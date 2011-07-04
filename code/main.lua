@@ -1,10 +1,29 @@
+require "sprite"
 local physics = require "physics"
 physics.start()
 physics.setDrawMode( "hybrid" )
 physics.setGravity( 0, 0 )
 
-function radian(degree)
-	return (math.pi / 180) * degree
+local function initEnemeyDeath()
+	enemyDeathSheet = sprite.newSpriteSheet("enemy-death-sheet-1.png", 24, 24)
+	enemyDeathSet = sprite.newSpriteSet(enemyDeathSheet, 1, 4)
+	sprite.add(enemyDeathSet, "enemyDeathSheet1", 1, 5, 1000, 1)
+end
+
+function createEnemyDeath(targetX, targetY)
+	local si = sprite.newSprite(enemyDeathSet)
+	si.name = "enemyDeathSetYo"
+	si:prepare()
+	function onEnd(event)
+		if(event.phase == "loop") then
+			event.sprite:removeSelf()
+		end
+	end
+	si:addEventListener("sprite", onEnd)
+	si:play()
+	si.x = targetX
+	si.y = targetY
+	return si
 end
 
 local function createPlayer()
@@ -60,7 +79,7 @@ end
 local function createEnemyPlane(filename, name, startX, startY, bottom)
 	local img = display.newImage(filename)
 	img.name = name
-	img.speed = 2 -- pixels per second
+	img.speed = ENEMY_1_SPEED
 	img.x = startX
 	img.y = startY
 	img.bottom = bottom
@@ -83,6 +102,7 @@ local function createEnemyPlane(filename, name, startX, startY, bottom)
 	
 	function onHit(self, event)
 		if(event.other.name == "Bullet") then
+			createEnemyDeath(self.x, self.y)
 			self:destroy()
 			event.other:destroy()
 		end
@@ -190,11 +210,12 @@ function createEnemyBullet(startX, startY, target)
 	local img = display.newImage("bullet.png")
 	
 	img.name = "Bullet"
-	img.speed = 4
+	img.speed = ENEMY_1_BULLET_SPEED
 	img.x = startX
 	img.y = startY
 	img.targetX = target.x
 	img.targetY = target.y
+	-- TODO: use math.deg vs. manual conversion
 	img.rot = math.atan2(img.y -  img.targetY,  img.x - img.targetX) / math.pi * 180 -90;
 	img.angle = (img.rot -90) * math.pi / 180;
 	
@@ -269,14 +290,23 @@ function removeLoop(o)
 	print("!! item not found !!")
 end
 
-tickers = {}
+ENEMY_1_SPEED = 4
+ENEMY_1_BULLET_SPEED = 7
+
 MAX_BULLET_COUNT = 4
+
+tickers = {}
 bullets = 0
+enemyRoster = {
+	
+	
+	
+}
 
 stage = display.getCurrentStage()
-
+initEnemeyDeath()
 plane = createPlayer()
-createEnemyPlane("enemy-1.png", "Enemy1", 100, 0, stage.height)
+
 local lastTick = system.getTimer()
 
 addLoop(plane)
@@ -316,6 +346,24 @@ end
 function startGame()
 	Runtime:addEventListener("enterFrame", animate )
 	Runtime:addEventListener("touch", onTouch)
+	local t = {}
+	function t:timer(event)
+		--event.time
+		-- timer.cancel( event.source ) 
+		local randomX = stage.width * math.random()
+		if(randomX < 20) then
+			randomX = 20
+		end
+		
+		if(randomX > stage.width - 20) then
+			randomX = stage.width - 20
+		end
+			
+		createEnemyPlane("enemy-1.png", "Enemy1", randomX, 0, stage.height)
+	end
+	
+	timer.performWithDelay(3000, t, 0)
+	
 end
 
 startGame()
