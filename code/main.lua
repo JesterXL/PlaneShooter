@@ -8,12 +8,77 @@ local function initEnemeyDeath()
 	sprite.add(enemyDeathSet, "enemyDeathSheet1", 1, 5, 1000, 1)
 end
 
+local function initPlayerDeath()
+	playerDeathSheet = sprite.newSpriteSheet("player-death-sheet.png", 18, 18)
+	playerDeathSet = sprite.newSpriteSet(playerDeathSheet, 1, 10)
+	-- sprite.add( spriteSet, sequenceName, startFrame, frameCount, time, [loopParam] )
+	sprite.add(playerDeathSet, "playerDeathSheet", 1, 10, 2000, 1)
+end
+
+local function initTerrain()
+	-- NOTE: getting emulator bug with images; hard to tell wtf, so aborting for now
+	if(true) then
+		return
+	end
+	
+	terrain1 = display.newImage("debug-terrain.png", 0, 0)
+	mainGroup:insert(terrain1)
+	terrain2 = display.newImage("debug-terrain.png", 0, 0)
+	mainGroup:insert(terrain2)
+	terrain1.x = 0
+	terrain1.y = 0
+--	terrain2.isVisible = false
+--	terrain2.x = 0
+	--terrain2.y = terrain1.y + terrain1.height + 4
+	
+	print("terrain1.y: ", terrain1.y, ", stage.y: ", stage.y)
+	
+	terrainScroller = {}
+	terrainScroller.speed = TERRAIN_SCROLL_SPEED
+	terrainScroller.onTerrain = terrain1
+	terrainScroller.offTerrain = terrain2
+	terrainScroller.targetY = -terrain1.height
+	
+	function terrainScroller:tick(millisecondsPassed)
+		local deltaX = self.onTerrain.x
+		local deltaY = self.onTerrain.y - self.targetY
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+
+		local moveX = self.speed * (deltaX / dist)
+		local moveY = self.speed * (deltaY / dist)
+		print("self.onTerrain.y: ", self.onTerrain.y)
+
+		if (self.speed >= dist) then
+			self.y = self.targetY
+			self.onTerrain.y = self.offTerrain.y + self.offTerrain.height
+			local oldOn = self.onTerrain
+			self.onTerrain = self.offTerrain
+			self.offTerrain = oldOn
+		else
+			self.onTerrain.x = self.onTerrain.x - moveX
+			self.onTerrain.y = self.onTerrain.y - moveY
+			self.offTerrain.x = self.onTerrain.x
+			self.offTerrain.y = self.onTerrain.y + self.onTerrain.height + 2
+		end
+	end
+end
+
+function startScrollingTerrain()
+	--addLoop(terrainScroller)
+end
+
+function stopScrollingTerrain()
+	--removeLoop(terrainScroller)
+end
+
 local function initHealthBar()
 	healthBarBackground = display.newImage("health-bar-background.png", 0, 0)
+	mainGroup:insert(healthBarBackground)
 	healthBarBackground.x = stage.width - healthBarBackground.width - 8
 	healthBarBackground.y = 8
 	
 	healthBarForeground = display.newImage("health-bar-foreground.png", 0, 0)
+	mainGroup:insert(healthBarForeground)
 	healthBarForeground.x = healthBarBackground.x
 	healthBarForeground.y = healthBarBackground.y
 	healthBarForeground:setReferencePoint(display.TopLeftReferencePoint)
@@ -22,10 +87,16 @@ end
 local function initSounds()
 	planeShootSound = audio.loadSound("plane-shoot.wav")
 	enemyDeath1Sound = audio.loadSound("enemy-death-1.mp3")
+	playerHitSound = audio.loadSound("player-hit-sound.mp3")
+	playerDeathSound = audio.loadSound("player-death-sound.mp3")
 end
 
 -- from 0 to 1
 function setHealth(value)
+	if(value <= 0) then
+		value = 0.1
+	end
+	
 	healthBarForeground.xScale = value
 	-- NOTE: Makah-no-sense, ese. Basically, setting width is bugged, and Case #677 is documented.
 	-- Meaning, no matter what reference point you set, it ALWAYS resizes from center when setting width/height.
@@ -36,7 +107,25 @@ end
 
 function createEnemyDeath(targetX, targetY)
 	local si = sprite.newSprite(enemyDeathSet)
+	mainGroup:insert(si)
 	si.name = "enemyDeathSetYo"
+	si:prepare()
+	function onEnd(event)
+		if(event.phase == "loop") then
+			event.sprite:removeSelf()
+		end
+	end
+	si:addEventListener("sprite", onEnd)
+	si:play()
+	si.x = targetX
+	si.y = targetY
+	return si
+end
+
+function createPlayerDeath(targetX, targetY)
+	local si = sprite.newSprite(playerDeathSet)
+	mainGroup:insert(si)
+	si.name = "playerDeathSetYo"
 	si:prepare()
 	function onEnd(event)
 		if(event.phase == "loop") then
@@ -52,7 +141,7 @@ end
 
 local function createPlayer()
 	local img = display.newImage("plane.png")
-	
+	mainGroup:insert(img)
 	img.speed = PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
 	img.maxHitPoints = 3
@@ -73,7 +162,13 @@ local function createPlayer()
 		self.hitPoints = self.hitPoints - 1
 		setHealth(self.hitPoints / self.maxHitPoints)
 		if(self.hitPoints <= 0) then
+			self.isVisible = false
+			audio.play(playerDeathSound, {loops=0})
+			createPlayerDeath(self.x, self.y)
+			stopPlayerInteraction()
 			endGame()
+		else
+			audio.play(playerHitSound, {loops=0})
 		end
 	end
 	
@@ -104,6 +199,7 @@ end
 
 local function createEnemyPlane(filename, name, startX, startY, bottom)
 	local img = display.newImage(filename)
+	mainGroup:insert(img)
 	img.name = name
 	img.speed = ENEMY_1_SPEED
 	img.x = startX
@@ -181,7 +277,7 @@ local function createBullet(startX, startY)
 	end
 	
 	local img = display.newImage("bullet.png")
-	
+	mainGroup:insert(img)
 	img.name = "Bullet"
 	img.speed = 10 -- pixels per second
 	img.x = startX
@@ -236,7 +332,7 @@ end
 
 function createEnemyBullet(startX, startY, target)
 	local img = display.newImage("bullet.png")
-	
+	mainGroup:insert(img)
 	img.name = "Bullet"
 	img.speed = ENEMY_1_BULLET_SPEED
 	img.x = startX
@@ -348,16 +444,23 @@ function onTouch(event)
 	end
 	
 	if(event.phase == "ended" or event.phase == "cancelled") then
-		stopFiringBullets()
-		audio.fadeOut({channel=1, time=100})
-		planeShootSoundChannel = nil
+		stopPlayerInteraction()
 	end
+end
+
+function stopPlayerInteraction()
+	stopFiringBullets()
+	audio.fadeOut({channel=1, time=100})
+	planeShootSoundChannel = nil
 end
 
 function endGame()
 	print("endGame")
 	Runtime:removeEventListener("enterFrame", animate )
 	Runtime:removeEventListener("touch", onTouch)
+	timer.cancel(gameTimer)
+	gameTimer = nil
+	stopScrollingTerrain()
 end
 
 function startGame()
@@ -379,20 +482,23 @@ function startGame()
 		createEnemyPlane("enemy-1.png", "Enemy1", randomX, 0, stage.height)
 	end
 	
-	timer.performWithDelay(500, t, 0)
+	gameTimer = timer.performWithDelay(500, t, 0)
 	
+	startScrollingTerrain()
 end
 
 
 physics.start()
-physics.setDrawMode( "hybrid" )
+physics.setDrawMode( "normal" )
 physics.setGravity( 0, 0 )
 
 ENEMY_1_SPEED = 4
 ENEMY_1_BULLET_SPEED = 7
 MAX_BULLET_COUNT = 6
 PLAYER_MOVE_SPEED = 7
+TERRAIN_SCROLL_SPEED = 1
 
+mainGroup = display.newGroup()
 
 tickers = {}
 bullets = 0
@@ -408,9 +514,13 @@ function bulletRegulator:tick(millisecondsPassed)
 end
 
 stage = display.getCurrentStage()
+print("stage.width: ", stage.width, ", height: ", stage.height)
+initTerrain()
 initEnemeyDeath()
 initHealthBar()
 initSounds()
+initPlayerDeath()
+
 plane = createPlayer()
 
 lastTick = system.getTimer()
