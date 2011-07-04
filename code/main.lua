@@ -1,13 +1,37 @@
 require "sprite"
 local physics = require "physics"
-physics.start()
-physics.setDrawMode( "hybrid" )
-physics.setGravity( 0, 0 )
+
 
 local function initEnemeyDeath()
 	enemyDeathSheet = sprite.newSpriteSheet("enemy-death-sheet-1.png", 24, 24)
 	enemyDeathSet = sprite.newSpriteSet(enemyDeathSheet, 1, 4)
 	sprite.add(enemyDeathSet, "enemyDeathSheet1", 1, 5, 1000, 1)
+end
+
+local function initHealthBar()
+	healthBarBackground = display.newImage("health-bar-background.png", 0, 0)
+	healthBarBackground.x = stage.width - healthBarBackground.width - 8
+	healthBarBackground.y = 8
+	
+	healthBarForeground = display.newImage("health-bar-foreground.png", 0, 0)
+	healthBarForeground.x = healthBarBackground.x
+	healthBarForeground.y = healthBarBackground.y
+	healthBarForeground:setReferencePoint(display.TopLeftReferencePoint)
+end
+
+local function initSounds()
+	planeShootSound = audio.loadSound("plane-shoot.wav")
+	enemyDeath1Sound = audio.loadSound("enemy-death-1.mp3")
+end
+
+-- from 0 to 1
+function setHealth(value)
+	healthBarForeground.xScale = value
+	-- NOTE: Makah-no-sense, ese. Basically, setting width is bugged, and Case #677 is documented.
+	-- Meaning, no matter what reference point you set, it ALWAYS resizes from center when setting width/height.
+	-- So, we just increment based on the negative xReference of "how far my left is from my left origin".
+	-- Wow, that was a fun hour.
+	healthBarForeground.x = healthBarBackground.x + healthBarForeground.xReference
 end
 
 function createEnemyDeath(targetX, targetY)
@@ -29,8 +53,9 @@ end
 local function createPlayer()
 	local img = display.newImage("plane.png")
 	
-	img.speed = 6 -- pixels per second
+	img.speed = PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
+	img.maxHitPoints = 3
 	img.hitPoints = 3
 	
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
@@ -45,7 +70,8 @@ local function createPlayer()
 	end
 	
 	function img:onBulletHit(event)
-		self.hitPionts = self.hitPoints - 1
+		self.hitPoints = self.hitPoints - 1
+		setHealth(self.hitPoints / self.maxHitPoints)
 		if(self.hitPoints <= 0) then
 			endGame()
 		end
@@ -103,6 +129,8 @@ local function createEnemyPlane(filename, name, startX, startY, bottom)
 	function onHit(self, event)
 		if(event.other.name == "Bullet") then
 			createEnemyDeath(self.x, self.y)
+			local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound, {loops=0})
+			audio.setVolume(.25, {channel = enemyDeath1SoundChannel})
 			self:destroy()
 			event.other:destroy()
 		end
@@ -270,11 +298,15 @@ function createEnemyBullet(startX, startY, target)
 	return img
 end
 
-
-local function onRunComplete(event)
-	table.remove(event.target)
-	event.target:removeSelf()
+local function startFiringBullets()
+	addLoop(bulletRegulator)
+	bulletRegulator:tick(333)
 end
+
+local function stopFiringBullets()
+	removeLoop(bulletRegulator)
+end
+
 
 function addLoop(o)
 	table.insert(tickers, o)
@@ -290,31 +322,6 @@ function removeLoop(o)
 	print("!! item not found !!")
 end
 
-ENEMY_1_SPEED = 4
-ENEMY_1_BULLET_SPEED = 7
-
-MAX_BULLET_COUNT = 4
-
-tickers = {}
-bullets = 0
-enemyRoster = {
-	
-	
-	
-}
-
-stage = display.getCurrentStage()
-initEnemeyDeath()
-plane = createPlayer()
-
-local lastTick = system.getTimer()
-
-addLoop(plane)
-
-planeXTarget = stage.width / 2
-planeYTarget = stage.height / 2
-plane:move(planeXTarget, planeYTarget)
-
 function animate(event)
 	local now = system.getTimer()
 	local difference = now - lastTick
@@ -327,13 +334,23 @@ end
 
 function onTouch(event)
 	if(event.phase == "began") then
-		createBullet(plane.x, plane.y)
+		startFiringBullets()
+		if(planeShootSoundChannel == nil) then
+			audio.setVolume( .25, { channel=1 } )
+			planeShootSoundChannel = audio.play(planeShootSound, {channel=1, loops=-1, fadein=100})
+		end
 	end
 		
 		
 	if(event.phase == "began" or event.phase == "moved") then
 		planeXTarget = event.x
 		planeYTarget = event.y
+	end
+	
+	if(event.phase == "ended" or event.phase == "cancelled") then
+		stopFiringBullets()
+		audio.fadeOut({channel=1, time=100})
+		planeShootSoundChannel = nil
 	end
 end
 
@@ -362,9 +379,47 @@ function startGame()
 		createEnemyPlane("enemy-1.png", "Enemy1", randomX, 0, stage.height)
 	end
 	
-	timer.performWithDelay(3000, t, 0)
+	timer.performWithDelay(500, t, 0)
 	
 end
+
+
+physics.start()
+physics.setDrawMode( "hybrid" )
+physics.setGravity( 0, 0 )
+
+ENEMY_1_SPEED = 4
+ENEMY_1_BULLET_SPEED = 7
+MAX_BULLET_COUNT = 6
+PLAYER_MOVE_SPEED = 7
+
+
+tickers = {}
+bullets = 0
+bulletRegulator = {} -- Mount up!
+bulletRegulator.fireSpeed = 200
+bulletRegulator.lastFire = 0
+function bulletRegulator:tick(millisecondsPassed)
+	self.lastFire = self.lastFire + millisecondsPassed
+	if(self.lastFire >= self.fireSpeed) then
+		createBullet(plane.x, plane.y)
+		self.lastFire = 0
+	end
+end
+
+stage = display.getCurrentStage()
+initEnemeyDeath()
+initHealthBar()
+initSounds()
+plane = createPlayer()
+
+lastTick = system.getTimer()
+
+addLoop(plane)
+
+planeXTarget = stage.width / 2
+planeYTarget = stage.height / 2
+plane:move(planeXTarget, planeYTarget)
 
 startGame()
 
