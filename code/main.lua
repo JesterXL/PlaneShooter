@@ -390,38 +390,126 @@ local function createBullet2(startX, startY)
 	return img
 end
 
-function createPowerUp(x, y)
-	local img = display.newImage("icon-power-up.png")
-	img.x = x
-	img.y = y
-	img.lifetime = 5000 -- milliseconds
+local function createBullet3(startX, startY)
+	if(bullets + 1 > MAX_BULLET_COUNT) then
+		return
+	else
+		bullets = bullets + 1
+	end
 	
-
+	local centerImage = display.newImage("player-bullet-2.png")
+	local leftImage = display.newImage("player-bullet-1.png")
+	local rightImage = display.newImage("player-bullet-1.png") 
+	mainGroup:insert(centerImage)
+	mainGroup:insert(leftImage)
+	mainGroup:insert(rightImage)
+	centerImage.name = "Bullet"
+	leftImage.name = "Bullet"
+	rightImage.name = "Bullet"
+	centerImage.speed = 10
+	leftImage.speed = 10
+	rightImage.speed = 10
+	leftImage.x = startX
+	leftImage.y = startY
+	rightImage.x = startX
+	rightImage.y = startY
+	centerImage.x = startX
+	centerImage.y = startY
+	leftImage.rotation = -45
+	rightImage.rotation = 45
 	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+	physics.addBody( centerImage, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
-								isBullet = false, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 16, maskBits = 1 }
+								isBullet = true, isSensor = true, isFixedRotation = true,
+								filter = { categoryBits = 2, maskBits = 4 }
 							} )
-							
+	physics.addBody( leftImage, { density = 1.0, friction = 0.3, bounce = 0.2, 
+								bodyType = "kinematic", 
+								isBullet = true, isSensor = true, isFixedRotation = true,
+								filter = { categoryBits = 2, maskBits = 4 }
+							} )						
+	
+	physics.addBody( rightImage, { density = 1.0, friction = 0.3, bounce = 0.2, 
+								bodyType = "kinematic", 
+								isBullet = true, isSensor = true, isFixedRotation = true,
+								filter = { categoryBits = 2, maskBits = 4 }
+							} )						
+								
+	addLoop(leftImage)
+	addLoop(rightImage)
+	addLoop(centerImage)
+	
+	function leftImage:destroy()
+		bullets = bullets - 1
+		removeLoop(self)
+		self:removeSelf()
+	end
+	
+	function rightImage:destroy()
+		bullets = bullets - 1
+		removeLoop(self)
+		self:removeSelf()
+	end
+	
+	function centerImage:destroy()
+		bullets = bullets - 1
+		removeLoop(self)
+		self:removeSelf()
+	end
+	
 	function onHit(self, event)
-		if(event.other.name == "Player") then
-			addPowerUp()
-			self:removeSelf()
+		if(event.other.name == "Bullet") then
+			self:destroy()
+			event.other:destroy()
 		end
 	end
 	
-	function img:tick(millisecondsPassed)
-		self.lifetime = self.lifetime - millisecondsPassed
-		if(self.lifetime <= 0) then
-			self:removeSelf()
+	leftImage.collision = onHit
+	leftImage:addEventListener("collision", leftImage)
+	
+	rightImage.collision = onHit
+	rightImage:addEventListener("collision", rightImage)
+	
+	centerImage.collision = onHit
+	centerImage:addEventListener("collision", centerImage)
+	
+	function centerImage:tick(millisecondsPassed)
+		if(self.y < 0) then
+			self:destroy()
+			return
+		else
+			local deltaX = 0
+			local deltaY = self.y - 0
+			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+
+			local moveX = self.speed * (deltaX / dist)
+			local moveY = self.speed * (deltaY / dist)
+			
+			if (self.speed >= dist) then
+				self:destroy()
+			else
+				self.y = self.y - moveY
+			end
 		end
 	end
 	
-	img.collision = onHit
-	img:addEventListener("collision", img)
+	leftImage.rot = math.atan2(leftImage.y -  -800,  leftImage.x - -800) / math.pi * 180 -90;
+	leftImage.angle = (leftImage.rot -90) * math.pi / 180;
 	
-	return img
+	rightImage.rot = math.atan2(rightImage.y -  -800,  rightImage.x - 800) / math.pi * 180 -90;
+	rightImage.angle = (rightImage.rot -90) * math.pi / 180;
+	
+	function leftImage:tick(millisecondsPassed)
+		self.x = self.x + math.cos(self.angle) * self.speed
+	   	self.y = self.y + math.sin(self.angle) * self.speed
+	end
+	
+	function rightImage:tick(millisecondsPassed)
+		self.x = self.x + math.cos(self.angle) * self.speed
+	   	self.y = self.y + math.sin(self.angle) * self.speed
+	end
+	
+	return centerImage, leftImage, rightImage
 end
 
 function createEnemyBullet(startX, startY, target)
@@ -488,9 +576,42 @@ img:addEventListener("collision", img)
 	return img
 end
 
+function createPowerUp(x, y)
+	local img = display.newImage("icon-power-up.png")
+	img.x = x
+	img.y = y
+	img.lifetime = 5000 -- milliseconds
+	
+
+	
+	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+								bodyType = "kinematic", 
+								isBullet = false, isSensor = true, isFixedRotation = true,
+								filter = { categoryBits = 16, maskBits = 1 }
+							} )
+							
+	function onHit(self, event)
+		if(event.other.name == "Player") then
+			addPowerUp()
+			self:removeSelf()
+		end
+	end
+	
+	function img:tick(millisecondsPassed)
+		self.lifetime = self.lifetime - millisecondsPassed
+		if(self.lifetime <= 0) then
+			self:removeSelf()
+		end
+	end
+	
+	img.collision = onHit
+	img:addEventListener("collision", img)
+	
+	return img
+end
+
 function addPowerUp()
-	local newValue = powerUpLevel + 1
-	setPowerUpLevel(newValue)
+	setPowerUpLevel(powerUpLevel + 1)
 end
 
 function removePowerUp()
@@ -661,11 +782,17 @@ function bulletRegulator:tick(millisecondsPassed)
 end
 
 function setPowerUpLevel(level)
+	if(level > 3) then
+		level = 3
+	end
+	
 	powerUpLevel = level
 	if(powerUpLevel == 1) then
 		bulletRegulator.fireFunc = createBullet1
 	elseif(powerUpLevel == 2) then
 		bulletRegulator.fireFunc = createBullet2
+	elseif(powerUpLevel == 3) then
+		bulletRegulator.fireFunc = createBullet3
 	end
 end
 
