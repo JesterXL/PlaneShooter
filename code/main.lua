@@ -278,7 +278,7 @@ local function createBullet1(startX, startY)
 	local img = display.newImage("player-bullet-1.png")
 	mainGroup:insert(img)
 	img.name = "Bullet"
-	img.speed = 10 -- pixels per second
+	img.speed = PLAYER_BULLET_SPEED
 	img.x = startX
 	img.y = startY
 	
@@ -339,7 +339,7 @@ local function createBullet2(startX, startY)
 	local img = display.newImage("player-bullet-2.png")
 	mainGroup:insert(img)
 	img.name = "Bullet"
-	img.speed = 10 -- pixels per second
+	img.speed = PLAYER_BULLET_SPEED
 	img.x = startX
 	img.y = startY
 	
@@ -406,9 +406,9 @@ local function createBullet3(startX, startY)
 	centerImage.name = "Bullet"
 	leftImage.name = "Bullet"
 	rightImage.name = "Bullet"
-	centerImage.speed = 10
-	leftImage.speed = 10
-	rightImage.speed = 10
+	centerImage.speed = PLAYER_BULLET_SPEED
+	leftImage.speed = PLAYER_BULLET_SPEED
+	rightImage.speed = PLAYER_BULLET_SPEED
 	leftImage.x = startX
 	leftImage.y = startY
 	rightImage.x = startX
@@ -762,6 +762,7 @@ ENEMY_1_SPEED = 4
 ENEMY_1_BULLET_SPEED = 7
 MAX_BULLET_COUNT = 6
 PLAYER_MOVE_SPEED = 7
+PLAYER_BULLET_SPEED = 10
 TERRAIN_SCROLL_SPEED = 1
 
 mainGroup = display.newGroup()
@@ -782,17 +783,27 @@ function bulletRegulator:tick(millisecondsPassed)
 end
 
 function setPowerUpLevel(level)
-	if(level > 3) then
-		level = 3
+	if(level > 4) then
+		level = 4
 	end
 	
 	powerUpLevel = level
+	if(powerUpLevel <= 3) then
+		PLAYER_BULLET_SPEED = 10
+		PLAYER_MOVE_SPEED = 7
+		plane.speed = PLAYER_MOVE_SPEED
+	end
+	
 	if(powerUpLevel == 1) then
 		bulletRegulator.fireFunc = createBullet1
 	elseif(powerUpLevel == 2) then
 		bulletRegulator.fireFunc = createBullet2
 	elseif(powerUpLevel == 3) then
 		bulletRegulator.fireFunc = createBullet3
+	elseif(powerUpLevel == 4) then
+		PLAYER_BULLET_SPEED = 14
+		PLAYER_MOVE_SPEED = 11
+		plane.speed = PLAYER_MOVE_SPEED
 	end
 end
 
@@ -802,9 +813,11 @@ initEnemeyDeath()
 initHealthBar()
 initSounds()
 initPlayerDeath()
-setPowerUpLevel(powerUpLevel)
+
 
 plane = createPlayer()
+
+setPowerUpLevel(powerUpLevel)
 
 lastTick = system.getTimer()
 
