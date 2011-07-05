@@ -396,6 +396,8 @@ function createPowerUp(x, y)
 	img.y = y
 	img.lifetime = 5000 -- milliseconds
 	
+
+	
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = false, isSensor = true, isFixedRotation = true,
@@ -487,7 +489,8 @@ img:addEventListener("collision", img)
 end
 
 function addPowerUp()
-	setPowerUpLevel(powerUpLevel + 1)
+	local newValue = powerUpLevel + 1
+	setPowerUpLevel(newValue)
 end
 
 function removePowerUp()
@@ -589,8 +592,8 @@ function startGame()
 	Runtime:addEventListener("enterFrame", animate )
 	Runtime:addEventListener("touch", onTouch)
 	local t = {}
-	t.powerCount = 10
-	t.POWER_MAX_COUNT = 10
+	t.powerCount = 3
+	t.POWER_MAX_COUNT = 3
 	function t:timer(event)
 		--event.time
 		-- timer.cancel( event.source ) 
@@ -608,7 +611,16 @@ function startGame()
 			t.powerCount = t.powerCount - 1
 			if(t.powerCount <= 0) then
 				t.powerCount = t.POWER_MAX_COUNT
-				createPowerUp(event.target.x, event.target.y)
+				-- NOTE: You have to set a delay; adding physics bodies during a collision event (within the stack)
+				-- will cause a hard crash
+				local delayTable = {}
+				delayTable.x = event.target.x
+				delayTable.y = event.target.y
+				function delayTable:timer(event)
+				    createPowerUp(self.x, self.y)
+		        end
+		        timer.performWithDelay(200, delayTable)
+				
 			end
 		end
 		enemyPlane:addEventListener("enemyDead", onDead)
@@ -648,7 +660,7 @@ function bulletRegulator:tick(millisecondsPassed)
 	end
 end
 
-local function setPowerUpLevel(level)
+function setPowerUpLevel(level)
 	powerUpLevel = level
 	if(powerUpLevel == 1) then
 		bulletRegulator.fireFunc = createBullet1
