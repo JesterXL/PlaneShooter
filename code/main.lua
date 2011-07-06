@@ -616,6 +616,7 @@ function createBoss()
 	local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
 	--sprite.add(bossSet, "bossSheetSet1", 1, 3, 500, 0)
 	local boss = sprite.newSprite(bossSet)
+	boss:setReferencePoint(display.TopLeftReferencePoint)
 	mainGroup:insert(boss)
 	boss.name = "Boss"
 	boss:prepare()
@@ -624,7 +625,7 @@ function createBoss()
 	boss.x = middle
 	boss.y = -boss.height
 	boss.speed = 1
-	boss.targetX = stage.width / 2
+	boss.targetX = stage.width / 2 - boss.width / 2
 	boss.targetY = boss.height
 	boss.gunPoint1 = {x = 71, y = 23}
 	boss.gunPoint2 = {x = 71, y = 44}
