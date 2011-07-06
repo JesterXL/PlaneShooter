@@ -512,15 +512,15 @@ local function createBullet3(startX, startY)
 	return centerImage, leftImage, rightImage
 end
 
-function createEnemyBullet(startX, startY, target)
+function createEnemyBullet(startX, startY, targetPoint)
 	local img = display.newImage("bullet.png")
 	mainGroup:insert(img)
 	img.name = "Bullet"
 	img.speed = ENEMY_1_BULLET_SPEED
 	img.x = startX
 	img.y = startY
-	img.targetX = target.x
-	img.targetY = target.y
+	img.targetX = targetPoint.x
+	img.targetY = targetPoint.y
 	-- TODO: use math.deg vs. manual conversion
 	img.rot = math.atan2(img.y -  img.targetY,  img.x - img.targetX) / math.pi * 180 -90;
 	img.angle = (img.rot -90) * math.pi / 180;
@@ -610,6 +610,103 @@ function createPowerUp(x, y)
 	return img
 end
 
+
+function createBoss()
+	local bossSheet = sprite.newSpriteSheet("boss-sheet-1.png", 143, 96)
+	local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
+	--sprite.add(bossSet, "bossSheetSet1", 1, 3, 500, 0)
+	local boss = sprite.newSprite(bossSet)
+	mainGroup:insert(boss)
+	boss.name = "Boss"
+	boss:prepare()
+	boss:play()
+	local middle = (stage.width / 2) - (boss.width / 2)
+	boss.x = middle
+	boss.y = -boss.height
+	boss.speed = 1
+	boss.targetX = stage.width / 2
+	boss.targetY = boss.height
+	boss.gunPoint1 = {x = 71, y = 23}
+	boss.gunPoint2 = {x = 71, y = 44}
+	boss.gunPoint3 = {x = 71, y = 68}
+	boss.leftGunPoint = {x = 71, y = 68}
+	boss.rightGunPoint = {x = 71, y = 68}
+	boss.fireSpeed = 1600
+	boss.lastTick = 0
+	boss.hitPoints = 100
+	boss.hitSound = audio.loadSound("boss-hit-sound.mp3")
+	
+	physics.addBody( boss, { density = 1.0, friction = 0.3, bounce = 0.2, 
+								bodyType = "kinematic", 
+								isBullet = false, isSensor = true, isFixedRotation = true,
+								filter = { categoryBits = 4, maskBits = 3 }
+							} )
+								
+	addLoop(boss)
+	
+	function boss:destroy()
+		removeLoop(self)
+		createEnemyDeath(self.x, self.y)
+		local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound)
+		audio.setVolume(1, {channel = enemyDeath1SoundChannel})
+		self:dispatchEvent({name="enemyDead", target=self})
+		self:removeSelf()
+	end
+	
+	function moveToFiringPosition(self, millisecondsPassed)
+		local deltaX = self.x - self.targetX
+		local deltaY = self.y - self.targetY
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+
+		local moveX = self.speed * (deltaX / dist)
+		local moveY = self.speed * (deltaY / dist)
+		
+		if (self.speed >= dist) then
+			boss.tick = insanityFiringMode
+		else
+			self.x = self.x - moveX
+			self.y = self.y - moveY
+		end
+	end
+	
+	function insanityFiringMode(self, millisecondsPassed)
+		self.lastTick = self.lastTick + millisecondsPassed
+		if(self.lastTick >= self.fireSpeed) then
+			-- TODO: making this harder for player would be to have fire at delayed times vs. all at once
+			createEnemyBullet(self.gunPoint1.x + self.x, self.gunPoint1.y + self.y, plane)
+			createEnemyBullet(self.gunPoint2.x + self.x, self.gunPoint2.y + self.y, plane)
+			createEnemyBullet(self.gunPoint3.x + self.x, self.gunPoint3.y + self.y, plane)
+			createEnemyBullet(self.leftGunPoint.x + self.x, self.leftGunPoint.y + self.y, {x = -30, y = self.leftGunPoint.y + self.y})
+			createEnemyBullet(self.rightGunPoint.x + self.x, self.rightGunPoint.y + self.y, {x = stage.width + 30, y = self.rightGunPoint.y + self.y})
+			self.lastTick = 0
+		else
+			self.lastTick = self.lastTick + millisecondsPassed
+		end
+	end
+	
+	boss.tick = moveToFiringPosition
+	
+	function onHit(self, event)
+		if(event.other.name == "Bullet") then
+			self.hitPoints = self.hitPoints - 1
+			if(self.hitPoints <= 0) then
+				self:destroy()
+			else
+				--local hitSoundChannel = audio.play(self.hitSound)
+				local hitSoundChannel = audio.play(playerHitSound)
+				audio.setVolume(.5, {channel=hitSoundChannel})
+				createEnemyDeath(event.other.x, event.other.y)
+				event.other:destroy()
+			end
+		end
+	end
+	
+	boss.collision = onHit
+	boss:addEventListener("collision", boss)
+	
+	return boss
+end
+
 function addPowerUp()
 	setPowerUpLevel(powerUpLevel + 1)
 end
@@ -664,16 +761,6 @@ function animate(event)
 	end
 end
 
-function move(o, x, y)
-	o.x = x
-	o.y = y
-end
-
-function move(x, y)
-	self.x = x
-	self.y = y
-end
-
 function onTouch(event)
 	if(event.phase == "began") then
 		startFiringBullets()
@@ -709,12 +796,53 @@ function endGame()
 	stopScrollingTerrain()
 end
 
+function setPowerUpLevel(level)
+	if(level > 3) then
+		level = 3
+	end
+	
+	powerUpLevel = level
+	if(powerUpLevel <= 3) then
+		PLAYER_BULLET_SPEED = 10
+		PLAYER_MOVE_SPEED = 7
+		plane.speed = PLAYER_MOVE_SPEED
+	end
+	
+	if(powerUpLevel == 1) then
+		bulletRegulator.fireFunc = createBullet1
+	elseif(powerUpLevel == 2) then
+		bulletRegulator.fireFunc = createBullet2
+	elseif(powerUpLevel == 3) then
+		bulletRegulator.fireFunc = createBullet3
+	end
+	--[[
+	elseif(powerUpLevel == 4) then
+		return
+		PLAYER_BULLET_SPEED = 14
+		PLAYER_MOVE_SPEED = 11
+		plane.speed = PLAYER_MOVE_SPEED
+	end
+	]]--
+end
+
+function startBossFight()
+	print("-- startBossFight --")
+	if(fightingBoss == false) then
+		fightingBoss = true
+		timer.cancel(gameTimer)
+		gameTimer = nil
+		local delayTable = {}
+		function delayTable:timer(event)
+		    createBoss()
+        end
+        timer.performWithDelay(200, delayTable)
+	end
+end
+
 function startGame()
 	Runtime:addEventListener("enterFrame", animate )
 	Runtime:addEventListener("touch", onTouch)
 	local t = {}
-	t.powerCount = 3
-	t.POWER_MAX_COUNT = 3
 	function t:timer(event)
 		--event.time
 		-- timer.cancel( event.source ) 
@@ -729,9 +857,15 @@ function startGame()
 			
 		local enemyPlane = createEnemyPlane("enemy-1.png", "Enemy1", randomX, 0, stage.height)
 		function onDead(event)
-			t.powerCount = t.powerCount - 1
-			if(t.powerCount <= 0) then
-				t.powerCount = t.POWER_MAX_COUNT
+			
+			enemies = enemies - 1
+			if(enemies <= 0) then
+				startBossFight()
+			end
+			
+			powerCount = powerCount - 1
+			if(powerCount <= 0) then
+				powerCount = POWER_MAX_COUNT
 				-- NOTE: You have to set a delay; adding physics bodies during a collision event (within the stack)
 				-- will cause a hard crash
 				local delayTable = {}
@@ -754,6 +888,7 @@ end
 
 
 
+
 physics.start()
 physics.setDrawMode( "normal" )
 physics.setGravity( 0, 0 )
@@ -769,9 +904,14 @@ mainGroup = display.newGroup()
 
 tickers = {}
 powerUpLevel = 1
+enemies = 10
+fightingBoss = false
+powerCount = 3
+POWER_MAX_COUNT = 3
+
 bullets = 0
 bulletRegulator = {} -- Mount up!
-bulletRegulator.fireSpeed = 200
+bulletRegulator.fireSpeed = 400
 bulletRegulator.lastFire = 0
 bulletRegulator.fireFunc = nil
 function bulletRegulator:tick(millisecondsPassed)
@@ -782,30 +922,6 @@ function bulletRegulator:tick(millisecondsPassed)
 	end
 end
 
-function setPowerUpLevel(level)
-	if(level > 4) then
-		level = 4
-	end
-	
-	powerUpLevel = level
-	if(powerUpLevel <= 3) then
-		PLAYER_BULLET_SPEED = 10
-		PLAYER_MOVE_SPEED = 7
-		plane.speed = PLAYER_MOVE_SPEED
-	end
-	
-	if(powerUpLevel == 1) then
-		bulletRegulator.fireFunc = createBullet1
-	elseif(powerUpLevel == 2) then
-		bulletRegulator.fireFunc = createBullet2
-	elseif(powerUpLevel == 3) then
-		bulletRegulator.fireFunc = createBullet3
-	elseif(powerUpLevel == 4) then
-		PLAYER_BULLET_SPEED = 14
-		PLAYER_MOVE_SPEED = 11
-		plane.speed = PLAYER_MOVE_SPEED
-	end
-end
 
 stage = display.getCurrentStage()
 initTerrain()
