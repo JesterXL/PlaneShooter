@@ -1,0 +1,8 @@
+doc = fw.getDocumentDOM()
+sel = fw.selection
+
+len = sel.length
+for(var index = 0; index < len; index++)
+{
+	alert("path: " + sel[index])
+}

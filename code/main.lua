@@ -637,13 +637,19 @@ function createBoss()
 	boss.hitPoints = 100
 	boss.hitSound = audio.loadSound("boss-hit-sound.mp3")
 	
+	local halfWidth = boss.width / 2
+	local halfHeight = boss.height / 2
+	local bossShape = {82-halfWidth,48-halfHeight, 98-halfWidth,94-halfHeight, 45-halfWidth,94-halfHeight, 62-halfWidth,48-halfHeight, 0-halfWidth,30-halfHeight, 0-halfWidth,0-halfHeight, 143-halfWidth,0-halfHeight, 143-halfWidth,30-halfHeight} 
+	
 	physics.addBody( boss, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
-								isBullet = false, isSensor = true, isFixedRotation = true,
+								isBullet = false, isSensor = true, isFixedRotation = false,
+								shape=bossShape,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
 								
 	addLoop(boss)
+	
 	
 	function boss:destroy()
 		removeLoop(self)
@@ -891,7 +897,7 @@ end
 
 
 physics.start()
-physics.setDrawMode( "normal" )
+physics.setDrawMode( "hybrid" )
 physics.setGravity( 0, 0 )
 
 ENEMY_1_SPEED = 4
@@ -945,5 +951,3 @@ planeYTarget = stage.height / 2
 plane:move(planeXTarget, planeYTarget)
 
 startGame()
-
-
