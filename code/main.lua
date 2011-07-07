@@ -589,18 +589,27 @@ function createPowerUp(x, y)
 								isBullet = false, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 16, maskBits = 1 }
 							} )
-							
+				
+	addLoop(img)
+			
 	function onHit(self, event)
 		if(event.other.name == "Player") then
 			addPowerUp()
-			self:removeSelf()
+			local result = removeLoop(img)
+			print("result of removing myself upon a collision: ", result)
+			img:removeSelf()
+			img = nil
+			return true
 		end
 	end
 	
 	function img:tick(millisecondsPassed)
-		self.lifetime = self.lifetime - millisecondsPassed
-		if(self.lifetime <= 0) then
-			self:removeSelf()
+		-- TODO/FIXME/BUG: this is weird; it's a non-nil reference, but it's jsut a table
+		if(img.removeSelf ~= nil) then
+			img.lifetime = img.lifetime - millisecondsPassed
+			if(img.lifetime <= 0) then
+				img:removeSelf()
+			end
 		end
 	end
 	
@@ -724,14 +733,19 @@ function removePowerUp()
 	end
 end
 
+function addLoop(o)
+	table.insert(tickers, o)
+end
+
 function removeLoop(o)
 	for i,v in ipairs(tickers) do
 		if(v == o) then
 			table.remove(tickers, i)
-			return
+			return true
 		end	
 	end
 	print("!! item not found !!")
+	return false
 end
 
 local function startFiringBullets()
@@ -741,21 +755,6 @@ end
 
 local function stopFiringBullets()
 	removeLoop(bulletRegulator)
-end
-
-
-function addLoop(o)
-	table.insert(tickers, o)
-end
-
-function removeLoop(o)
-	for i,v in ipairs(tickers) do
-		if(v == o) then
-			table.remove(tickers, i)
-			return
-		end	
-	end
-	print("!! item not found !!")
 end
 
 function animate(event)
