@@ -1,15 +1,16 @@
 require "sprite"
 local physics = require "physics"
+local Player = require "Player"
 
 
 local function initEnemeyDeath()
-	enemyDeathSheet = sprite.newSpriteSheet("enemy-death-sheet-1.png", 24, 24)
+	enemyDeathSheet = sprite.newSpriteSheet("enemy_death_sheet_1.png", 24, 24)
 	enemyDeathSet = sprite.newSpriteSet(enemyDeathSheet, 1, 4)
 	sprite.add(enemyDeathSet, "enemyDeathSheet1", 1, 5, 1000, 1)
 end
 
 local function initPlayerDeath()
-	playerDeathSheet = sprite.newSpriteSheet("player-death-sheet.png", 18, 18)
+	playerDeathSheet = sprite.newSpriteSheet("player_death_sheet.png", 18, 18)
 	playerDeathSet = sprite.newSpriteSet(playerDeathSheet, 1, 10)
 	sprite.add(playerDeathSet, "playerDeathSheet", 1, 10, 2000, 1)
 end
@@ -20,9 +21,9 @@ local function initTerrain()
 		return
 	end
 	
-	terrain1 = display.newImage("debug-terrain.png", 0, 0)
+	terrain1 = display.newImage("debug_terrain.png", 0, 0)
 	mainGroup:insert(terrain1)
-	terrain2 = display.newImage("debug-terrain.png", 0, 0)
+	terrain2 = display.newImage("debug_terrain.png", 0, 0)
 	mainGroup:insert(terrain2)
 	terrain1.x = 0
 	terrain1.y = 0
@@ -71,12 +72,12 @@ function stopScrollingTerrain()
 end
 
 local function initHealthBar()
-	healthBarBackground = display.newImage("health-bar-background.png", 0, 0)
+	healthBarBackground = display.newImage("health_bar_background.png", 0, 0)
 	mainGroup:insert(healthBarBackground)
 	healthBarBackground.x = stage.width - healthBarBackground.width - 8
 	healthBarBackground.y = 8
 	
-	healthBarForeground = display.newImage("health-bar-foreground.png", 0, 0)
+	healthBarForeground = display.newImage("health_bar_foreground.png", 0, 0)
 	mainGroup:insert(healthBarForeground)
 	healthBarForeground.x = healthBarBackground.x
 	healthBarForeground.y = healthBarBackground.y
@@ -84,10 +85,10 @@ local function initHealthBar()
 end
 
 local function initSounds()
-	planeShootSound = audio.loadSound("plane-shoot.wav")
-	enemyDeath1Sound = audio.loadSound("enemy-death-1.mp3")
-	playerHitSound = audio.loadSound("player-hit-sound.mp3")
-	playerDeathSound = audio.loadSound("player-death-sound.mp3")
+	planeShootSound = audio.loadSound("plane_shoot.wav")
+	enemyDeath1Sound = audio.loadSound("enemy_death_1.mp3")
+	playerHitSound = audio.loadSound("player_hit_sound.mp3")
+	playerDeathSound = audio.loadSound("player_death_sound.mp3")
 end
 
 -- from 0 to 1
@@ -138,62 +139,7 @@ function createPlayerDeath(targetX, targetY)
 	return si
 end
 
-local function createPlayer()
-	local img = display.newImage("plane.png")
-	mainGroup:insert(img)
-	img.speed = PLAYER_MOVE_SPEED -- pixels per second
-	img.name = "Player"
-	img.maxHitPoints = 3
-	img.hitPoints = 3
-	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 1, maskBits = 28 }
-							} )
-								
-function img:move(x, y)
-	self.x = x
-	self.y = y
-end
-	
-function img:onBulletHit(event)
-	self.hitPoints = self.hitPoints - 1
-	setHealth(self.hitPoints / self.maxHitPoints)
-	if(self.hitPoints <= 0) then
-		self.isVisible = false
-		audio.play(playerDeathSound, {loops=0})
-		createPlayerDeath(self.x, self.y)
-		stopPlayerInteraction()
-		endGame()
-	else
-		audio.play(playerHitSound, {loops=0})
-	end
-end
-	
-function img:tick(millisecondsPassed)
-	if(self.x == planeXTarget) then
-		return
-	else
-		local deltaX = self.x - planeXTarget
-		local deltaY = self.y - planeYTarget
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
-
-		if (self.speed >= dist) then
-			self.x = planeXTarget
-			self.y = planeYTarget
-		else
-			self.x = self.x - moveX
-			self.y = self.y - moveY
-		end
-	end	
-end
-	
-	return img
-end
 
 local function createEnemyPlane(filename, name, startX, startY, bottom)
 	local img = display.newImage(filename)
@@ -275,7 +221,7 @@ local function createBullet1(startX, startY)
 		bullets = bullets + 1
 	end
 	
-	local img = display.newImage("player-bullet-1.png")
+	local img = display.newImage("player_bullet_1.png")
 	mainGroup:insert(img)
 	img.name = "Bullet"
 	img.speed = PLAYER_BULLET_SPEED
@@ -336,7 +282,7 @@ local function createBullet2(startX, startY)
 		bullets = bullets + 1
 	end
 	
-	local img = display.newImage("player-bullet-2.png")
+	local img = display.newImage("player_bullet_2.png")
 	mainGroup:insert(img)
 	img.name = "Bullet"
 	img.speed = PLAYER_BULLET_SPEED
@@ -397,9 +343,9 @@ local function createBullet3(startX, startY)
 		bullets = bullets + 1
 	end
 	
-	local centerImage = display.newImage("player-bullet-2.png")
-	local leftImage = display.newImage("player-bullet-1.png")
-	local rightImage = display.newImage("player-bullet-1.png") 
+	local centerImage = display.newImage("player_bullet_2.png")
+	local leftImage = display.newImage("player_bullet_1.png")
+	local rightImage = display.newImage("player_bullet_1.png") 
 	mainGroup:insert(centerImage)
 	mainGroup:insert(leftImage)
 	mainGroup:insert(rightImage)
@@ -533,15 +479,15 @@ function createEnemyBullet(startX, startY, targetPoint)
 								
 	addLoop(img)
 	
-function onHit(self, event)
-	if(event.other.name == "Player") then
-		event.other:onBulletHit()
-		self:destroy()
+	function onHit(self, event)
+		if(event.other.name == "Player") then
+			event.other:onBulletHit()
+			self:destroy()
+		end
 	end
-end
 
-img.collision = onHit
-img:addEventListener("collision", img)
+	img.collision = onHit
+	img:addEventListener("collision", img)
 	
 	function img:destroy()
 		removeLoop(self)
@@ -577,7 +523,7 @@ img:addEventListener("collision", img)
 end
 
 function createPowerUp(x, y)
-	local img = display.newImage("icon-power-up.png")
+	local img = display.newImage("icon_power_up.png")
 	img.x = x
 	img.y = y
 	img.lifetime = 5000 -- milliseconds
@@ -621,7 +567,7 @@ end
 
 
 function createBoss()
-	local bossSheet = sprite.newSpriteSheet("boss-sheet-1.png", 143, 96)
+	local bossSheet = sprite.newSpriteSheet("boss_sheet_1.png", 143, 96)
 	local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
 	--sprite.add(bossSet, "bossSheetSet1", 1, 3, 500, 0)
 	local boss = sprite.newSprite(bossSet)
@@ -644,7 +590,7 @@ function createBoss()
 	boss.fireSpeed = 1600
 	boss.lastTick = 0
 	boss.hitPoints = 100
-	boss.hitSound = audio.loadSound("boss-hit-sound.mp3")
+	boss.hitSound = audio.loadSound("boss_hit_sound.mp3")
 	
 	local halfWidth = boss.width / 2
 	local halfHeight = boss.height / 2
@@ -861,7 +807,7 @@ function startGame()
 			randomX = stage.width - 20
 		end
 			
-		local enemyPlane = createEnemyPlane("enemy-1.png", "Enemy1", randomX, 0, stage.height)
+		local enemyPlane = createEnemyPlane("enemy_1.png", "Enemy1", randomX, 0, stage.height)
 		function onDead(event)
 			
 			enemies = enemies - 1
@@ -937,7 +883,8 @@ initSounds()
 initPlayerDeath()
 
 
-plane = createPlayer()
+plane = Player.new()
+plane:addEventListener("hitPointsChanged", )
 
 setPowerUpLevel(powerUpLevel)
 
