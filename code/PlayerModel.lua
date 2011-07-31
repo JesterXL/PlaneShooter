@@ -2,7 +2,7 @@
 print("PlayerModel")
 PlayerModel = {}
 PlayerModel.ID = globals:getID()
-PlayerModel.instance = require("Actor").new()
+PlayerModel.instance = require("robotlegs/Actor").new()
 PlayerModel.instance.hitPoints = 3
 PlayerModel.instance.maxHitPoints = 3
 

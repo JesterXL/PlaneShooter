@@ -1,7 +1,7 @@
 module (..., package.seeall)
 
 function new()
-	local context = require("Context").new()
+	local context = require("robotlegs/Context").new()
 	context.superStartup = context.startup
 	
 	function context:startup()

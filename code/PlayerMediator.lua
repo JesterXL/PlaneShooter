@@ -2,7 +2,7 @@ module (..., package.seeall)
 
 function new(viewInstance)
 	
-	local mediator = require("Mediator").new(viewInstance)
+	local mediator = require("robotlegs/Mediator").new(viewInstance)
 	mediator.superOnRegister = mediator.onRegister
 	
 	function mediator:onRegister()
