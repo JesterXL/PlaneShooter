@@ -8,9 +8,9 @@ function new()
 		print("MainContext::startup, ID: ", self.ID)
 		self:superStartup()
 		
-		self:mapCommand("startThisMug", "BootstrapCommand")
+		self:mapCommand("startThisMug", "commands/BootstrapCommand")
 		
-		self:mapMediator("Player", "PlayerMediator")
+		self:mapMediator("Player", "mediators/PlayerMediator")
 		
 		self:dispatch({name="startThisMug", target=self})
 	end

@@ -5,7 +5,7 @@ function new()
 	
 	function command:execute(event)
 		print("BootstrapCommand::execute, event: ", event)
-		require("PlayerModel")
+		require("models/PlayerModel")
 		return true
 	end
 

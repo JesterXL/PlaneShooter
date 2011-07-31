@@ -1,14 +1,18 @@
-module (..., package.seeall)
+
 
 require "constants"
 
-function new()
+Player = {}
+
+function Player:new()
 	local img = display.newImage("plane.png")
 	img.classType = "Player"
 	img.speed = constants.PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
 	img.maxHitPoints = 3
 	img.hitPoints = 3
+	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
+	img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
 	
 
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
@@ -31,13 +35,13 @@ function new()
 		self:dispatchEvent({name="bulletHit", target=self})
 		if(self.hitPoints <= 0) then
 			self.isVisible = false
-			--audio.play(playerDeathSound, {loops=0})
+			audio.play(self.playerDeathSound, {loops=0})
 			------createPlayerDeath(self.x, self.y)
 			------stopPlayerInteraction()
 			------endGame()
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
-			--audio.play(playerHitSound, {loops=0})
+			audio.play(self.playerHitSound, {loops=0})
 		end
 	end
 	
@@ -64,3 +68,5 @@ function new()
 	
 	return img
 end
+
+return Player
