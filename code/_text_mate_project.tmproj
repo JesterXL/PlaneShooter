@@ -3,50 +3,64 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>ufo/main.lua</string>
+	<string>main.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>Actor.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-25T12:58:51Z</date>
+			<date>2011-07-28T00:28:06Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>Context.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-24T23:00:19Z</date>
+			<date>2011-07-28T17:03:21Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>main.lua.bak</string>
+			<key>lastUsed</key>
+			<date>2011-07-28T17:03:30Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-25T13:04:05Z</date>
+			<date>2011-07-28T17:05:06Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>MainContext.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-24T23:00:17Z</date>
+			<date>2011-07-28T17:05:03Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs/Command.lua</string>
+			<key>lastUsed</key>
+			<date>2011-07-28T17:05:06Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>MessageBus.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-24T23:00:16Z</date>
+			<date>2011-07-28T00:05:42Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>Player.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-24T23:00:15Z</date>
+			<date>2011-07-28T00:34:57Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>PlayerModel.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-24T23:00:15Z</date>
+			<date>2011-07-28T16:27:43Z</date>
 		</dict>
 		<dict>
 			<key>expanded</key>
@@ -58,33 +72,39 @@
 			<key>sourceDirectory</key>
 			<string>ufo</string>
 		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>commands</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>commands</string>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>robotlegs</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>robotlegs</string>
+		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>130</integer>
 	<key>metaData</key>
 	<dict>
-		<key>Actor.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>3</integer>
-				<key>line</key>
-				<integer>4</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>Context.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>34</integer>
+				<integer>4</integer>
 				<key>line</key>
-				<integer>23</integer>
+				<integer>27</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -105,42 +125,28 @@
 			<key>firstVisibleLine</key>
 			<integer>0</integer>
 		</dict>
-		<key>MessageBus.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>18</integer>
-				<key>line</key>
-				<integer>7</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>Player.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>10</integer>
-				<key>line</key>
-				<integer>13</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>PlayerModel.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>42</integer>
+				<integer>30</integer>
 				<key>line</key>
-				<integer>2</integer>
+				<integer>18</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>commands/BootstrapCommand.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>50</integer>
+				<key>line</key>
+				<integer>6</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -152,6 +158,20 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>1</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>main.lua.bak</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
 				<integer>1</integer>
 				<key>line</key>
 				<integer>480</integer>
@@ -159,16 +179,16 @@
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>113</integer>
+			<integer>458</integer>
 		</dict>
-		<key>ufo/main.lua</key>
+		<key>robotlegs/Command.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>3</integer>
 				<key>line</key>
-				<integer>40</integer>
+				<integer>9</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
@@ -178,18 +198,17 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>PlayerModel.lua</string>
-		<string>Player.lua</string>
-		<string>MessageBus.lua</string>
+		<string>commands/BootstrapCommand.lua</string>
+		<string>robotlegs/Command.lua</string>
 		<string>MainContext.lua</string>
-		<string>main.lua</string>
 		<string>Context.lua</string>
-		<string>Actor.lua</string>
-		<string>ufo/main.lua</string>
+		<string>main.lua.bak</string>
+		<string>main.lua</string>
+		<string>PlayerModel.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{153, 49}, {1287, 829}}</string>
+	<string>{{411, 49}, {945, 829}}</string>
 </dict>
 </plist>

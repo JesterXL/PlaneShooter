@@ -30,7 +30,7 @@ sprite.add(ufoLaserTurretSpriteSet, "ufoTurretFire", 1, 5, 300, 1)
 
 local function setupUFOTurret(x, y, name)
 	local ufoTurret = sprite.newSprite(ufoLaserTurretSpriteSet)
-	ufoTurret:setReferencePoint(display.TopCenterReferencePoint)
+	--ufoTurret:setReferencePoint(display.TopCenterReferencePoint)
 	ufoGroup:insert(ufoTurret)
 	ufoGroup[name] = ufoTurret
 	ufoTurret.x = x

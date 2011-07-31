@@ -1,20 +1,24 @@
 module (..., package.seeall)
 
-local function new()
+require "globals"
+require "MessageBus"
+
+function new()
 	local actor = {}
-	--local bus = require("MessageBus").new()
+	actor.ID = globals.getID()
 	
 	function actor:dispatch(eventObj)
-		MessageBus:dispatchEvent(eventObj)
+		MessageBus:dispatch(eventObj)
 	end
 	
 	function actor:addListener(name, handler)
-		MessageBus:addEventListener(name, handler)
+		MessageBus:addListener(name, handler)
 	end
 	
 	function actor:removeListener(name, handler)
-		MessageBus:removeEventListener(name, handler)
+		MessageBus:removeListener(name, handler)
 	end
+	
 	
 	return actor
 end

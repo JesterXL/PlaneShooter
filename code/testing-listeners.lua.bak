@@ -1,0 +1,38 @@
+local bus = require("MessageBus").new()
+print("MessageBus: ", MessageBus)
+print("MessageBus.listeners: ", MessageBus.listeners)
+print("MessageBus.addListener: ", MessageBus.addListener)
+
+local cow = {}
+function cow:moo(eventObj)
+	print("cow table moo eventObj: ", eventObj)
+	MessageBus:removeListener("moo", self)
+	
+end
+
+local cow2 = {}
+function cow2:moo(eventObj)
+	print("cow2 table moo eventObj: ", eventObj)
+end
+
+local function moo(eventObj)
+	print("moo eventObj: ", eventObj)
+	--MessageBus:removeListener("moo", moo)
+end
+
+print("-------")
+print("has listener: ", MessageBus:hasListener("moo", cow))
+MessageBus:addListener("moo", cow)
+print("has listener: ", MessageBus:hasListener("moo", cow))
+MessageBus:addListener("moo", cow)
+MessageBus:addListener("moo", cow)
+MessageBus:addListener("moo", cow)
+MessageBus:addListener("moo", cow)
+MessageBus:addListener("moo", cow)
+MessageBus:addListener("moo", cow)
+MessageBus:addListener("moo", cow)
+MessageBus:dispatch({name="moo", target=self})
+MessageBus:removeListener("moo", cow)
+print("has listener: ", MessageBus:hasListener("moo", cow))
+print("again")
+MessageBus:dispatch({name="moo", target=self})
