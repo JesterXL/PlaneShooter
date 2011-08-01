@@ -31,7 +31,7 @@ function MessageBus:dispatch(eventObj)
 end
 
 function MessageBus:addListener(name, listener)
-	print("MessageBus, name: ", name)
+	print("MessageBus::addListener, name: ", name)
 	-- NOTE: don't add a listener if we already have one for the exact same scope
 	if(name == nil) then error("MessageBus::addListener, name is nil.") end
 	if(listener == nil) then error("MessageBus::addListener, listener is nil.") end
@@ -61,15 +61,15 @@ end
 
 function MessageBus:hasListener(name, handler)
 	print("MessageBus::hasListener, name: ", name, ", handler: ", handler)
-	if(name == nil) then error("MessageBus::hasListener, name is nil.") end
-	if(handler == nil) then error("MessageBus::hasListener, handler is nil.") end
-	local i = 1
-	while MessageBus.listeners[i] do
-		local obj = MessageBus.listeners[i]
+	assert(name ~= nil, "MessageBus::hasListener, name is nil.")
+	assert(handler ~= nil, "MessageBus::hasListener, handler is nil.")
+	
+	for i,obj in ipairs(MessageBus.listeners) do
 		if(obj.name == name and obj.listener == handler) then
-			return true
+			return true, i
 		end
 	end
+	
 	return false
 end
 

@@ -9,7 +9,13 @@ function new(viewInstance)
 		print("PlayerMediator::onRegister, viewInstance: ", viewInstance)
 		self:superOnRegister()
 		
+		viewInstance.hitPoints = PlayerModel.instance.hitPoints
+		viewInstance.maxHitPoints = PlayerModel.instance.maxHitPoints
 		viewInstance:addEventListener("bulletHit", self)
+	end
+	
+	function mediator:onRemove()
+		viewInstance:removeEventListener("bulletHit", self)
 	end
 	
 	function mediator:bulletHit(event)

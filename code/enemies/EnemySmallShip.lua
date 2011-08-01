@@ -44,6 +44,11 @@ function EnemySmallShip:new(startX, startY, bottom)
 			print("ship is dead, ID: ", self.ID)
 			event.other:destroy()
 			self:destroy()
+		elseif(event.other.name == "Player") then
+			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
+			audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
+			event.other:onBulletHit()
+			self:destroy()
 		end
 	end
 	

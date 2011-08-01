@@ -3,13 +3,17 @@ require "physics"
 require "constants"
 require "ScrollingTerrain"
 require "player/Player"
+require "player/PlayerBulletSingle"
 require "enemies/EnemySmallShip"
+require "enemies/EnemySmallShipDeath"
+require "gamegui/HealthBar"
 
 local function initSounds()
 	planeShootSound = audio.loadSound("plane_shoot.wav")
 end
 
 function addLoop(o)
+	assert(o ~= nil, "You cannot pass nil values to the game loop")
 	local index = table.indexOf(tickers, o)
 	if(index == nil) then
 		return table.insert(tickers, o)
@@ -30,18 +34,25 @@ function removeLoop(o)
 	return false
 end
 
+function onRemoveFromGameLoop(event)
+	event.target:removeEventListener("removeFromGameLoop", onRemoveFromGameLoop)
+	removeLoop(event.target)
+end
+
 function animate(event)
 	local now = system.getTimer()
 	local difference = now - lastTick
 	lastTick = now
 	
 	for i,v in ipairs(tickers) do
+		--[[
 		if(v.y == nil) then
 			print("v: ", v)
 			print("v.ID: ", v.ID)
 			error("zomg")
 			return
 		end
+		--]]
 		v:tick(difference)
 	end
 end
@@ -76,15 +87,17 @@ end
 function onTouch(event)
 	if(event.phase == "began") then
 		startFiringBullets()
+		audio.setVolume( .25, { channel=1 } )
 		if(planeShootSoundChannel == nil) then
-			audio.setVolume( .25, { channel=1 } )
-			planeShootSoundChannel = audio.play(planeShootSound, {channel=1, loops=-1, fadein=100})
+			planeShootSoundChannel = audio.play(planeShootSound, {loops=-1, fadein=100})
+		else
+			audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1, fadein=100})
 		end
 	end
 	
 	if(event.phase == "began" or event.phase == "moved") then
-		planeXTarget = event.x
-		planeYTarget = event.y
+		player.planeXTarget = event.x
+		player.planeYTarget = event.y
 	end
 	
 	if(event.phase == "ended" or event.phase == "cancelled") then
@@ -94,7 +107,8 @@ end
 
 function stopPlayerInteraction()
 	stopFiringBullets()
-	audio.fadeOut({channel=1, time=100})
+	--audio.fadeOut({channel=1, time=100})
+	audio.pause(planeShootSoundChannel)
 	planeShootSoundChannel = nil
 end
 
@@ -107,6 +121,22 @@ function endGame()
 	stopScrollingTerrain()
 end
 
+function createBullet1()
+	print("createBullet1")
+	local bullet = PlayerBulletSingle:new(player.x, player.y)
+	mainGroup:insert(bullet)
+	bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
+	addLoop(bullet)
+end
+
+function createBullet2()
+	
+end
+
+function createBullet3()
+	
+end
+
 function setPowerUpLevel(level)
 	if(level > 3) then
 		level = 3
@@ -116,7 +146,7 @@ function setPowerUpLevel(level)
 	if(powerUpLevel <= 3) then
 		PLAYER_BULLET_SPEED = 10
 		--PLAYER_MOVE_SPEED = 7
-		player.speed = PLAYER_MOVE_SPEED
+		--player.speed = constants.PLAYER_MOVE_SPEED
 	end
 	
 	if(powerUpLevel == 1) then
@@ -169,8 +199,9 @@ function startGame()
 			
 		local enemyPlane = EnemySmallShip:new(randomX, 0, stage.height)
 		function onDead(event)
-			print("onDead")
 			assert(removeLoop(event.target), "Failed to remove enemy plane from game loop.")
+			local shipDeath = EnemySmallShipDeath:new(event.target.x, event.target.y)
+			mainGroup:insert(shipDeath)
 			enemies = enemies - 1
 			if(enemies <= 0) then
 				startBossFight()
@@ -193,6 +224,7 @@ function startGame()
 			end
 		end
 		enemyPlane:addEventListener("enemyDead", onDead)
+		mainGroup:insert(enemyPlane)
 		addLoop(enemyPlane)
 	end
 	
@@ -239,11 +271,13 @@ function initializeGame()
 	
 	--initTerrain()
 	--initEnemeyDeath()
-	--initHealthBar()
+	healthBar = HealthBar:new()
+	context:createMediator(healthBar)
 	initSounds()
 	--initPlayerDeath()
 	
 	player = Player.new()
+	mainGroup:insert(player)
 	context:createMediator(player)
 	--plane:addEventListener("hitPointsChanged", )
 
@@ -251,11 +285,11 @@ function initializeGame()
 
 	lastTick = system.getTimer()
 
-	addLoop(plane)
+	addLoop(player)
 
-	planeXTarget = stage.width / 2
-	planeYTarget = stage.height / 2
-	player:move(planeXTarget, planeYTarget)
+	player.planeXTarget = stage.width / 2
+	player.planeYTarget = stage.height / 2
+	player:move(player.planeXTarget, player.planeYTarget)
 
 	startGame()
 end

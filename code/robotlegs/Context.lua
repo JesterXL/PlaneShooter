@@ -30,6 +30,8 @@ function new()
 	end
 	
 	function context:mapMediator(viewClass, mediatorClass)
+		assert(viewClass ~= nil, "viewClass cannot be nil.")
+		assert(mediatorClass ~= nil, "mediatorClass cannot be nil.")
 		print("Context::mapMediator, viewClass: ", viewClass, ", mediatorClass: ", mediatorClass)
 		self.mediators[viewClass] = mediatorClass
 		return true
@@ -48,6 +50,7 @@ function new()
 		assert(self:hasCreatedMediator(viewInstance) == false, "viewInstance already has an instantiated Mediator.")
 		local mediatorClassName = self.mediators[viewInstance.classType]
 		assert(mediatorClassName ~= nil, "There is no Mediator class registered for this View class.")
+		print("mediatorClassName: ", mediatorClassName)
 		if(mediatorClassName ~= nil) then
 			local mediatorClass = require(mediatorClassName).new(viewInstance)
 			table.insert(self.mediatorInstances, mediatorClass)
@@ -75,10 +78,8 @@ function new()
 	end
 	
 	function context:hasCreatedMediator(viewInstance)
-		print("Context::hasMediator, viewInstance: ", viewInstance)
-		local i = 1
-		while self.mediatorInstances[i] do
-			local mediatorInstance = self.mediatorInstances[i]
+		print("Context::hasCreatedMediator, viewInstance: ", viewInstance)
+		for i,mediatorInstance in ipairs(self.mediatorInstances) do
 			if(mediatorInstance.viewInstance == viewInstance) then
 				return true, i
 			end

@@ -6,11 +6,13 @@ Player = {}
 
 function Player:new()
 	local img = display.newImage("plane.png")
-	img.classType = "Player"
+	img.classType = "player/Player"
 	img.speed = constants.PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
 	img.maxHitPoints = 3
 	img.hitPoints = 3
+	img.planeXTarget = 0
+	img.planeYTarget = 0
 	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
 	img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
 	
@@ -46,19 +48,19 @@ function Player:new()
 	end
 	
 	function img:tick(millisecondsPassed)
-		if(self.x == planeXTarget) then
+		if(self.x == self.planeXTarget and self.y == self.planeYTarget) then
 			return
 		else
-			local deltaX = self.x - planeXTarget
-			local deltaY = self.y - planeYTarget
+			local deltaX = self.x - self.planeXTarget
+			local deltaY = self.y - self.planeYTarget
 			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
 			local moveX = self.speed * (deltaX / dist)
 			local moveY = self.speed * (deltaY / dist)
 
 			if (self.speed >= dist) then
-				self.x = planeXTarget
-				self.y = planeYTarget
+				self.x = self.planeXTarget
+				self.y = self.planeYTarget
 			else
 				self.x = self.x - moveX
 				self.y = self.y - moveY

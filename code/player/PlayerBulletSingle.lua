@@ -1,6 +1,10 @@
 require "constants"
 
-function new(startX, startY)
+PlayerBulletSingle = {}
+
+function PlayerBulletSingle:new(startX, startY)
+	assert(startX ~= nil, "Must pass in a startX value")
+	assert(startY ~= nil, "Must pass in a startY value")
 	-- TODO: add the max bullets elsewhere
 	--[[
 	if(bullets + 1 > MAX_BULLET_COUNT) then
@@ -31,6 +35,8 @@ function new(startX, startY)
 		bullets = bullets - 1
 		removeLoop(self)
 		--]]
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
+		self:removeEventListener("collision", img)
 		self:removeSelf()
 	end
 	
@@ -66,3 +72,5 @@ function new(startX, startY)
 	
 	return img
 end
+
+return PlayerBulletSingle

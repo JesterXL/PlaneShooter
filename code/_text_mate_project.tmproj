@@ -7,64 +7,112 @@
 	<key>documents</key>
 	<array>
 		<dict>
-			<key>filename</key>
-			<string>Actor.lua</string>
-			<key>lastUsed</key>
-			<date>2011-07-28T00:28:06Z</date>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>commands</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>commands</string>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>Context.lua</string>
+			<string>constants.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-28T17:03:21Z</date>
+			<date>2011-07-31T20:21:55Z</date>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>gamegui</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>gamegui</string>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>main.lua.bak</string>
+			<string>jxl.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-28T17:03:30Z</date>
+			<date>2011-07-31T19:03:05Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-28T17:05:06Z</date>
-			<key>selected</key>
-			<true/>
+			<date>2011-07-31T22:08:03Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>main.lua.bak</string>
+			<key>lastUsed</key>
+			<date>2011-07-31T18:22:25Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>MainContext.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-28T17:05:03Z</date>
+			<date>2011-07-31T19:04:30Z</date>
 		</dict>
 		<dict>
-			<key>filename</key>
-			<string>robotlegs/Command.lua</string>
-			<key>lastUsed</key>
-			<date>2011-07-28T17:05:06Z</date>
+			<key>name</key>
+			<string>mediators</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>mediators</string>
 		</dict>
 		<dict>
-			<key>filename</key>
-			<string>MessageBus.lua</string>
-			<key>lastUsed</key>
-			<date>2011-07-28T00:05:42Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>Player.lua</string>
-			<key>lastUsed</key>
-			<date>2011-07-28T00:34:57Z</date>
-		</dict>
-		<dict>
-			<key>filename</key>
-			<string>PlayerModel.lua</string>
-			<key>lastUsed</key>
-			<date>2011-07-28T16:27:43Z</date>
+			<key>name</key>
+			<string>models</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>models</string>
 		</dict>
 		<dict>
 			<key>expanded</key>
 			<true/>
+			<key>name</key>
+			<string>enemies</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>enemies</string>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>player</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>player</string>
+		</dict>
+		<dict>
+			<key>expanded</key>
+			<true/>
+			<key>name</key>
+			<string>robotlegs</string>
+			<key>regexFolderFilter</key>
+			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
+			<key>sourceDirectory</key>
+			<string>robotlegs</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>ScrollingTerrain.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>testing-listeners.lua.bak</string>
+			<key>selected</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>name</key>
 			<string>ufo</string>
 			<key>regexFolderFilter</key>
@@ -76,139 +124,39 @@
 			<key>expanded</key>
 			<true/>
 			<key>name</key>
-			<string>commands</string>
+			<string>powerups</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 			<key>sourceDirectory</key>
-			<string>commands</string>
-		</dict>
-		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>robotlegs</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>robotlegs</string>
+			<string>powerups</string>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
-	<integer>130</integer>
+	<integer>243</integer>
 	<key>metaData</key>
 	<dict>
-		<key>Context.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>4</integer>
-				<key>line</key>
-				<integer>27</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>MainContext.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>2</integer>
-				<key>line</key>
-				<integer>9</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>PlayerModel.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>30</integer>
-				<key>line</key>
-				<integer>18</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>commands/BootstrapCommand.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>50</integer>
-				<key>line</key>
-				<integer>6</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
 		<key>main.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>14</integer>
+				<integer>24</integer>
 				<key>line</key>
-				<integer>1</integer>
+				<integer>40</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>0</integer>
-		</dict>
-		<key>main.lua.bak</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>1</integer>
-				<key>line</key>
-				<integer>480</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>458</integer>
-		</dict>
-		<key>robotlegs/Command.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>3</integer>
-				<key>line</key>
-				<integer>9</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>0</integer>
+			<integer>25</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>commands/BootstrapCommand.lua</string>
-		<string>robotlegs/Command.lua</string>
-		<string>MainContext.lua</string>
-		<string>Context.lua</string>
-		<string>main.lua.bak</string>
 		<string>main.lua</string>
-		<string>PlayerModel.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{411, 49}, {945, 829}}</string>
+	<string>{{408, 442}, {1016, 436}}</string>
 </dict>
 </plist>

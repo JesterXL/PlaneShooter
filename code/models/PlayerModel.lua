@@ -14,6 +14,10 @@ function inst:setHitPoints(value)
 	self:dispatch({target=self, name="hitPointsChanged"})
 end
 
+function inst:getHitpointsPercentage()
+	return self.hitPoints / self.maxHitPoints
+end
+
 function inst:onBulletHit()
 	print("PlayerModel::onBulletHit")
 	self:setHitPoints(self.hitPoints - 1)
