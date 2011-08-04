@@ -1,0 +1,328 @@
+local API_REF = "api-reference.html"
+
+
+--- Quickhelp Documentation (ctrl-Q)
+-- This is called when the user invokes quick help via ctrl-q, or by
+-- having the quickhelp panel open and set to autolookup
+-- @param name The name to get documentation for.
+-- @return the documentation as an HTML or plain text string
+function getDocumentation(name, basePath)
+--	disableCache()
+
+--	log(basePath)
+
+    local ref = basePath.."/"..API_REF
+
+--    log(ref)
+
+    local data = fetchURL(ref)
+
+ --   log(data:sub(1,20))
+
+    local href = [[href="#([^"]+)">]] .. name
+
+ --   log(href)
+
+    local url = data:match(href)
+
+    if url then
+        -- <h4 id="physics.addBody">physics.addBody</h4>
+
+        local contentTag = [[<h%d id="]] .. url .. [[">]]
+        local footerTag1 = [[<p>&nbsp;</p>]]
+        local footerTag2 = [=[<h[35]]=]
+   --     log(tostring(contentTag))
+        
+        local contentPos = data:find(contentTag);
+  --      log(tostring(contentPos))
+
+        if contentPos > 0 then
+            local footerPos = data:find(footerTag1, contentPos+3);
+
+            local footerPos2 = data:find(footerTag2, contentPos+3);
+
+            if footerPos2 > 0 and footerPos > 0 then
+                footerPos = math.min(footerPos, footerPos2)
+            end
+
+
+
+            data = data:sub(contentPos, footerPos)
+
+    --        log(data)
+
+
+
+            data = "<html>" .. data .. "</html>"
+
+            return data
+
+        end
+    end
+end
+
+--- External Documentation URL (shift-F1)
+-- This is called by shift-F1 on the symbol, or by the
+-- external documentation button on the quick help panel
+-- @param name The name to get documentation for.
+-- @return the URL of the external documentation
+function getDocumentationUrl(name)
+end
+
+--- Quick Navigation Tooltip Text, (ctrl-hover on symbol)
+-- This is called when the user ctrl-hovers over a symbol
+-- @param name The name to get documentation for.
+-- @return the documentation as a plain text string
+function getQuickNavigateDocumentation(name)
+    local sig = SIGNATURES[name]
+    if not sig then return end
+
+    if type(sig) == "table" then
+        sig = sig[1]
+    end
+
+    return "[Corona API]\r\n " .. sig
+end
+
+SIGNATURES = {
+    ["analytics.init"] = [=[analytics.init( applicationKey )]=],
+    ["analytics.logEvent"] = [=[analytics.logEvent( eventID )]=],
+
+    ["audio.dispose"] = [=[audio.dispose(  audioHandle  )]=],
+    ["audio.fade"] = [=[audio.fade( [{[channel=c][, time=t][, volume=v ]}] )]=],
+    ["audio.fadeOut"] = [=[audio.fadeOut( [{[channel=c][, time=t]}] )]=],
+    ["audio.findFreeChannel"] = [=[audio.findFreeChannel( [ startChannel ] )]=],
+    ["audio.getDuration"] = [=[audio.getDuration(  audioHandle  )]=],
+    ["audio.getMaxVolume"] = [=[audio.getMaxVolume( { channel=c } )]=],
+    ["audio.getMinVolume"] = [=[audio.getMinVolume( { channel=c } )]=],
+    ["audio.getVolume"] = [=[audio.getVolume( [{[channel=c]}] )]=],
+    ["audio.isChannelActive"] = [=[audio.isChannelActive(  channel  )]=],
+    ["audio.isChannelPaused"] = [=[audio.isChannelPaused(  channel  )]=],
+    ["audio.isChannelPlaying"] = [=[audio.isChannelPlaying(  channel  )]=],
+    ["audio.loadSound"] = [=[audio.loadSound(  audiofileName [, baseDir ] )]=],
+    ["audio.loadStream"] = [=[audio.loadStream(  audioFileName [, baseDir ] )]=],
+    ["audio.pause"] = [=[audio.pause( [channel] )]=],
+    ["audio.play"] = [=[audio.play(  audioHandle [, {[channel=c][, loops=l][, duration=d][, fadein=f][, onComplete=o]}] )]=],
+    ["audio.reserveChannels"] = [=[audio.reserveChannels(  channels  )]=],
+    ["audio.rewind"] = [=[audio.rewind( [, audioHandle ][, { channel=c }] )]=],
+    ["audio.seek"] = [=[audio.seek( time[, audioHandle ][, { channel=c }] )]=],
+    ["audio.setMaxVolume"] = [=[audio.setMaxVolume(  volume, { channel=c } )]=],
+    ["audio.setMinVolume"] = [=[audio.setMinVolume(  volume, { channel=c } )]=],
+    ["audio.setVolume"] = [=[audio.setVolume(  volume [, {[channel=c]}] )]=],
+    ["audio.stop"] = [=[audio.stop( [channel] )]=],
+    ["audio.stopWithDelay"] = [=[audio.stopWithDelay(  duration [, {[ channel = c ]}] )]=],
+    ["body.applyAngularImpulse"] = [=[body:applyAngularImpulse(  appliedForce  )]=],
+    ["body.applyForce"] = [=[body:applyForce(  xForce, yForce, bodyX, bodyY  )]=],
+    ["body.applyLinearImpulse"] = [=[body:applyLinearImpulse(  xForce, yForce, bodyX, bodyY  )]=],
+    ["body.applyTorque"] = [=[body:applyTorque(  appliedForce  )]=],
+    ["body.getLinearVelocity"] = [=[body:getLinearVelocity(  )]=],
+    ["body.resetMassData"] = [=[body:resetMassData(  )]=],
+    ["body.setLinearVelocity"] = [=[body:setLinearVelocity(  xVelocity, yVelocity  )]=],
+
+    ["crypto.digest"] = [=[crypto.digest( algorithm, string [, raw] )]=],
+    ["crypto.hmac"] = [=[crypto.hmac( algorithm, string, key [, raw] )]=],
+
+    ["display.captureScreen"] = [=[display.captureScreen( saveToAlbum )]=],
+    ["display.getCurrentStage"] = [=[display.getCurrentStage(  )]=],
+    ["display.loadRemoteImage"] = [=[display.loadRemoteImage(  url, method, listener [, params], destFilename [, baseDir][, x, y] )]=],
+    ["display.newCircle"] = [=[display.newCircle( )]=],
+    ["display.newGroup"] = [=[display.newGroup( )]=],
+    ["display.newImage"] = [=[display.newImage( )]=],
+    ["display.newLine"] = [=[display.newLine( )]=],
+    ["display.newRect"] = [=[display.newRect( )]=],
+    ["display.newRoundedRect"] = [=[display.newRoundedRect( )]=],
+    ["display.newText"] = [=[display.newText( )]=],
+    ["display.save"] = [=[display.save( displayObject, filename [, baseDirectory] )]=],
+    ["display.setDefault"] = [=[display.setDefault(  key, gray  )]=],
+    ["display.setStatusBar"] = [=[display.setStatusBar( mode )]=],
+
+    ["easing.inExpo"] = [=[easing.inExpo( t, tMax, start, delta )]=],
+    ["easing.inOutExpo"] = [=[easing.inOutExpo( t, tMax, start, delta )]=],
+    ["easing.inOutQuad"] = [=[easing.inOutQuad( t, tMax, start, delta )]=],
+    ["easing.inQuad"] = [=[easing.inQuad( t, tMax, start, delta )]=],
+    ["easing.linear"] = [=[easing.linear( t, tMax, start, delta )]=],
+    ["easing.outExpo"] = [=[easing.outExpo( t, tMax, start, delta )]=],
+    ["easing.outQuad"] = [=[easing.outQuad( t, tMax, start, delta )]=],
+
+    ["error"] = [=[error( message [, level] )]=],
+
+    ["facebook.login"] = [=[facebook.login(  appId, listener [, permissions ] )]=],
+    ["facebook.request"] = [=[facebook.request(  path [, httpMethod, params] )]=],
+    ["facebook.showDialog"] = [=[facebook.showDialog(  params  )]=],
+
+    ["file.close"] = [=[file:close(  )]=],
+    ["file.flush"] = [=[file:flush(  )]=],
+    ["file.lines"] = [=[file:lines(  )]=],
+    ["file.read"] = [=[file:read( [fmt1][, fmt2][, ...] )]=],
+    ["file.seek"] = [=[file:seek( [whence] [, offset] )]=],
+    ["file.setvbuf"] = [=[file:setvbuf(  mode [, size] )]=],
+    ["file.write"] = [=[file:write(  arg1 [, arg2][, ...] )]=],
+
+    ["graphics.newMask"] = [=[graphics.newMask(  filename [, baseDir] )]=],
+
+    ["group.insert"] = [=[group:insert( [index,] child, [, resetTransform] )]=],
+    ["group.remove"] = [=[group:remove(  indexOrChild  )]=],
+
+    ["joint.getAnchorA"] = [=[joint:getAnchorA(  )]=],
+    ["joint.getAnchorB"] = [=[joint:getAnchorB(  )]=],
+    ["joint.getLimit"] = [=[joint.getLimit(  )]=],
+    ["joint.getReactionForce"] = [=[joint:getReactionForce(  )]=],
+    ["joint.getRotationLimits"] = [=[joint:getRotationLimits(  )]=],
+    ["joint.setLimits"] = [=[joint:setLimits( upper, lower )]=],
+    ["joint.setRotationLimits"] = [=[joint:setRotationLimits(  lowerLimit, upperLimit  )]=],
+
+    ["math.abs"] = [=[math.abs( x )]=],
+    ["math.acos"] = [=[math.acos( x )]=],
+    ["math.asin"] = [=[math.asin( x )]=],
+    ["math.atan2"] = [=[math.atan2( y, x )]=],
+    ["math.atan"] = [=[math.atan( x )]=],
+    ["math.ceil"] = [=[math.ceil( x )]=],
+    ["math.cos"] = [=[math.cos( x )]=],
+    ["math.cosh"] = [=[math.cosh( x )]=],
+    ["math.deg"] = [=[math.deg( x )]=],
+    ["math.exp"] = [=[math.exp( x )]=],
+    ["math.floor"] = [=[math.floor( x )]=],
+    ["math.fmod"] = [=[math.fmod( x, y )]=],
+    ["math.frexp"] = [=[math.frexp( x )]=],
+    ["math.ldexp"] = [=[math.ldexp( m, e )]=],
+    ["math.log10"] = [=[math.log10( x )]=],
+    ["math.log"] = [=[math.log( x )]=],
+    ["math.max"] = [=[math.max( x, ... )]=],
+    ["math.min"] = [=[math.min( x, ... )]=],
+    ["math.modf"] = [=[math.modf( x )]=],
+    ["math.pow"] = [=[math.pow( x, y )]=],
+    ["math.rad"] = [=[math.rad( x )]=],
+    ["math.random"] = [=[math.random( [m [, n]] )]=],
+    ["math.randomseed"] = [=[math.randomseed( x )]=],
+    ["math.sin"] = [=[math.sin( x )]=],
+    ["math.sinh"] = [=[math.sinh( x )]=],
+    ["math.sqrt"] = [=[math.sqrt( x )]=],
+    ["math.tan"] = [=[math.tan( x )]=],
+    ["math.tanh"] = [=[math.tanh( x )]=],
+
+    ["media.getSoundVolume"] = [=[media.getSoundVolume(  )]=],
+    ["media.newEventSound"] = [=[media.newEventSound( soundFile )]=],
+    ["media.newRecording"] = [=[media.newRecording( [path] )]=],
+    ["media.pauseSound"] = [=[media.pauseSound( )]=],
+    ["media.playEventSound"] = [=[media.playEventSound( sound )]=],
+    ["media.playSound"] = [=[media.playSound( soundFile )]=],
+    ["media.playVideo"] = [=[media.playVideo( path [, baseSource ], showControls, listener )]=],
+    ["media.setSoundVolume"] = [=[media.setSoundVolume(  vol  )]=],
+    ["media.show"] = [=[media.show( imageSource, listener )]=],
+    ["media.stopSound"] = [=[media.stopSound( )]=],
+
+    ["movieclip.newAnim"] = [=[movieclip.newAnim( frames )]=],
+
+    ["myMap.addMarker"] = [=[myMap:addMarker(  latitude, longitude, [{ title="Displayed Title", subtitle="subtitle text"}] )]=],
+    ["myMap.getAddressLocation"] = [=[myMap:getAddressLocation(  location  )]=],
+    ["myMap.getUserLocation"] = [=[myMap:getUserLocation(  )]=],
+    ["myMap.removeAllMarkers"] = [=[myMap:removeAllMarkers(  )]=],
+    ["myMap.setCenter"] = [=[myMap:setCenter(  latitude, longitude, isAnimated  )]=],
+    ["myMap.setRegion"] = [=[myMap:setRegion(  latitude, longitude, latitudeSpan, longitudeSpan, isAnimated  )]=],
+
+    ["native.cancelAlert"] = [=[native.cancelAlert( )]=],
+    ["native.cancelWebPopup"] = [=[native.cancelWebPopup( )]=],
+    ["native.getFontNames"] = [=[native.getFontNames( )]=],
+    ["native.newFont"] = [=[native.newFont( )]=],
+    ["native.newMapView"] = [=[native.newMapView( left, top, width, height )]=],
+    ["native.newTextBox"] = [=[native.newTextBox( )]=],
+    ["native.newTextField"] = [=[native.newTextField( )]=],
+    ["native.setActivityIndicator"] = [=[native.setActivityIndicator( )]=],
+    ["native.setKeyboardFocus"] = [=[native.setKeyboardFocus( )]=],
+    ["native.showAlert"] = [=[native.showAlert( )]=],
+    ["native.showWebPopup"] = [=[native.showWebPopup( )]=],
+
+    ["network.download"] = [=[network.download(  url, method, listener [, params], destFilename [, baseDir] )]=],
+    ["network.request"] = [=[network.request(  url, method, listener [, params] )]=],
+
+    ["object.addEventListener"] = [=[object:addEventListener(  eventName, listener  )]=],
+    ["object.contentToLocal"] = [=[object:contentToLocal( x_content, y_content )]=],
+    ["object.dispatchEvent"] = [=[object:dispatchEvent(  event  )]=],
+    ["object.getParent"] = [=[object:getParent( )]=],
+    ["object.getSampleRate"] = [=[object:getSampleRate(  )]=],
+    ["object.getTunerFrequency"] = [=[object:getTunerFrequency(  )]=],
+    ["object.getTunerVolume"] = [=[object:getTunerVolume(  )]=],
+    ["object.isRecording"] = [=[object:isRecording(  )]=],
+    ["object.localToContent"] = [=[object:localToContent( x, y )]=],
+    ["object.nextFrame"] = [=[object:nextFrame( )]=],
+    ["object.play"] = [=[object:play( )]=],
+    ["object.previousFrame"] = [=[object:previousFrame( )]=],
+    ["object.removeEventListener"] = [=[object:removeEventListener(  eventName, listener  )]=],
+    ["object.removeSelf"] = [=[object:removeSelf(  )]=],
+    ["object.reverse"] = [=[object:reverse( )]=],
+    ["object.rotate"] = [=[object:rotate(  deltaAngle  )]=],
+    ["object.scale"] = [=[object:scale(  sx, sy  )]=],
+    ["object.setDrag"] = [=[object:setDrag(  drag=true/false, limitX=true/false, limitY=true/false, onPress=myPressFunction, onDrag=myDragFunction, onRelease=myReleaseFunction, bounds={ boundsX, boundsY, boundsHeight, boundsWidth } )]=],
+    ["object.setFillColor"] = [=[object:setFillColor(  r, g, b [, a] )]=],
+    ["object.setLabels"] = [=[object:setLabels( labels )]=],
+    ["object.setMask"] = [=[object:setMask(  mask  )]=],
+    ["object.setReferencePoint"] = [=[object:setReferencePoint(  referencePoint  )]=],
+    ["object.setSampleRate"] = [=[object:setSampleRate(  r  )]=],
+    ["object.setStrokeColor"] = [=[object:setStrokeColor(  r, g, b [, a] )]=],
+    ["object.setTextColor"] = [=[object:setTextColor(  r, g, b [, a] )]=],
+    ["object.startRecording"] = [=[object:startRecording(  )]=],
+    ["object.startTuner"] = [=[object:startTuner(  )]=],
+    ["object.stop"] = [=[object:stop(  )]=],
+    ["object.stopAtFrame"] = [=[object:stopAtFrame(  frame  )]=],
+    ["object.stopRecording"] = [=[object:stopRecording(  )]=],
+    ["object.stopTuner"] = [=[object:stopTuner(  )]=],
+    ["object.toBack"] = [=[object:toBack(  )]=],
+    ["object.toFront"] = [=[object:toFront(  )]=],
+    ["object.translate"] = [=[object:translate(  deltaX, deltaY  )]=],
+
+    ["openfeint.downloadBlob"] = [=[openfeint.downloadBlob(  blobKey, listenerFunction )]=],
+    ["openfeint.init"] = [=[openfeint.init( "<OpenFeint Product Key>", "<OpenFeint Product Secret>", "Display Name" )]=],
+    ["openfeint.launchDashboard"] = [=[openfeint.launchDashboard( )]=],
+    ["openfeint.launchDashboardWithAchievementsPage"] = [=[openfeint.launchDashboardWithAchievementsPage( )]=],
+    ["openfeint.launchDashboardWithChallengesPage"] = [=[openfeint.launchDashboardWithChallengesPage( )]=],
+    ["openfeint.launchDashboardWithFindFriendsPage"] = [=[openfeint.launchDashboardWithFindFriendsPage( )]=],
+    ["openfeint.launchDashboardWithListLeaderboardsPage"] = [=[openfeint.launchDashboardWithListLeaderboardsPage( )]=],
+    ["openfeint.launchDashboardWithWhosPlayingPage"] = [=[openfeint.launchDashboardWithWhosPlayingPage( )]=],
+    ["openfeint.setHighScore"] = [=[openfeint.setHighScore( leaderboardId, score )]=],
+    ["openfeint.unlockAchievement"] = [=[openfeint.unlockAchievement( achievementId )]=],
+    ["openfeint.uploadBlob"] = [=[openfeint.uploadBlob(  blobKey, blobData  )]=],
+
+    ["physics.addBody"] = [=[physics.addBody( object, [bodyType,]{density=d, friction=f, bounce=b [,radius=r]} )]=],
+    ["physics.newJoint"] = [=[physics.newJoint(  jointType, object1, object2, anchorX, anchorY  )]=],
+
+    ["Runtime.addEventListener"] = [=[Runtime:addEventListener( "memoryWarning", listenerFunction  )]=],
+
+    ["sprite.add"] = [=[sprite.add( spriteSet, "startFlying", startFrame, frameCount, time, [loopCount] )]=],
+    ["sprite.newSprite"] = [=[sprite.newSprite( spriteSet )]=],
+    ["sprite.newSpriteSet"] = [=[sprite.newSpriteSet( spriteSheet, startFrame, frameCount )]=],
+    ["sprite.newSpriteSheet"] = [=[sprite.newSpriteSheet(  spriteSheetFile, [baseDir,] frameWidth, frameHeight  )]=],
+    ["sprite.newSpriteSheetFromData"] = [=[sprite.newSpriteSheetFromData(  spriteSheetImageFile, [baseDir,] coordinateData  )]=],
+
+    ["spriteInstance.addEventListener"] = [=[spriteInstance:addEventListener(  listenerFunction  )]=],
+    ["spriteInstance.pause"] = [=[spriteInstance:pause(  )]=],
+    ["spriteInstance.play"] = [=[spriteInstance:play(  )]=],
+    ["spriteInstance.prepare"] = [=[spriteInstance:prepare( [sequence] )]=],
+    ["spriteSheet.dispose"] = [=[spriteSheet:dispose(  )]=],
+
+    ["stage.setFocus"] = [=[stage:setFocus( )]=],
+
+    ["store.finishTransaction"] = [=[store.finishTransaction(  transaction  )]=],
+    ["store.init"] = [=[store.init(  listener  )]=],
+    ["store.loadProducts"] = [=[store.loadProducts(  arrayOfProductIdentifiers, listener  )]=],
+    ["store.purchase"] = [=[store.purchase(  arrayOfProducts  )]=],
+    ["store.restore"] = [=[store.restore(  )]=],
+
+    ["system.getInfo"] = [=[system.getInfo( param )]=],
+    ["system.getPreference"] = [=[system.getPreference( category, name )]=],
+    ["system.getTimer"] = [=[system.getTimer( )]=],
+    ["system.openURL"] = [=[system.openURL( url )]=],
+    ["system.pathForFile"] = [=[system.pathForFile( filename [, baseDirectory] )]=],
+    ["system.setAccelerometerInterval"] = [=[system.setAccelerometerInterval( frequency )]=],
+    ["system.setIdleTimer"] = [=[system.setIdleTimer( enabled )]=],
+    ["system.setLocationAccuracy"] = [=[system.setLocationAccuracy( distance )]=],
+    ["system.setLocationThreshold"] = [=[system.setLocationThreshold( distance )]=],
+    ["system.vibrate"] = [=[system.vibrate( )]=],
+
+    ["timer.cancel"] = [=[timer.cancel( timerId )]=],
+    ["timer.performWithDelay"] = [=[timer.performWithDelay( delay, listener [, iterations] )]=],
+
+    ["transition.cancel"] = [=[transition.cancel( tween )]=],
+    ["transition.dissolve"] = [=[transition.dissolve( src, dst, duration, delayDuration )]=],
+    ["transition.from"] = [=[transition.from( target, params )]=],
+    ["transition.to"] = [=[transition.to( target, params )]=],
+}

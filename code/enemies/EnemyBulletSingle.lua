@@ -1,7 +1,9 @@
 require "constants"
 
-function new(startX, startY, targetPoint)
-	local img = display.newImage("bullet.png")]
+EnemyBulletSingle = {}
+
+function EnemyBulletSingle:new(startX, startY, targetPoint)
+	local img = display.newImage("bullet.png")
 	img.name = "Bullet"
 	img.speed = constants.ENEMY_1_BULLET_SPEED
 	img.x = startX
@@ -18,8 +20,6 @@ function new(startX, startY, targetPoint)
 								filter = { categoryBits = 8, maskBits = 1 }
 							} )
 								
-	-- TODO: add to game loop
-	--addLoop(img)
 	
 	function onHit(self, event)
 		if(event.other.name == "Player") then
@@ -33,10 +33,7 @@ function new(startX, startY, targetPoint)
 	img:addEventListener("collision", img)
 	
 	function img:destroy()
-		-- TODO: remove from game loop
-		--[[
-		removeLoop(self)
-		--]]
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
 	end
 	
@@ -67,3 +64,5 @@ function new(startX, startY, targetPoint)
 	
 	return img
 end
+
+return EnemyBulletSingle

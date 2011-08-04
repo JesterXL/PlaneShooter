@@ -20,7 +20,7 @@
 			<key>filename</key>
 			<string>constants.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-31T20:21:55Z</date>
+			<date>2011-07-31T23:20:48Z</date>
 		</dict>
 		<dict>
 			<key>expanded</key>
@@ -42,21 +42,25 @@
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-31T22:08:03Z</date>
+			<date>2011-08-03T05:12:19Z</date>
+			<key>selected</key>
+			<true/>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>main.lua.bak</string>
 			<key>lastUsed</key>
-			<date>2011-07-31T18:22:25Z</date>
+			<date>2011-08-02T03:14:10Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>MainContext.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-31T19:04:30Z</date>
+			<date>2011-08-01T00:54:20Z</date>
 		</dict>
 		<dict>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>mediators</string>
 			<key>regexFolderFilter</key>
@@ -65,6 +69,8 @@
 			<string>mediators</string>
 		</dict>
 		<dict>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>models</string>
 			<key>regexFolderFilter</key>
@@ -109,8 +115,6 @@
 		<dict>
 			<key>filename</key>
 			<string>testing-listeners.lua.bak</string>
-			<key>selected</key>
-			<true/>
 		</dict>
 		<dict>
 			<key>name</key>
@@ -135,24 +139,131 @@
 	<integer>243</integer>
 	<key>metaData</key>
 	<dict>
-		<key>main.lua</key>
+		<key>enemies/BossBigPlane.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>60</integer>
+				<key>line</key>
+				<integer>81</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>67</integer>
+		</dict>
+		<key>enemies/EnemyBulletSingle.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>27</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>13</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>26</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>17</integer>
+				<key>line</key>
+				<integer>27</integer>
+			</dict>
+		</dict>
+		<key>enemies/EnemySmallShip.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>24</integer>
 				<key>line</key>
-				<integer>40</integer>
+				<integer>44</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>25</integer>
+			<integer>34</integer>
+		</dict>
+		<key>main.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>12</integer>
+				<key>line</key>
+				<integer>202</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>184</integer>
+		</dict>
+		<key>mediators/PlayerMediator.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>63</integer>
+				<key>line</key>
+				<integer>12</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>5</integer>
+		</dict>
+		<key>player/Player.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>21</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>29</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>25</integer>
+				<key>line</key>
+				<integer>32</integer>
+			</dict>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>main.lua</string>
+		<string>enemies/BossBigPlane.lua</string>
+		<string>mediators/PlayerMediator.lua</string>
+		<string>player/Player.lua</string>
+		<string>enemies/EnemyBulletSingle.lua</string>
+		<string>enemies/EnemySmallShip.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>

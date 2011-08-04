@@ -6,10 +6,13 @@ require "player/Player"
 require "player/PlayerBulletSingle"
 require "enemies/EnemySmallShip"
 require "enemies/EnemySmallShipDeath"
+require "enemies/EnemyBulletSingle"
 require "gamegui/HealthBar"
+require "enemies/BossBigPlane"
 
 local function initSounds()
 	planeShootSound = audio.loadSound("plane_shoot.wav")
+
 end
 
 function addLoop(o)
@@ -174,11 +177,36 @@ function startBossFight()
 		gameTimer = nil
 		local delayTable = {}
 		function delayTable:timer(event)
-			-- TODO: re-implement
-		   -- createBoss()
+		   createBoss()
         end
         timer.performWithDelay(200, delayTable)
 	end
+end
+
+function createBoss()
+	local boss = BossBigPlane:new()
+	boss:addEventListener("removeFromGameLoop", onBossDead)
+	boss:addEventListener("fireShots", onFireBossShots)
+	mainGroup:insert(boss)
+	addLoop(boss)
+end
+
+function onFireBossShots(event)
+	for i,point in ipairs(event.points) do
+		local bullet = EnemyBulletSingle:new(point.x, point.y, player)
+		bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
+		addLoop(bullet)
+	end
+end
+
+function onBossDead(event)
+	local boss = event.target
+	boss:removeEventListener("removeFromGameLoop", onBossDead)
+	boss:removeEventListener("fireShots", onFireBossShots)
+	removeLoop(boss)
+	-- TODO: use correct animation, sucka! In fact, make an epic one!
+	local death = EnemySmallShipDeath:new(boss.x, boss.y)
+	mainGroup:insert(death)
 end
 
 function startGame()
@@ -220,7 +248,6 @@ function startGame()
 				    --createPowerUp(self.x, self.y)
 		        end
 		        timer.performWithDelay(200, delayTable)
-				
 			end
 		end
 		enemyPlane:addEventListener("enemyDead", onDead)

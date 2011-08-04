@@ -1,22 +1,23 @@
 require "constants"
 
-bossBigPlane = {}
+BossBigPlane = {}
 
-function new()
-	if(bossBigPlane.bossSheet == nil) then
+function BossBigPlane:new()
+	if(BossBigPlane.bossSheet == nil) then
 		local bossSheet = sprite.newSpriteSheet("boss_sheet_1.png", 143, 96)
 		local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
-		--sprite.add(bossSet, "bossSheetSet1", 1, 3, 500, 0)
-		bossBigPlane.bossSheet = bossSheet
-		bossBigPlane.bossSet = bossSet
-		bossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
-		bossBigPlane.deathSound = 
+		sprite.add(bossSet, "bossSheetSet1", 1, 2, 100, 0)
+		BossBigPlane.bossSheet = bossSheet
+		BossBigPlane.bossSet = bossSet
+		BossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
+		-- TODO/FIXME: wrong sound yo
+		BossBigPlane.deathSound = audio.loadSound("boss_hit_sound.mp3")
 	end
 	
-	local boss = sprite.newSprite(bossSet)
+	local boss = sprite.newSprite(BossBigPlane.bossSet)
 	boss:setReferencePoint(display.TopLeftReferencePoint)
 	boss.name = "Boss"
-	boss:prepare()
+	boss:prepare("bossSheetSet1")
 	boss:play()
 	-- TODO: maybe require sprite; not sure
 	local middle = (stage.width / 2) - (boss.width / 2)
@@ -28,8 +29,8 @@ function new()
 	boss.gunPoint1 = {x = 71, y = 23}
 	boss.gunPoint2 = {x = 71, y = 44}
 	boss.gunPoint3 = {x = 71, y = 68}
-	boss.leftGunPoint = {x = 71, y = 68}
-	boss.rightGunPoint = {x = 71, y = 68}
+	boss.leftGunPoint = {x = 62, y = 62}
+	boss.rightGunPoint = {x = 78, y = 62}
 	boss.fireSpeed = 1600
 	boss.lastTick = 0
 	boss.hitPoints = 100
@@ -45,15 +46,10 @@ function new()
 								shape=bossShape,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
-								
-	-- TODO: add to game loop
-	--addLoop(boss)
-	
-	
+							
 	function boss:destroy()
 		-- TODO: remove from game loop and handle death dispatch
-		--removeLoop(self)
-		--createEnemyDeath(self.x, self.y)
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		
 		-- TODO: fix sound
 		--local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound)
@@ -81,11 +77,18 @@ function new()
 		self.lastTick = self.lastTick + millisecondsPassed
 		if(self.lastTick >= self.fireSpeed) then
 			-- TODO: making this harder for player would be to have fire at delayed times vs. all at once
-			createEnemyBullet(self.gunPoint1.x + self.x, self.gunPoint1.y + self.y, plane)
-			createEnemyBullet(self.gunPoint2.x + self.x, self.gunPoint2.y + self.y, plane)
-			createEnemyBullet(self.gunPoint3.x + self.x, self.gunPoint3.y + self.y, plane)
-			createEnemyBullet(self.leftGunPoint.x + self.x, self.leftGunPoint.y + self.y, {x = -30, y = self.leftGunPoint.y + self.y})
-			createEnemyBullet(self.rightGunPoint.x + self.x, self.rightGunPoint.y + self.y, {x = stage.width + 30, y = self.rightGunPoint.y + self.y})
+			local points = {
+				{x=self.gunPoint1.x + self.x, y=self.gunPoint1.y + self.y},
+				{x=self.gunPoint2.x + self.x, y=self.gunPoint2.y + self.y},
+				{x=self.gunPoint3.x + self.x, y=self.gunPoint3.y + self.y},
+				{x=self.leftGunPoint.x + self.x, y=self.leftGunPoint.y + self.y}, 
+				{x=self.rightGunPoint.x + self.x, y=self.rightGunPoint.y + self.y}
+				
+				--createEnemyBullet(self.leftGunPoint.x + self.x, self.leftGunPoint.y + self.y, {x = -30, y = self.leftGunPoint.y + self.y})
+				--createEnemyBullet(self.rightGunPoint.x + self.x, self.rightGunPoint.y + self.y, {x = stage.width + 30, y = self.rightGunPoint.y + self.y})
+						
+			}
+			self:dispatchEvent({name="fireShots", target=self, points=points})
 			self.lastTick = 0
 		else
 			self.lastTick = self.lastTick + millisecondsPassed
@@ -117,3 +120,5 @@ function new()
 	
 	return boss
 end
+
+return BossBigPlane
