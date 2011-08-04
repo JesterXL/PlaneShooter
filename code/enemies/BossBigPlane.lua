@@ -9,9 +9,11 @@ function BossBigPlane:new()
 		sprite.add(bossSet, "bossSheetSet1", 1, 2, 100, 0)
 		BossBigPlane.bossSheet = bossSheet
 		BossBigPlane.bossSet = bossSet
-		BossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
+		BossBigPlane.hitSound = audio.loadSound("enemies/boss_hit_sound.mp3")
+		BossBigPlane.railHitSound = audio.loadSound("enemies/boss_rail_hit.wav")
+		BossBigPlane.fireSound = audio.loadSound("enemies/boss_big_plane_fire.wav")
 		-- TODO/FIXME: wrong sound yo
-		BossBigPlane.deathSound = audio.loadSound("boss_hit_sound.mp3")
+		--BossBigPlane.deathSound = audio.loadSound("enemies/boss_hit_sound.mp3")
 	end
 	
 	local boss = sprite.newSprite(BossBigPlane.bossSet)
@@ -75,8 +77,17 @@ function BossBigPlane:new()
 	
 	function insanityFiringMode(self, millisecondsPassed)
 		self.lastTick = self.lastTick + millisecondsPassed
+		--[[
+		if(BossBigPlane.fireSoundChannel == nil) then
+			print("------------ Playing fire sound ----------")
+			BossBigPlane.fireSoundChannel = audio.play(BossBigPlane.fireSound, {loops=-1})
+		end
+		--]]
+		
 		if(self.lastTick >= self.fireSpeed) then
-			-- TODO: making this harder for player would be to have fire at delayed times vs. all at once
+			
+			
+			
 			local points = {
 				{x=self.gunPoint1.x + self.x, y=self.gunPoint1.y + self.y},
 				{x=self.gunPoint2.x + self.x, y=self.gunPoint2.y + self.y},
@@ -99,18 +110,41 @@ function BossBigPlane:new()
 	
 	function onHit(self, event)
 		-- TODO: ensure bullet name is same
-		if(event.other.name == "Bullet") then
+		if(event.other.name == "Bullet" or event.other.name == "BulletRail") then
 			self.hitPoints = self.hitPoints - 1
+			if(event.other.name ~= "BulletRail") then
+				event.other:destroy();
+			end
+			
 			if(self.hitPoints <= 0) then
+				self:dispatchEvent({name="death", target=self})
 				self:destroy()
 			else
-				-- TODO: fix sound
-				--local hitSoundChannel = audio.play(playerHitSound)
-				--audio.setVolume(.5, {channel=hitSoundChannel})
+				
+				if(event.other.name ~= "BulletRail") then
+					if(BossBigPlane.hitSoundChannel ~= nil) then
+						audio.stop(BossBigPlane.hitSoundChannel)
+						audio.rewind(BossBigPlane.hitSound)
+						audio.play(BossBigPlane.hitSound, {channel=BossBigPlane.hitSoundChannel})
+					else
+						BossBigPlane.hitSoundChannel = audio.play(BossBigPlane.hitSound)
+					end
+				else
+					if(BossBigPlane.railHitSoundChannel ~= nil) then
+						audio.stop(BossBigPlane.railHitSoundChannel)
+						audio.rewind(BossBigPlane.railHitSound)
+						audio.play(BossBigPlane.railHitSound, {channel=BossBigPlane.railHitSoundChannel})
+					else
+						BossBigPlane.railHitSoundChannel = audio.play(BossBigPlane.railHitSound)
+					end
+				end
+				
+					
+					
+				
 				-- TODO: handle new event
 				--createEnemyDeath(event.other.x, event.other.y)
-				self:dispatchEvent({name="death", target=self})
-				event.other:destroy()
+				
 			end
 		end
 	end

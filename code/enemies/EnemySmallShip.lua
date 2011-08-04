@@ -40,14 +40,18 @@ function EnemySmallShip:new(startX, startY, bottom)
 			-- TODO: create enemy death
 			--createEnemyDeath(self.x, self.y)
 			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
-			audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
+			--audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
 			print("ship is dead, ID: ", self.ID)
 			event.other:destroy()
 			self:destroy()
 		elseif(event.other.name == "Player") then
 			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
-			audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
+			--audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
 			event.other:onBulletHit()
+			self:destroy()
+		elseif(event.other.name == "BulletRail") then
+			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
+			--audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
 			self:destroy()
 		end
 	end

@@ -4,6 +4,7 @@ require "constants"
 require "ScrollingTerrain"
 require "player/Player"
 require "player/PlayerBulletSingle"
+require "player/PlayerRailGun"
 require "enemies/EnemySmallShip"
 require "enemies/EnemySmallShipDeath"
 require "enemies/EnemyBulletSingle"
@@ -90,11 +91,12 @@ end
 function onTouch(event)
 	if(event.phase == "began") then
 		startFiringBullets()
-		audio.setVolume( .25, { channel=1 } )
-		if(planeShootSoundChannel == nil) then
-			planeShootSoundChannel = audio.play(planeShootSound, {loops=-1, fadein=100})
-		else
-			audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1, fadein=100})
+		if(bulletRegulator.fireFunc ~= createRailGun) then
+			if(planeShootSoundChannel == nil) then
+				planeShootSoundChannel = audio.play(planeShootSound, {loops=-1, fadein=100})
+			else
+				audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1, fadein=100})
+			end
 		end
 	end
 	
@@ -125,11 +127,23 @@ function endGame()
 end
 
 function createBullet1()
-	print("createBullet1")
 	local bullet = PlayerBulletSingle:new(player.x, player.y)
 	mainGroup:insert(bullet)
 	bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
 	addLoop(bullet)
+end
+
+function createRailGun()
+	if(rail == nil) then
+		rail = PlayerRailGun:new(player.x, player.y)
+		rail:addEventListener("animeFinished", onRailGunComplete)
+		mainGroup:insert(rail)
+	end
+end
+
+function onRailGunComplete(event)
+	rail:removeEventListener("animeFinished", onRailGunComplete)
+	rail = nil
 end
 
 function createBullet2()
@@ -152,6 +166,7 @@ function setPowerUpLevel(level)
 		--player.speed = constants.PLAYER_MOVE_SPEED
 	end
 	
+--[[
 	if(powerUpLevel == 1) then
 		bulletRegulator.fireFunc = createBullet1
 	elseif(powerUpLevel == 2) then
@@ -159,6 +174,10 @@ function setPowerUpLevel(level)
 	elseif(powerUpLevel == 3) then
 		bulletRegulator.fireFunc = createBullet3
 	end
+--]]
+		bulletRegulator.fireFunc = createRailGun
+	
+	
 	--[[
 	elseif(powerUpLevel == 4) then
 		return
@@ -264,7 +283,7 @@ end
 
 function initializeGame()
 	physics.start()
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
 	
 	context = require("MainContext").new()
