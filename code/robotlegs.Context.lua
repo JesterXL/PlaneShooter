@@ -1,7 +1,7 @@
 module (..., package.seeall)
 
-require "robotlegs/globals"
-require "robotlegs/MessageBus"
+require "robotlegs.globals"
+require "robotlegs.MessageBus"
 
 function new()
 	local context = {}

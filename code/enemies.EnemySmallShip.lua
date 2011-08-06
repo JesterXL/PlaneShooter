@@ -1,5 +1,5 @@
 require "constants"
-require "robotlegs/globals"
+require "robotlegs.globals"
 
 EnemySmallShip = {}
 function EnemySmallShip:new(startX, startY, bottom)

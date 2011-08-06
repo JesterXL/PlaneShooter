@@ -17,7 +17,7 @@ function Player:new()
 	local img = sprite.newSprite(Player.spriteSet)
 	img:prepare("planeFly")
 	img:play()
-	img.classType = "player/Player"
+	img.classType = "player.Player"
 	img.speed = constants.PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
 	img.maxHitPoints = 3
