@@ -11,6 +11,10 @@ require "enemies/EnemyBulletSingle"
 require "gamegui/HealthBar"
 require "enemies/BossBigPlane"
 
+require "gamegui/animations/HeadNormalAnime"
+require "gamegui/buttons/PauseButton"
+
+
 local function initSounds()
 	planeShootSound = audio.loadSound("plane_shoot.wav")
 
@@ -166,7 +170,7 @@ function setPowerUpLevel(level)
 		--player.speed = constants.PLAYER_MOVE_SPEED
 	end
 	
---[[
+
 	if(powerUpLevel == 1) then
 		bulletRegulator.fireFunc = createBullet1
 	elseif(powerUpLevel == 2) then
@@ -174,8 +178,8 @@ function setPowerUpLevel(level)
 	elseif(powerUpLevel == 3) then
 		bulletRegulator.fireFunc = createBullet3
 	end
---]]
-		bulletRegulator.fireFunc = createRailGun
+
+		--bulletRegulator.fireFunc = createRailGun
 	
 	
 	--[[
@@ -192,7 +196,7 @@ function startBossFight()
 	print("-- startBossFight --")
 	if(fightingBoss == false) then
 		fightingBoss = true
-		timer.cancel(gameTimer)
+		removeLoop(gameTicker)
 		gameTimer = nil
 		local delayTable = {}
 		function delayTable:timer(event)
@@ -203,7 +207,7 @@ function startBossFight()
 end
 
 function createBoss()
-	local boss = BossBigPlane:new()
+	local boss = BossBigPlane:new(player)
 	boss:addEventListener("removeFromGameLoop", onBossDead)
 	boss:addEventListener("fireShots", onFireBossShots)
 	mainGroup:insert(boss)
@@ -228,60 +232,114 @@ function onBossDead(event)
 	mainGroup:insert(death)
 end
 
+function initKeys()
+
+	local function onKeyEvent( event )
+	        local phase = event.phase
+	        local keyName = event.keyName
+	        print("phase: ", phase, ", keyName: ", keyName)
+
+	        -- we handled the event, so return true.
+	        -- for default behavior, return false.
+	        return true
+	end
+
+	-- Add the key callback
+	Runtime:addEventListener( "key", onKeyEvent );
+		
+end
+
+
 function startGame()
+	gamePaused = false
 	Runtime:addEventListener("enterFrame", animate )
 	Runtime:addEventListener("touch", onTouch)
-	local t = {}
-	function t:timer(event)
-		--event.time
-		-- timer.cancel( event.source ) 
-		local randomX = stage.width * math.random()
-		if(randomX < 20) then
-			randomX = 20
-		end
+	if(gameTicker == nil) then
+		gameTicker = {}
+		gameTicker.milliseconds = 0
+		function gameTicker:tick(millisecondsPassed)
+			gameTicker.milliseconds = gameTicker.milliseconds + millisecondsPassed
+			if(gameTicker.milliseconds < 500) then
+				return
+			else
+				-- TODO/FIXME: I'm tired, fix this
+				gameTicker.milliseconds = 0
+			end
+			
+			--event.time
+			-- timer.cancel( event.source ) 
+			local randomX = stage.width * math.random()
+			if(randomX < 20) then
+				randomX = 20
+			end
 		
-		if(randomX > stage.width - 20) then
-			randomX = stage.width - 20
-		end
-			
-		local enemyPlane = EnemySmallShip:new(randomX, 0, stage.height)
-		function onDead(event)
-			assert(removeLoop(event.target), "Failed to remove enemy plane from game loop.")
-			local shipDeath = EnemySmallShipDeath:new(event.target.x, event.target.y)
-			mainGroup:insert(shipDeath)
-			enemies = enemies - 1
-			if(enemies <= 0) then
-				startBossFight()
+			if(randomX > stage.width - 20) then
+				randomX = stage.width - 20
 			end
 			
-			powerCount = powerCount - 1
-			if(powerCount <= 0) then
-				powerCount = POWER_MAX_COUNT
-				-- NOTE: You have to set a delay; adding physics bodies during a collision event (within the stack)
-				-- will cause a hard crash
-				local delayTable = {}
-				delayTable.x = event.target.x
-				delayTable.y = event.target.y
-				function delayTable:timer(event)
-					-- TODO: re-implement
-				    --createPowerUp(self.x, self.y)
-		        end
-		        timer.performWithDelay(200, delayTable)
+			local enemyPlane = EnemySmallShip:new(randomX, 0, stage.height)
+			function onDead(event)
+				assert(removeLoop(event.target), "Failed to remove enemy plane from game loop.")
+				local shipDeath = EnemySmallShipDeath:new(event.target.x, event.target.y)
+				mainGroup:insert(shipDeath)
+				enemies = enemies - 1
+				if(enemies <= 0) then
+					startBossFight()
+				end
+			
+				powerCount = powerCount - 1
+				if(powerCount <= 0) then
+					powerCount = POWER_MAX_COUNT
+					-- NOTE: You have to set a delay; adding physics bodies during a collision event (within the stack)
+					-- will cause a hard crash
+					local delayTable = {}
+					delayTable.x = event.target.x
+					delayTable.y = event.target.y
+					function delayTable:timer(event)
+						-- TODO: re-implement
+					    --createPowerUp(self.x, self.y)
+			        end
+			        timer.performWithDelay(200, delayTable)
+				end
 			end
+			enemyPlane:addEventListener("enemyDead", onDead)
+			mainGroup:insert(enemyPlane)
+			addLoop(enemyPlane)
 		end
-		enemyPlane:addEventListener("enemyDead", onDead)
-		mainGroup:insert(enemyPlane)
-		addLoop(enemyPlane)
 	end
 	
-	gameTimer = timer.performWithDelay(500, t, 0)
+	addLoop(gameTicker)
+		
 	
 	startScrollingTerrain()
+end
+
+function pauseGame()
+	gamePaused = true
+	Runtime:removeEventListener("enterFrame", animate )
+	Runtime:removeEventListener("touch", onTouch)
+	headAnime:stop()
+end
+
+function unpauseGame()
+	gamePaused = false
+	Runtime:addEventListener("enterFrame", animate )
+	Runtime:addEventListener("touch", onTouch)
+	headAnime:play()
+end
+
+function togglePause()
+	if(gamePaused == true) then
+		unpauseGame()
+	else
+		pauseGame()
+	end
 end
 
 
 
 function initializeGame()
+	
 	physics.start()
 	--physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
@@ -336,9 +394,39 @@ function initializeGame()
 	player.planeXTarget = stage.width / 2
 	player.planeYTarget = stage.height / 2
 	player:move(player.planeXTarget, player.planeYTarget)
-
+	
+	headAnime = HeadNormalAnime:new(4, stage.height - 104)
+	mainGroup:insert(headAnime)
+	
+	initKeys()
+	
+	local pauseButton = PauseButton:new()
+	pauseButton.x = stage.width - pauseButton.width
+	pauseButton.y = stage.height - pauseButton.height
+	pauseButton:addEventListener("touch", onPauseTouch)
+	
 	startGame()
 end
+
+function onPauseTouch(event)
+	if(event.phase == "began") then
+		togglePause()
+		return true
+	end
+end
+
+function onKeyEvent( event )
+	if(event.keyName == "menu") then
+		if(gamePaused == true) then
+			unpauseGame()
+		else
+			pauseGame()
+		end
+	end
+end
+ 
+-- Add the key callback
+Runtime:addEventListener( "key", onKeyEvent );
 
 initializeGame()
 

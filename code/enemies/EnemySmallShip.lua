@@ -9,7 +9,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 		EnemySmallShip.smallShipDeathSound = audio.loadSound("enemy_death_1.mp3")
 	end
 	
-	local img = display.newImage("enemy_1.png")
+	local img = display.newImage("enemies/enemy_1.png")
 	img.name = "Enemy1"
 	img.ID = globals.getID()
 	img.speed = constants.SMALL_SHIP_SPEED

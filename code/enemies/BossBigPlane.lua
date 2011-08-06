@@ -2,9 +2,9 @@ require "constants"
 
 BossBigPlane = {}
 
-function BossBigPlane:new()
+function BossBigPlane:new(player)
 	if(BossBigPlane.bossSheet == nil) then
-		local bossSheet = sprite.newSpriteSheet("boss_sheet_1.png", 143, 96)
+		local bossSheet = sprite.newSpriteSheet("enemies/boss_big_plane_sheet.png", 142, 98)
 		local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
 		sprite.add(bossSet, "bossSheetSet1", 1, 2, 100, 0)
 		BossBigPlane.bossSheet = bossSheet
@@ -16,11 +16,13 @@ function BossBigPlane:new()
 		--BossBigPlane.deathSound = audio.loadSound("enemies/boss_hit_sound.mp3")
 	end
 	
-	local boss = sprite.newSprite(BossBigPlane.bossSet)
-	boss:setReferencePoint(display.TopLeftReferencePoint)
+	local boss = display.newGroup()
+	local bossSpriteSheet = sprite.newSprite(BossBigPlane.bossSet)
+	boss:insert(bossSpriteSheet)
+	--bossSpriteSheet:setReferencePoint(display.TopLeftReferencePoint)
 	boss.name = "Boss"
-	boss:prepare("bossSheetSet1")
-	boss:play()
+	bossSpriteSheet:prepare("bossSheetSet1")
+	bossSpriteSheet:play()
 	-- TODO: maybe require sprite; not sure
 	local middle = (stage.width / 2) - (boss.width / 2)
 	boss.x = middle
@@ -28,14 +30,36 @@ function BossBigPlane:new()
 	boss.speed = 1
 	boss.targetX = stage.width / 2 - boss.width / 2
 	boss.targetY = boss.height
+	--[[
 	boss.gunPoint1 = {x = 71, y = 23}
 	boss.gunPoint2 = {x = 71, y = 44}
 	boss.gunPoint3 = {x = 71, y = 68}
-	boss.leftGunPoint = {x = 62, y = 62}
-	boss.rightGunPoint = {x = 78, y = 62}
-	boss.fireSpeed = 1600
+	--]]
+	boss.gunPoint1 = {x = 0, y = -33}
+	boss.gunPoint2 = {x = 0, y = 0}
+	boss.gunPoint3 = {x = 0, y = 34}
+	boss.gunPoint1Image = display.newImage("enemies/boss_big_plane_turret.png")
+	boss.gunPoint2Image = display.newImage("enemies/boss_big_plane_turret.png")
+	boss.gunPoint3Image = display.newImage("enemies/boss_big_plane_turret.png")
+	boss:insert(boss.gunPoint1Image)
+	boss:insert(boss.gunPoint2Image)
+	boss:insert(boss.gunPoint3Image)
+	boss.gunPoint1Image.x = boss.gunPoint1.x
+	boss.gunPoint1Image.y = boss.gunPoint1.y
+	boss.gunPoint2Image.x = boss.gunPoint2.x
+	boss.gunPoint2Image.y = boss.gunPoint2.y
+	boss.gunPoint3Image.x = boss.gunPoint3.x
+	boss.gunPoint3Image.y = boss.gunPoint3.y
+	boss.leftGunPoint = {x = -2, y = 0}
+	boss.rightGunPoint = {x = 2, y = 0}
+	boss.fireSpeed = 320
+	boss.fireCount = 0 -- which gun is firing, cycle through 5
+	boss.fireCountMax = 5
 	boss.lastTick = 0
 	boss.hitPoints = 100
+	boss.player = player
+	boss.rot = math.atan2(boss.y -  boss.player.x,  boss.x - boss.player.y) / math.pi * 180 -90;
+	boss.angle = (boss.rot -90) * math.pi / 180;
 	
 	
 	local halfWidth = boss.width / 2
@@ -75,6 +99,12 @@ function BossBigPlane:new()
 		end
 	end
 	
+	function boss:getRotation(target)
+		local targetX, targetY = target:localToContent(target.x, target.y)
+		local rot = math.atan2(boss.player.y - targetY, boss.player.x - targetX) / math.pi * 180 - 90
+		return rot
+	end
+	
 	function insanityFiringMode(self, millisecondsPassed)
 		self.lastTick = self.lastTick + millisecondsPassed
 		--[[
@@ -84,8 +114,16 @@ function BossBigPlane:new()
 		end
 		--]]
 		
+		boss.gunPoint1Image.rotation = boss:getRotation(boss.gunPoint1Image)
+		boss.gunPoint2Image.rotation = boss:getRotation(boss.gunPoint2Image)
+		boss.gunPoint3Image.rotation = boss:getRotation(boss.gunPoint3Image)
+		
 		if(self.lastTick >= self.fireSpeed) then
-			
+			if(boss.fireCount + 1 <= boss.fireCountMax) then
+				boss.fireCount = boss.fireCount + 1
+			else
+				boss.fireCount = 1
+			end
 			
 			
 			local points = {
@@ -94,11 +132,19 @@ function BossBigPlane:new()
 				{x=self.gunPoint3.x + self.x, y=self.gunPoint3.y + self.y},
 				{x=self.leftGunPoint.x + self.x, y=self.leftGunPoint.y + self.y}, 
 				{x=self.rightGunPoint.x + self.x, y=self.rightGunPoint.y + self.y}
-				
-				--createEnemyBullet(self.leftGunPoint.x + self.x, self.leftGunPoint.y + self.y, {x = -30, y = self.leftGunPoint.y + self.y})
-				--createEnemyBullet(self.rightGunPoint.x + self.x, self.rightGunPoint.y + self.y, {x = stage.width + 30, y = self.rightGunPoint.y + self.y})
-						
 			}
+			
+			--[[
+			
+			local points
+			if(boss.fireCount == 1) then points = {{x=self.gunPoint1.x + self.x, y=self.gunPoint1.y + self.y}}
+			elseif(boss.fireCount == 1) then points = {{x=self.gunPoint2.x + self.x, y=self.gunPoint2.y + self.y}}
+			elseif(boss.fireCount == 1) then points = {{x=self.gunPoint3.x + self.x, y=self.gunPoint3.y + self.y}}
+			elseif(boss.fireCount == 1) then points = {{x=self.leftGunPoint.x + self.x, y=self.leftGunPoint.y + self.y}}
+			elseif(boss.fireCount == 1) then points = {{x=self.rightGunPoint.x + self.x, y=self.rightGunPoint.y + self.y}}
+			end
+			--]]
+			
 			self:dispatchEvent({name="fireShots", target=self, points=points})
 			self.lastTick = 0
 		else

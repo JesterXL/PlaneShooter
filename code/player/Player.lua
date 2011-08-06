@@ -5,7 +5,18 @@ require "constants"
 Player = {}
 
 function Player:new()
-	local img = display.newImage("plane.png")
+	
+	if(Player.spriteSheet == nil) then
+		local spriteSheet = sprite.newSpriteSheet("player/player.png", 22, 17)
+		local spriteSet = sprite.newSpriteSet(spriteSheet, 1, 2)
+		sprite.add(spriteSet, "planeFly", 1, 2, 50, 0)
+		Player.spriteSheet = spriteSheet
+		Player.spriteSet = spriteSet
+	end
+	
+	local img = sprite.newSprite(Player.spriteSet)
+	img:prepare("planeFly")
+	img:play()
 	img.classType = "player/Player"
 	img.speed = constants.PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
