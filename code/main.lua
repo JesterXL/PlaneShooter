@@ -10,6 +10,8 @@ require "enemies.EnemySmallShipDeath"
 require "enemies.EnemyBulletSingle"
 require "gamegui.HealthBar"
 require "enemies.BossBigPlane"
+require "enemies.EnemyMissileJet"
+require "enemies.EnemyMissile"
 
 require "gamegui.animations.HeadNormalAnime"
 require "gamegui.buttons.PauseButton"
@@ -130,6 +132,20 @@ function endGame()
 	stopScrollingTerrain()
 end
 
+function onCreateEnemyBullet(event)
+	local bullet = EnemyBulletSingle:new(event.target.x, event.target.y, player)
+	mainGroup:insert(bullet)
+	bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
+	addLoop(bullet)
+end
+
+function onFireZeeMissile(event)
+	local missile = EnemyMissile:new(event.target.x, event.target.y, player)
+	mainGroup:insert(missile)
+	missile:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
+	addLoop(missile)
+end
+
 function createBullet1()
 	local bullet = PlayerBulletSingle:new(player.x, player.y)
 	mainGroup:insert(bullet)
@@ -217,6 +233,7 @@ end
 function onFireBossShots(event)
 	for i,point in ipairs(event.points) do
 		local bullet = EnemyBulletSingle:new(point.x, point.y, player)
+		mainGroup:insert(bullet)
 		bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
 		addLoop(bullet)
 	end
@@ -257,7 +274,9 @@ function startGame()
 	if(gameTicker == nil) then
 		gameTicker = {}
 		gameTicker.milliseconds = 0
+		gameTicker.counter = 0
 		function gameTicker:tick(millisecondsPassed)
+			
 			gameTicker.milliseconds = gameTicker.milliseconds + millisecondsPassed
 			if(gameTicker.milliseconds < 500) then
 				return
@@ -265,7 +284,7 @@ function startGame()
 				-- TODO/FIXME: I'm tired, fix this
 				gameTicker.milliseconds = 0
 			end
-			
+			gameTicker.counter = gameTicker.counter + 1
 			--event.time
 			-- timer.cancel( event.source ) 
 			local randomX = stage.width * math.random()
@@ -276,10 +295,24 @@ function startGame()
 			if(randomX > stage.width - 20) then
 				randomX = stage.width - 20
 			end
-			
-			local enemyPlane = EnemySmallShip:new(randomX, 0, stage.height)
+
+			local enemy
+			if(self.counter == 3 or self.counter == 5 or self.counter == 7 or self.counter == 9) then
+				enemy = EnemyMissileJet:new(randomX, 0, stage.height)
+				enemy:addEventListener("fireZeeMissile", onFireZeeMissile)
+			else
+				enemy = EnemySmallShip:new(randomX, 0, stage.height)
+				enemy:addEventListener("createEnemyBullet", onCreateEnemyBullet)
+			end
+
 			function onDead(event)
 				assert(removeLoop(event.target), "Failed to remove enemy plane from game loop.")
+				if(event.target.classType ~= nil and event.target.classType == "enemies.EnemyMissleJet") then
+					enemy:removeEventListener("fireZeeMissile", onFireZeeMissile)
+				elseif(event.target.classType ~= nil and event.target.classType == "enemies.EnemySmallShip") then
+					enemy:removeEventListener("createEnemyBullet", onCreateEnemyBullet)
+				end
+
 				local shipDeath = EnemySmallShipDeath:new(event.target.x, event.target.y)
 				mainGroup:insert(shipDeath)
 				enemies = enemies - 1
@@ -302,9 +335,9 @@ function startGame()
 			        timer.performWithDelay(200, delayTable)
 				end
 			end
-			enemyPlane:addEventListener("enemyDead", onDead)
-			mainGroup:insert(enemyPlane)
-			addLoop(enemyPlane)
+			enemy:addEventListener("enemyDead", onDead)
+			mainGroup:insert(enemy)
+			addLoop(enemy)
 		end
 	end
 	
@@ -318,14 +351,12 @@ function pauseGame()
 	gamePaused = true
 	Runtime:removeEventListener("enterFrame", animate )
 	Runtime:removeEventListener("touch", onTouch)
-	headAnime:stop()
 end
 
 function unpauseGame()
 	gamePaused = false
 	Runtime:addEventListener("enterFrame", animate )
 	Runtime:addEventListener("touch", onTouch)
-	headAnime:play()
 end
 
 function togglePause()
@@ -394,9 +425,11 @@ function initializeGame()
 	player.planeXTarget = stage.width / 2
 	player.planeYTarget = stage.height / 2
 	player:move(player.planeXTarget, player.planeYTarget)
+	--[[
 	
 	headAnime = HeadNormalAnime:new(4, stage.height - 104)
 	mainGroup:insert(headAnime)
+	--]]
 	
 	initKeys()
 	

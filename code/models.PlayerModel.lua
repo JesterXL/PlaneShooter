@@ -19,8 +19,11 @@ function inst:getHitpointsPercentage()
 end
 
 function inst:onBulletHit()
-	print("PlayerModel::onBulletHit")
 	self:setHitPoints(self.hitPoints - 1)
+end
+
+function inst:onMissileHit()
+	self:setHitPoints(self.hitPoints - 2)
 end
 
 return PlayerModel

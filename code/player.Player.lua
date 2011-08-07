@@ -7,7 +7,7 @@ Player = {}
 function Player:new()
 	
 	if(Player.spriteSheet == nil) then
-		local spriteSheet = sprite.newSpriteSheet("player/player.png", 22, 17)
+		local spriteSheet = sprite.newSpriteSheet("player.png", 22, 17)
 		local spriteSet = sprite.newSpriteSet(spriteSheet, 1, 2)
 		sprite.add(spriteSet, "planeFly", 1, 2, 50, 0)
 		Player.spriteSheet = spriteSheet
@@ -52,6 +52,17 @@ function Player:new()
 			------createPlayerDeath(self.x, self.y)
 			------stopPlayerInteraction()
 			------endGame()
+			self:dispatchEvent({target=self, name="playerDead"})
+		else
+			audio.play(self.playerHitSound, {loops=0})
+		end
+	end
+
+	function img:onMissileHit(event)
+		self:dispatchEvent({name="missileHit", target=self})
+		if(self.hitPoints <= 0) then
+			self.isVisible = false
+			audio.play(self.playerDeathSound, {loops=0})
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
 			audio.play(self.playerHitSound, {loops=0})

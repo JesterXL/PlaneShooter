@@ -4,14 +4,14 @@ BossBigPlane = {}
 
 function BossBigPlane:new(player)
 	if(BossBigPlane.bossSheet == nil) then
-		local bossSheet = sprite.newSpriteSheet("enemies/boss_big_plane_sheet.png", 142, 98)
+		local bossSheet = sprite.newSpriteSheet("boss_big_plane_sheet.png", 142, 98)
 		local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
 		sprite.add(bossSet, "bossSheetSet1", 1, 2, 100, 0)
 		BossBigPlane.bossSheet = bossSheet
 		BossBigPlane.bossSet = bossSet
-		BossBigPlane.hitSound = audio.loadSound("enemies/boss_hit_sound.mp3")
-		BossBigPlane.railHitSound = audio.loadSound("enemies/boss_rail_hit.wav")
-		BossBigPlane.fireSound = audio.loadSound("enemies/boss_big_plane_fire.wav")
+		BossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
+		BossBigPlane.railHitSound = audio.loadSound("boss_rail_hit.wav")
+		BossBigPlane.fireSound = audio.loadSound("boss_big_plane_fire.wav")
 		-- TODO/FIXME: wrong sound yo
 		--BossBigPlane.deathSound = audio.loadSound("enemies/boss_hit_sound.mp3")
 	end
@@ -38,9 +38,9 @@ function BossBigPlane:new(player)
 	boss.gunPoint1 = {x = 0, y = -33}
 	boss.gunPoint2 = {x = 0, y = 0}
 	boss.gunPoint3 = {x = 0, y = 34}
-	boss.gunPoint1Image = display.newImage("enemies/boss_big_plane_turret.png")
-	boss.gunPoint2Image = display.newImage("enemies/boss_big_plane_turret.png")
-	boss.gunPoint3Image = display.newImage("enemies/boss_big_plane_turret.png")
+	boss.gunPoint1Image = display.newImage("boss_big_plane_turret.png")
+	boss.gunPoint2Image = display.newImage("boss_big_plane_turret.png")
+	boss.gunPoint3Image = display.newImage("boss_big_plane_turret.png")
 	boss:insert(boss.gunPoint1Image)
 	boss:insert(boss.gunPoint2Image)
 	boss:insert(boss.gunPoint3Image)
@@ -52,7 +52,7 @@ function BossBigPlane:new(player)
 	boss.gunPoint3Image.y = boss.gunPoint3.y
 	boss.leftGunPoint = {x = -2, y = 0}
 	boss.rightGunPoint = {x = 2, y = 0}
-	boss.fireSpeed = 320
+	boss.fireSpeed = 1600
 	boss.fireCount = 0 -- which gun is firing, cycle through 5
 	boss.fireCountMax = 5
 	boss.lastTick = 0

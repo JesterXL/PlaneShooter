@@ -2,45 +2,177 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>currentDocument</key>
+	<string>main.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
-			<key>expanded</key>
-			<true/>
+			<key>filename</key>
+			<string>_text_mate_project.tmproj</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>.DS_Store</string>
+		</dict>
+		<dict>
 			<key>name</key>
-			<string>commands</string>
+			<string>.idea</string>
 			<key>regexFolderFilter</key>
 			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
 			<key>sourceDirectory</key>
-			<string>commands</string>
+			<string>.idea</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>1942Sheet1.gif</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>1942Sheet1.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_big_plane_01.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_big_plane_02.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_big_plane_fire.wav</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_big_plane_sheet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_big_plane_turret.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_hit_sound.mp3</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_rail_hit.wav</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>boss_sheet_1.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>bullet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>button_credits.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>button_pause.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>button_start_game.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>button_unpause.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>commands.BootstrapCommand.lua</string>
+			<key>lastUsed</key>
+			<date>2011-08-06T23:13:30Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>constants.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-31T23:20:48Z</date>
-		</dict>
-		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>gamegui</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>gamegui</string>
+			<date>2011-08-06T23:13:31Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
-			<string>jxl.lua</string>
+			<string>crate.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>debug_terrain.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemies.BossBigPlane.lua</string>
 			<key>lastUsed</key>
-			<date>2011-07-31T19:03:05Z</date>
+			<date>2011-08-06T23:14:57Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemies.EnemyBulletSingle.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemies.EnemySmallShip.lua</string>
+			<key>lastUsed</key>
+			<date>2011-08-06T21:51:17Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemies.EnemySmallShipDeath.lua</string>
+			<key>lastUsed</key>
+			<date>2011-08-06T21:51:15Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemy_1.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemy_death_1.mp3</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>enemy_death_sheet_1.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui.animations.HeadNormalAnime.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui.buttons.PauseButton.lua</string>
+			<key>lastUsed</key>
+			<date>2011-08-06T21:51:18Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>gamegui.HealthBar.lua</string>
+			<key>lastUsed</key>
+			<date>2011-08-06T21:43:38Z</date>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>health_bar_background.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>health_bar_foreground.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>icon_power_up.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>left_button.png</string>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-06T21:17:09Z</date>
+			<date>2011-08-06T23:14:57Z</date>
 			<key>selected</key>
 			<true/>
 		</dict>
@@ -48,63 +180,127 @@
 			<key>filename</key>
 			<string>main.lua.bak</string>
 			<key>lastUsed</key>
-			<date>2011-08-05T03:39:03Z</date>
+			<date>2011-08-06T21:54:08Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
 			<string>MainContext.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>mediators.HealthBarMediator.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>mediators.PlayerMediator.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>models.PlayerModel.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>movieclip.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>plane_shoot.wav</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>PlaneShooter.iml</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_bullet_1.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_bullet_2.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_death_sheet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_death_sound.mp3</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player_hit_sound.mp3</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player.Player.lua</string>
 			<key>lastUsed</key>
-			<date>2011-08-01T00:54:20Z</date>
+			<date>2011-08-06T21:43:52Z</date>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>mediators</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>mediators</string>
+			<key>filename</key>
+			<string>player.PlayerBulletDual.lua</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>models</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>models</string>
+			<key>filename</key>
+			<string>player.PlayerBulletSingle.lua</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>enemies</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>enemies</string>
+			<key>filename</key>
+			<string>player.PlayerBulletSpread.lua</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>player</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>player</string>
+			<key>filename</key>
+			<string>player.PlayerDeath.lua</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>robotlegs</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>robotlegs</string>
+			<key>filename</key>
+			<string>player.PlayerRailGun.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>player.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>powerups.PowerUp.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>rail_gun_anime_1_sheet.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>railgun.wav</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>right_button.png</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs.Actor.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs.Command.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs.Context.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs.globals.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs.Mediator.lua</string>
+		</dict>
+		<dict>
+			<key>filename</key>
+			<string>robotlegs.MessageBus.lua</string>
+			<key>lastUsed</key>
+			<date>2011-08-06T21:52:53Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -123,23 +319,67 @@
 			<string>ufo</string>
 		</dict>
 		<dict>
-			<key>expanded</key>
-			<true/>
-			<key>name</key>
-			<string>powerups</string>
-			<key>regexFolderFilter</key>
-			<string>!.*/(\.[^/]*|CVS|_darcs|_MTN|\{arch\}|blib|.*~\.nib|.*\.(framework|app|pbproj|pbxproj|xcode(proj)?|bundle))$</string>
-			<key>sourceDirectory</key>
-			<string>powerups</string>
+			<key>filename</key>
+			<string>ufotests.lua</string>
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
 	<integer>243</integer>
 	<key>metaData</key>
-	<dict/>
+	<dict>
+		<key>enemies.BossBigPlane.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>32</integer>
+				<key>line</key>
+				<integer>147</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>129</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>29</integer>
+				<key>line</key>
+				<integer>147</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>38</integer>
+				<key>line</key>
+				<integer>147</integer>
+			</dict>
+		</dict>
+		<key>main.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>0</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>openDocuments</key>
+	<array>
+		<string>main.lua</string>
+		<string>enemies.BossBigPlane.lua</string>
+	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{386, 354}, {1016, 436}}</string>
+	<string>{{412, 442}, {1016, 436}}</string>
 </dict>
 </plist>

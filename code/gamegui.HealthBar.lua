@@ -5,7 +5,7 @@ function HealthBar:new()
 	local healthBarGroup = display.newGroup()
 	healthBarGroup.classType = "gamegui.HealthBar"
 	
-	local healthBarBackground = display.newImage("gamegui/health_bar_background.png", 0, 0)
+	local healthBarBackground = display.newImage("health_bar_background.png", 0, 0)
 	healthBarGroup.healthBarBackground = healthBarBackground
 	healthBarGroup:insert(healthBarBackground)
 	--[[
@@ -13,7 +13,7 @@ function HealthBar:new()
 	healthBarBackground.y = 8
 	--]]
 	
-	healthBarForeground = display.newImage("gamegui/health_bar_foreground.png", 0, 0)
+	healthBarForeground = display.newImage("health_bar_foreground.png", 0, 0)
 	healthBarGroup.healthBarForeground = healthBarForeground
 	healthBarGroup:insert(healthBarForeground)
 	healthBarForeground.x = healthBarBackground.x

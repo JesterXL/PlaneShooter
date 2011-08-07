@@ -5,7 +5,7 @@ EnemySmallShipDeath = {}
 function EnemySmallShipDeath:new(targetX, targetY)
 	
 	if(EnemySmallShipDeath.smallShipDeathSheet == nil) then
-		EnemySmallShipDeath.smallShipDeathSheet = sprite.newSpriteSheet("enemies/enemy_death_sheet_1.png", 24, 24)
+		EnemySmallShipDeath.smallShipDeathSheet = sprite.newSpriteSheet("enemy_death_sheet_1.png", 24, 24)
 		EnemySmallShipDeath.smallShipDeathSet = sprite.newSpriteSet(EnemySmallShipDeath.smallShipDeathSheet, 1, 5)
 		sprite.add(EnemySmallShipDeath.smallShipDeathSet, "smallShipDeath", 1, 5, 300, 1)
 	end
