@@ -4,8 +4,8 @@ EnemyMissile = {}
 
 function EnemyMissile:new(startX, startY, player)
 
-	if(EnemyMissile.EnemyMissileJet == nil) then
-		EnemyMissile.missleSound = audio.loadSound("enemy_missle_jet_missle.mp3")
+	if(EnemyMissile.missileSound == nil) then
+		EnemyMissile.missileSound = audio.loadSound("enemy_missle_jet_missle.mp3")
 		local missleSheet = sprite.newSpriteSheet("enemy_missle_jet_missle_sheet.png", 6, 15)
 		local missleSet = sprite.newSpriteSet(missleSheet, 1, 3)
 		sprite.add(missleSet, "missleFlare", 1, 3, 100, 0)
@@ -75,6 +75,8 @@ function EnemyMissile:new(startX, startY, player)
 		end
 	end
 
+	--audio.play(EnemyMissile.missileSound)
+	
 	return img
 end
 

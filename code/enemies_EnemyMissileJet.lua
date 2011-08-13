@@ -1,5 +1,5 @@
 require "constants"
-require "robotlegs.globals"
+require "robotlegs_globals"
 
 EnemyMissileJet = {}
 
@@ -15,7 +15,7 @@ function EnemyMissileJet:new(startX, startY, bottom)
 	end
 
 	local img = sprite.newSprite(EnemyMissileJet.jetSet)
-	img.classType = "enemies.EnemyMissileJet"
+	img.classType = "enemies_EnemyMissileJet"
 	img.name = "EnemyMissileJet"
 	img:prepare("jetFly")
 	img:play()
@@ -87,6 +87,8 @@ function EnemyMissileJet:new(startX, startY, bottom)
 		end
 
 	end
+	
+	audio.play(EnemyMissileJet.jetSound)
 
 	return img
 end

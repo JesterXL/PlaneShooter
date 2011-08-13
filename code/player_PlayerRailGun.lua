@@ -16,12 +16,12 @@ function PlayerRailGun:new(startX, startY)
 	--]]
 	
 	if(PlayerRailGun.spriteSheet == nil) then
-		local spriteSheet = sprite.newSpriteSheet("player/rail_gun_anime_1_sheet.png", 300, 700)
+		local spriteSheet = sprite.newSpriteSheet("player_rail_gun_anime_1_sheet.png", 300, 700)
 		local spriteSet = sprite.newSpriteSet(spriteSheet, 1, 7)
 		sprite.add(spriteSet, "railGun1", 1, 7, 400, 1)
 		BossBigPlane.spriteSheet = spriteSheet
 		BossBigPlane.spriteSet = spriteSet
-		BossBigPlane.fireSound = audio.loadSound("player/railgun.wav")
+		BossBigPlane.fireSound = audio.loadSound("player_railgun.wav")
 	end
 	
 	local img = sprite.newSprite(BossBigPlane.spriteSet)

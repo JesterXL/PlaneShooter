@@ -2,19 +2,19 @@ require "sprite"
 require "physics"
 require "constants"
 require "ScrollingTerrain"
-require "player.Player"
-require "player.PlayerBulletSingle"
-require "player.PlayerRailGun"
-require "enemies.EnemySmallShip"
-require "enemies.EnemySmallShipDeath"
-require "enemies.EnemyBulletSingle"
-require "gamegui.HealthBar"
-require "enemies.BossBigPlane"
-require "enemies.EnemyMissileJet"
-require "enemies.EnemyMissile"
+require "player_Player"
+require "player_PlayerBulletSingle"
+require "player_PlayerRailGun"
+require "enemies_EnemySmallShip"
+require "enemies_EnemySmallShipDeath"
+require "enemies_EnemyBulletSingle"
+require "gamegui_HealthBar"
+require "enemies_BossBigPlane"
+require "enemies_EnemyMissileJet"
+require "enemies_EnemyMissile"
 
-require "gamegui.animations.HeadNormalAnime"
-require "gamegui.buttons.PauseButton"
+require "gamegui_animations_HeadNormalAnime"
+require "gamegui_buttons_PauseButton"
 
 
 local function initSounds()
@@ -431,12 +431,10 @@ function initializeGame()
 	mainGroup:insert(headAnime)
 	--]]
 	
-	initKeys()
-	
-	local pauseButton = PauseButton:new()
-	pauseButton.x = stage.width - pauseButton.width
-	pauseButton.y = stage.height - pauseButton.height
+	local pauseButton = PauseButton:new(4, stage.height - 40)
 	pauseButton:addEventListener("touch", onPauseTouch)
+	
+	initKeys()
 	
 	startGame()
 end

@@ -1,17 +1,17 @@
 module (..., package.seeall)
 
 function new()
-	local context = require("robotlegs.Context").new()
+	local context = require("robotlegs_Context").new()
 	context.superStartup = context.startup
 	
 	function context:startup()
 		print("MainContext::startup, ID: ", self.ID)
 		self:superStartup()
 		
-		self:mapCommand("startThisMug", "commands.BootstrapCommand")
+		self:mapCommand("startThisMug", "commands_BootstrapCommand")
 		
-		self:mapMediator("player.Player", "mediators.PlayerMediator")
-		self:mapMediator("gamegui.HealthBar", "mediators.HealthBarMediator")
+		self:mapMediator("player_Player", "mediators_PlayerMediator")
+		self:mapMediator("gamegui_HealthBar", "mediators_HealthBarMediator")
 		
 		self:dispatch({name="startThisMug", target=self})
 	end

@@ -1,5 +1,5 @@
 require "constants"
-require "robotlegs.globals"
+require "robotlegs_globals"
 
 EnemySmallShip = {}
 function EnemySmallShip:new(startX, startY, bottom)
@@ -10,7 +10,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 	end
 	
 	local img = display.newImage("enemy_1.png")
-	img.classType = "enemies.EnemySmallShip"
+	img.classType = "enemies_EnemySmallShip"
 	img.name = "Enemy1"
 	img.ID = globals.getID()
 	img.speed = constants.SMALL_SHIP_SPEED

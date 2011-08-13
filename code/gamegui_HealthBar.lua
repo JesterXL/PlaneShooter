@@ -3,7 +3,7 @@ HealthBar = {}
 
 function HealthBar:new()
 	local healthBarGroup = display.newGroup()
-	healthBarGroup.classType = "gamegui.HealthBar"
+	healthBarGroup.classType = "gamegui_HealthBar"
 	
 	local healthBarBackground = display.newImage("health_bar_background.png", 0, 0)
 	healthBarGroup.healthBarBackground = healthBarBackground

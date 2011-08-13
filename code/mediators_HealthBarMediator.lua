@@ -1,10 +1,10 @@
 module (..., package.seeall)
 
-require "models.PlayerModel"
+require "models_PlayerModel"
 
 function new(viewInstance)
 	
-	local mediator = require("robotlegs.Mediator").new(viewInstance)
+	local mediator = require("robotlegs_Mediator").new(viewInstance)
 	print("viewInstance: ", viewInstance, ", vs. mediator.viewInstance: ", mediator.viewInstance)
 	mediator.superOnRegister = mediator.onRegister
 	mediator.name = "HealthBarMediator"
