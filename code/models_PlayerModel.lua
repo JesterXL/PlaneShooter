@@ -3,13 +3,15 @@ print("PlayerModel")
 PlayerModel = {}
 PlayerModel.ID = globals:getID()
 PlayerModel.instance = require("robotlegs_Actor").new()
-PlayerModel.instance.hitPoints = 3
-PlayerModel.instance.maxHitPoints = 3
+PlayerModel.instance.hitPoints = 10
+PlayerModel.instance.maxHitPoints = 10
 
 local inst = PlayerModel.instance
 
 function inst:setHitPoints(value)
 	print("PlayerModel::setHitPoints, value: ", value)
+	value = math.max(value, 0)
+	if value > PlayerModel.instance.maxHitPoints then value = PlayerModel.instance.maxHitPoints end
 	self.hitPoints = value
 	self:dispatch({target=self, name="hitPointsChanged"})
 end

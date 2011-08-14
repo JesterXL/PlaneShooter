@@ -5,15 +5,14 @@ require "models_PlayerModel"
 function new(viewInstance)
 	
 	local mediator = require("robotlegs_Mediator").new(viewInstance)
-	print("viewInstance: ", viewInstance, ", vs. mediator.viewInstance: ", mediator.viewInstance)
 	mediator.superOnRegister = mediator.onRegister
-	mediator.name = "HealthBarMediator"
+	mediator.name = "DamageHUDMediator"
 	
 	function mediator:onRegister()
-		print("HealthBarMediator::onRegister, viewInstance: ", viewInstance)
 		self:superOnRegister()
 		
 		PlayerModel.instance:addListener("hitPointsChanged", mediator.hitPointsChanged)
+		self:hitPointsChanged()
 	end
 	
 	function mediator:onRemove()
@@ -21,8 +20,7 @@ function new(viewInstance)
 	end
 	
 	function mediator:hitPointsChanged(event)
-		print("HealthBarMediator::hitPointsChanged")
-		mediator.viewInstance:setHealth(PlayerModel.instance:getHitpointsPercentage())
+		mediator.viewInstance:setHitpoints(PlayerModel.instance.hitPoints, PlayerModel.instance.maxHitPoints)
 	end
 	
 	return mediator

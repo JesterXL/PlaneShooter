@@ -8,7 +8,7 @@ require "player_PlayerRailGun"
 require "enemies_EnemySmallShip"
 require "enemies_EnemySmallShipDeath"
 require "enemies_EnemyBulletSingle"
-require "gamegui_HealthBar"
+require "gamegui_DamageHUD"
 require "enemies_BossBigPlane"
 require "enemies_EnemyMissileJet"
 require "enemies_EnemyMissile"
@@ -407,8 +407,13 @@ function initializeGame()
 	
 	--initTerrain()
 	--initEnemeyDeath()
-	healthBar = HealthBar:new()
-	context:createMediator(healthBar)
+
+
+	damageHUD = DamageHUD:new()
+	context:createMediator(damageHUD)
+	damageHUD.x = stage.width - damageHUD.width
+	damageHUD.y = 8
+
 	initSounds()
 	--initPlayerDeath()
 	

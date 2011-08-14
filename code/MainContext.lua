@@ -11,7 +11,7 @@ function new()
 		self:mapCommand("startThisMug", "commands_BootstrapCommand")
 		
 		self:mapMediator("player_Player", "mediators_PlayerMediator")
-		self:mapMediator("gamegui_HealthBar", "mediators_HealthBarMediator")
+		self:mapMediator("gamegui_DamageHUD", "mediators_DamageHUDMediator")
 		
 		self:dispatch({name="startThisMug", target=self})
 	end

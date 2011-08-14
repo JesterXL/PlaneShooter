@@ -53,6 +53,7 @@ function new()
 	
 	function context:createMediator(viewInstance)
 		--print("Context::createMediator, viewInstance: ", viewInstance)
+		assert(viewInstance ~= nil, "You must pass in a non-nil View.")
 		assert(viewInstance.classType ~= nil, "viewInstance does not have a classType parameter.")
 		assert(self:hasCreatedMediator(viewInstance) == false, "viewInstance already has an instantiated Mediator.")
 		local mediatorClassName = self.mediators[viewInstance.classType]
