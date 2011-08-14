@@ -16,6 +16,8 @@ require "enemies_EnemyMissile"
 require "gamegui_animations_HeadNormalAnime"
 require "gamegui_buttons_PauseButton"
 
+require "screen_title"
+
 
 local function initSounds()
 	planeShootSound = audio.loadSound("plane_shoot.wav")
@@ -370,7 +372,6 @@ end
 
 
 function initializeGame()
-	
 	physics.start()
 	--physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
@@ -459,6 +460,25 @@ end
 -- Add the key callback
 Runtime:addEventListener( "key", onKeyEvent );
 
-initializeGame()
+--initializeGame()
+
+display.setStatusBar( display.HiddenStatusBar )
+screenTitle = ScreenTitle:new()
+
+function onStartGameTouched(event)
+	screenTitle:hide()
+end
+
+function onTitleScreenHideComplete()
+	print("hideComplete")
+	screenTitle:removeEventListener("screenTitle", onStartGameTouched)
+	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
+	screenTitle:destroy()
+	initializeGame()	
+end
+
+screenTitle:addEventListener("startGame", onStartGameTouched)
+screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
+screenTitle:show()
 
 
