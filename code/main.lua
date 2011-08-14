@@ -15,6 +15,7 @@ require "enemies_EnemyMissile"
 
 require "gamegui_animations_HeadNormalAnime"
 require "gamegui_buttons_PauseButton"
+require "gamegui_ScoreView"
 
 require "screen_title"
 
@@ -308,6 +309,8 @@ function startGame()
 			end
 
 			function onDead(event)
+				-- TODO: use a Command/Controller you bad developer you
+				PlayerModel.instance:addToScore(100)
 				assert(removeLoop(event.target), "Failed to remove enemy plane from game loop.")
 				if(event.target.classType ~= nil and event.target.classType == "enemies.EnemyMissleJet") then
 					enemy:removeEventListener("fireZeeMissile", onFireZeeMissile)
@@ -414,6 +417,11 @@ function initializeGame()
 	damageHUD.x = stage.width - damageHUD.width
 	damageHUD.y = 8
 
+	scoreView = ScoreView:new()
+	context:createMediator(scoreView)
+	scoreView.x = scoreView.width / 2
+	scoreView.y = damageHUD.y
+
 	initSounds()
 	--initPlayerDeath()
 	
@@ -485,5 +493,4 @@ end
 screenTitle:addEventListener("startGame", onStartGameTouched)
 screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
 screenTitle:show()
-
 

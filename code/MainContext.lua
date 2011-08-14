@@ -12,6 +12,7 @@ function new()
 		
 		self:mapMediator("player_Player", "mediators_PlayerMediator")
 		self:mapMediator("gamegui_DamageHUD", "mediators_DamageHUDMediator")
+		self:mapMediator("gamegui_ScoreView", "mediators_ScoreViewMediator")
 		
 		self:dispatch({name="startThisMug", target=self})
 	end
