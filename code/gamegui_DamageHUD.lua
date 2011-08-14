@@ -21,16 +21,16 @@ function DamageHUD:new()
 												"gamegui_damage0011.png"
 											})
 	hud:insert(planeAnimation)
-	planeAnimation.y = 20
+	planeAnimation.y = 40
 
 	function hud:setHitpoints(current, max)
 		local frame = (current / max) * 100
-		print("-----frame: ", frame)
+		--print("-----frame: ", frame)
 		frame = math.floor(frame / 10)
-		print("frame: ", frame)
+		--print("frame: ", frame)
 		frame = 11 - frame
-		print("frame: ", frame)
-		print("current: ", current, ", max: ", max, ", frame: ", frame)
+		--print("frame: ", frame)
+		--print("current: ", current, ", max: ", max, ", frame: ", frame)
 		planeAnimation:stopAtFrame(frame)
 	end
 

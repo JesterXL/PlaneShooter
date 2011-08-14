@@ -1,4 +1,5 @@
 require "constants"
+require "physics"
 
 EnemyMissile = {}
 
@@ -21,6 +22,8 @@ function EnemyMissile:new(startX, startY, player)
 	img.x = startX
 	img.y = startY
 	img.player = player
+	img.currentLife = 0
+	img.lifeTime = 3000 -- milliseconds
 
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2,
 								bodyType = "kinematic",
@@ -55,6 +58,12 @@ function EnemyMissile:new(startX, startY, player)
 
 	function img:tick(millisecondsPassed)
 	-- TODO: make sure using milliseconds vs. hardcoding step speed
+		self.currentLife = self.currentLife + millisecondsPassed
+		if(self.currentLife >= self.lifeTime) then
+			self:destroy()
+			return true
+		end
+
 		self.rotation = self:getRotation()
 		--self.x = self.x + math.cos(self.angle) * self.speed
 	   	--self.y = self.y + math.sin(self.angle) * self.speed
