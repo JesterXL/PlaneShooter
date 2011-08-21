@@ -16,6 +16,10 @@ require "enemies_EnemyMissile"
 require "gamegui_animations_HeadNormalAnime"
 require "gamegui_buttons_PauseButton"
 require "gamegui_ScoreView"
+require "gamegui_DialogueView"
+require "gamegui_MoviePlayerView"
+
+require "services_LoadLevelService"
 
 require "screen_title"
 
@@ -490,7 +494,27 @@ function onTitleScreenHideComplete()
 	initializeGame()	
 end
 
+--[[
 screenTitle:addEventListener("startGame", onStartGameTouched)
 screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
 screenTitle:show()
+]]--
+
+--[[
+local dialogue = DialogueView:new()
+dialogue:setText("Hello, G funk era!")
+dialogue:setCharacter(constants.CHARACTER_JESTERXL)
+dialogue:show()
+]]--
+
+local level = LoadLevelService:new("level.json")
+local movie = level["events"][1]
+print("movie: ", movie, ", classType: ", movie.classType)
+local moviePlayer = MoviePlayerView:new()
+local t = {}
+function t:movieEnded(event)
+	print("movieEnded, event: ", event)
+end
+moviePlayer:addEventListener("movieEnded", t)
+moviePlayer:startMovie(movie)
 

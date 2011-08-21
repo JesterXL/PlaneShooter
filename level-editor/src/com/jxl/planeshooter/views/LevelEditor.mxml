@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 width="300" height="650" 
+		 title="Level Editor"
+		 xmlns:levelviews="com.jxl.planeshooter.views.levelviews.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.jxl.planeshooter.SaveLevelService;
+			import com.jxl.planeshooter.events.EventItemRendererEvent;
+			import com.jxl.planeshooter.events.SaveLevelServiceEvent;
+			import com.jxl.planeshooter.vo.EnemyVO;
+			import com.jxl.planeshooter.vo.LevelVO;
+			import com.jxl.planeshooter.vo.MovieVO;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var level:LevelVO;
+			
+			private var movieEditor:MovieEditor;
+			private var saveLevelService:SaveLevelService;
+			
+			private function onEditMovie(event:EventItemRendererEvent):void
+			{
+				var win:MovieEditor = new MovieEditor();
+				win.open(true);
+				win.movie = event.movie;
+				win.move(nativeWindow.bounds.x + width, nativeWindow.bounds.y);
+			}
+			
+			private function onNewEnemy():void
+			{
+				if(level)
+				{
+					if(level.events == null)
+						level.events = new ArrayCollection();
+					
+					var enemy:EnemyVO = new EnemyVO();
+					level.events.addItem(enemy);
+				}
+			}
+			
+			private function onNewMovie():void
+			{
+				if(level)
+				{
+					if(level.events == null)
+						level.events = new ArrayCollection();
+					
+					var movie:MovieVO = new MovieVO();
+					level.events.addItem(movie);
+				}
+			}
+			
+			private function onSaveLevel():void
+			{
+				if(saveLevelService == null)
+				{
+					saveLevelService = new SaveLevelService();
+					saveLevelService.addEventListener(SaveLevelServiceEvent.SAVE_SUCCESS, onSaveSuccess);
+					saveLevelService.addEventListener(SaveLevelServiceEvent.SAVE_ERROR, onSaveError);
+				}
+				saveLevelService.saveLevel(level);
+			}
+			
+			private function onSaveSuccess(event:SaveLevelServiceEvent):void
+			{
+			}
+			
+			private function onSaveError(event:SaveLevelServiceEvent):void
+			{
+				Debug.error("LevelEditor::onSaveError");
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:Button label="New Enemy" click="onNewEnemy()" />
+	<s:Button label="New Movie" click="onNewMovie()" />
+	<s:Button label="Save Level" click="onSaveLevel()" />
+	
+	<s:Scroller width="100%" height="100%">
+		<levelviews:EventDataGroup dataProvider="{level.events}"
+								   editMovie="onEditMovie(event)"/>
+	</s:Scroller>
+	
+	
+</s:Window>

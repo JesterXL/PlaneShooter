@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx" 
+				autoDrawBackground="false"
+				currentState="hidden"
+				creationComplete="init()">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.jxl.planeshooter.constants.CharacterTypes;
+			import com.jxl.planeshooter.constants.EmotionTypes;
+			import com.jxl.planeshooter.vo.DialogueVO;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var dialogue:DialogueVO;
+			
+			[Bindable]
+			public var characters:ArrayCollection;
+			
+			[Bindable]
+			public var emotions:ArrayCollection;
+			
+			private function init():void
+			{
+				characters = new ArrayCollection();
+				characters.addItem(CharacterTypes.JESTERXL);
+				characters.addItem(CharacterTypes.BINDY);
+				
+				emotions = new ArrayCollection();
+				emotions.addItem(EmotionTypes.NORMAL);
+				emotions.addItem(EmotionTypes.MAD);
+			}
+			
+			public override function set data(value:Object):void
+			{
+				super.data = value;
+				
+				dialogue = null;
+				
+				if(value && value is DialogueVO)
+				{
+					dialogue = value as DialogueVO;
+					currentState = "dialogue";
+				}
+				else
+				{
+					currentState = "hidden";
+				}
+			}
+			
+			private function onChangeEmotion():void
+			{
+				dialogue.emotion = emotionComboBox.selectedItem;
+			}
+			
+			private function onChangeCharacter():void
+			{
+				dialogue.characterName = characterComboBox.selectedItem;
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="hidden" />
+		<s:State name="dialogue" />
+	</s:states>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="#EEEEEE" />
+		</s:fill>
+		<s:stroke>
+			<s:SolidColorStroke color="#333333" />
+		</s:stroke>
+	</s:Rect>
+	
+	<s:Form>
+		<s:layout>
+			<s:FormLayout gap="-10" />
+		</s:layout>
+		
+		<s:FormItem label="Character:">
+			<s:ComboBox id="characterComboBox" dataProvider="{characters}" selectedItem="{dialogue.characterName}" change="onChangeCharacter()" />
+		</s:FormItem>
+		<s:FormItem label="Emotion:">
+			<s:ComboBox id="emotionComboBox" dataProvider="{emotions}" selectedItem="{dialogue.emotion}" change="onChangeEmotion()" />
+		</s:FormItem>
+		<s:FormItem label="Message:">
+			<mx:TextArea id="messageTextArea" text="{dialogue.message}" change="dialogue.message = messageTextArea.text" />
+		</s:FormItem>
+	</s:Form>
+	
+</s:ItemRenderer>

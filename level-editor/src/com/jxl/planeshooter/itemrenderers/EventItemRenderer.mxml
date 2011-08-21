@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ItemRenderer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:s="library://ns.adobe.com/flex/spark" 
+				xmlns:mx="library://ns.adobe.com/flex/mx"
+				currentState="hidden"
+				autoDrawBackground="false"
+				creationComplete="init();">
+	
+	<fx:Metadata>
+		[Event(name="editMovie", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
+	</fx:Metadata>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.jxl.planeshooter.constants.EnemyTypes;
+			import com.jxl.planeshooter.events.EventItemRendererEvent;
+			import com.jxl.planeshooter.views.MovieEditor;
+			import com.jxl.planeshooter.vo.EnemyVO;
+			import com.jxl.planeshooter.vo.MovieVO;
+			
+			import mx.collections.ArrayCollection;
+			
+			
+			[Bindable]
+			public var enemy:EnemyVO;
+			
+			[Bindable]
+			public var movie:MovieVO;
+			
+			[Bindable]
+			public var enemyTypes:ArrayCollection;
+			
+			[Bindable]
+			public var enemyIcon:*;
+			
+			private function init():void
+			{
+				enemyTypes = new ArrayCollection([
+					EnemyTypes.PLANE,
+					EnemyTypes.MISSILE,
+					EnemyTypes.JET,
+					EnemyTypes.BOMBER,
+					EnemyTypes.UFO
+					
+					]);
+			}
+			
+			public override function set data(value:Object):void
+			{
+				super.data = value;
+				
+				enemy = null;
+				movie = null;
+				
+				if(value && value is EnemyVO)
+				{
+					enemy = value as EnemyVO;
+					currentState = "enemy";
+					updateIcon();
+				}
+				else if(value && value is MovieVO)
+				{
+					movie = value as MovieVO;
+					currentState = "movie";
+				}
+				else
+				{
+					currentState = "hidden";
+				}
+			}
+			
+			private function onTimeChange():void
+			{
+				var seconds:Number = timeNumericStepper.value;
+				var minutes:Number = seconds / 60;
+				timeLabel.text = Math.floor(minutes) + " minutes, " + Math.floor(seconds) + " seconds";
+				data.when = timeNumericStepper.value;
+			}
+			
+			private function onEditMovie():void
+			{
+				var evt:EventItemRendererEvent = new EventItemRendererEvent(EventItemRendererEvent.EDIT_MOVIE);
+				evt.movie = movie;
+				dispatchEvent(evt);
+			}
+			
+			private function onUpdateEnemyIcon():void
+			{
+				//Debug.debug("enemy.type: " + enemy.type);
+				enemy.type = enemyComboBox.selectedItem;
+				updateIcon();
+			}
+			
+			private function updateIcon():void
+			{
+				enemyIcon = "assets/images/" + enemy.type + ".png";
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<s:NumberFormatter id="numFormatter" fractionalDigits="1" />
+	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="hidden" />
+		<s:State name="enemy" />
+		<s:State name="movie" />
+	</s:states>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="#EEEEEE" />
+		</s:fill>
+		<s:stroke>
+			<s:SolidColorStroke color="#333333" />
+		</s:stroke>
+	</s:Rect>
+	
+	<s:Form >
+		<s:layout>
+			<s:FormLayout gap="-10"  />
+		</s:layout>
+		<s:FormHeading label="Enemy" includeIn="enemy" />
+		<s:FormHeading label="Movie" includeIn="movie" />
+		<s:FormItem label="Time:" >
+			<s:NumericStepper id="timeNumericStepper" minimum="0" maximum="300" 
+							  value="{data.when}"
+							  change="onTimeChange()" />
+			<s:Label id="timeLabel" />
+		</s:FormItem>
+		<s:FormItem label="Type:" includeIn="enemy">
+			<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" />
+			<s:Image width="45" height="45" id="enemyIconImage" source="{enemyIcon}" />
+		</s:FormItem>
+		<s:FormItem label="Movie Name:" includeIn="movie">
+			<s:Label text="{movie.name}"  />
+			<mx:LinkButton label="Edit" click="onEditMovie()" />
+		</s:FormItem>
+	</s:Form>
+	
+</s:ItemRenderer>

@@ -1,6 +1,5 @@
 
-print("PlayerModel")
-PlayerModel = {}
+LevelModel = {}
 PlayerModel.ID = globals:getID()
 PlayerModel.instance = require("robotlegs_Actor").new()
 

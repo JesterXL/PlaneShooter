@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   width="222" height="189" applicationComplete="init()">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Style source="defaults.css" />
+	
+	<fx:Script>
+		<![CDATA[
+			import com.jxl.planeshooter.views.LevelEditor;
+			import com.jxl.planeshooter.vo.LevelVO;
+			
+			import mx.managers.PopUpManager;
+			
+			import spark.components.Window;
+			
+			private function init():void
+			{
+				createDebugWin();
+				
+				move(Screen.mainScreen.bounds.x + 20, Screen.mainScreen.bounds.y + 20);
+			}
+			
+			private function createDebugWin():void
+			{
+				var win:Window = new Window();
+				win.maximizable = false;
+				win.resizable = false;
+				//win.systemChrome = NativeWindowSystemChrome.NONE;
+				win.type = NativeWindowType.UTILITY;
+				win.addElement(new Debug());
+				win.open(true);
+				win.width = 580;
+				win.height = 430;
+				win.move(Screen.mainScreen.bounds.width + win.width, Screen.mainScreen.bounds.height - win.height);
+			}
+			
+			private function onNewLevel():void
+			{
+				var win:LevelEditor = new LevelEditor();
+				win.open(true);
+				var level:LevelVO = new LevelVO();
+				win.level = level;
+				win.move(nativeWindow.x + width, nativeWindow.y);
+			}
+			
+		]]>
+	</fx:Script>
+	<s:Button width="200" height="60" label="New Level" click="onNewLevel()"/>
+	
+</s:WindowedApplication>

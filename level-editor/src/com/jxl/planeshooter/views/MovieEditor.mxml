@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" 
+		  xmlns:mx="library://ns.adobe.com/flex/mx" 
+		  width="400" height="650" 
+		  title="Movie Editor"
+		  xmlns:views="com.jxl.planeshooter.views.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.jxl.planeshooter.vo.DialogueVO;
+			import com.jxl.planeshooter.vo.MovieVO;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var movie:MovieVO;
+			
+			private function onNewDialogue():void
+			{
+				if(movie)
+				{
+					if(movie.dialogues == null)
+						movie.dialogues = new ArrayCollection();
+					
+					var dialogue:DialogueVO = new DialogueVO();
+					movie.dialogues.addItem(dialogue);
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:Button label="New Dialogue" click="onNewDialogue()" />
+	<s:Scroller width="100%" height="100%">
+		<views:DialogueDataGroup dataProvider="{movie.dialogues}" />
+	</s:Scroller>
+	
+	
+</s:Window>
