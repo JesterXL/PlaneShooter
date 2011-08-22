@@ -15,6 +15,7 @@ function FlightPathCheckpoint:new(reached)
 		else
 			img = display.newImage("gamegui_flightpath_checkpoint_reached.png")
 		end
+		img:setReferencePoint(display.TopLeftReferencePoint)
 		flightPath.img = img
 		flightPath:insert(img)
 	end
@@ -23,6 +24,10 @@ function FlightPathCheckpoint:new(reached)
 		flightPath:remove(flightPath.img)
 		flightPath:removeSelf()
 	end
+	
+	flightPath:setReached(false)
+	
+	return flightPath
 
 end
 

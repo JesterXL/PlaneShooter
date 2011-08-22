@@ -35,6 +35,7 @@ package com.jxl.planeshooter.vo
 		{
 			var obj:Object 					= {};
 			obj.events 						= [];
+			obj.totalTime					= 0;
 			if(events && events.length > 0)
 			{
 				var len:int = events.length;
@@ -42,6 +43,10 @@ package com.jxl.planeshooter.vo
 				{
 					obj.events[len] = events[len].toObject();
 				}
+				obj.events.sortOn("when", Array.NUMERIC);
+				var lastObj:* = obj.events[obj.events.length - 1];
+				if(lastObj)
+					obj.totalTime = lastObj.when;
 			}
 			
 			return obj;

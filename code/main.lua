@@ -2,6 +2,10 @@ require "sprite"
 require "physics"
 require "constants"
 require "ScrollingTerrain"
+require "GameLoop"
+require "LevelDirector"
+require "player_PlayerWeapons"
+
 require "player_Player"
 require "player_PlayerBulletSingle"
 require "player_PlayerRailGun"
@@ -18,60 +22,18 @@ require "gamegui_buttons_PauseButton"
 require "gamegui_ScoreView"
 require "gamegui_DialogueView"
 require "gamegui_MoviePlayerView"
+require "gamegui_FlightPathCheckpoint"
+require "gamegui_FlightPath"
 
 require "services_LoadLevelService"
 
 require "screen_title"
 
 
+
 local function initSounds()
 	planeShootSound = audio.loadSound("plane_shoot.wav")
 
-end
-
-function addLoop(o)
-	assert(o ~= nil, "You cannot pass nil values to the game loop")
-	local index = table.indexOf(tickers, o)
-	if(index == nil) then
-		return table.insert(tickers, o)
-	else
-		error(o .. " is already added to the game loop.")
-	end
-end
-
-function removeLoop(o)
-	print("removeLoop")
-	for i,v in ipairs(tickers) do
-		if(v == o) then
-			table.remove(tickers, i)
-			return true
-		end	
-	end
-	print("!! item not found !!")
-	return false
-end
-
-function onRemoveFromGameLoop(event)
-	event.target:removeEventListener("removeFromGameLoop", onRemoveFromGameLoop)
-	removeLoop(event.target)
-end
-
-function animate(event)
-	local now = system.getTimer()
-	local difference = now - lastTick
-	lastTick = now
-	
-	for i,v in ipairs(tickers) do
-		--[[
-		if(v.y == nil) then
-			print("v: ", v)
-			print("v.ID: ", v.ID)
-			error("zomg")
-			return
-		end
-		--]]
-		v:tick(difference)
-	end
 end
 
 function startScrollingTerrain()
@@ -82,145 +44,31 @@ function stopScrollingTerrain()
 	--removeLoop(terrainScroller)
 end
 
-function addPowerUp()
-	setPowerUpLevel(powerUpLevel + 1)
-end
-
-function removePowerUp()
-	if(powerUpLevel > 1) then
-		setPowerUpLevel(powerUpLevel - 1)
-	end
-end
-
-local function startFiringBullets()
-	addLoop(bulletRegulator)
-	bulletRegulator:tick(333)
-end
-
-local function stopFiringBullets()
-	removeLoop(bulletRegulator)
-end
-
 function onTouch(event)
-	if(event.phase == "began") then
-		startFiringBullets()
-		if(bulletRegulator.fireFunc ~= createRailGun) then
-			if(planeShootSoundChannel == nil) then
-				planeShootSoundChannel = audio.play(planeShootSound, {loops=-1, fadein=100})
-			else
-				audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1, fadein=100})
-			end
-		end
-	end
-	
+	--print("onTouch, event.phase: ", event.phase)
+	local handled = false
 	if(event.phase == "began" or event.phase == "moved") then
 		player.planeXTarget = event.x
 		player.planeYTarget = event.y
+		handled = true
 	end
-	
+
+	if(event.phase == "began") then
+		playerWeapons.enabled = true
+		handled = true
+	end
+
 	if(event.phase == "ended" or event.phase == "cancelled") then
-		stopPlayerInteraction()
-	end
-end
-
-function stopPlayerInteraction()
-	stopFiringBullets()
-	--audio.fadeOut({channel=1, time=100})
-	audio.pause(planeShootSoundChannel)
-	planeShootSoundChannel = nil
-end
-
-function endGame()
-	print("endGame")
-	Runtime:removeEventListener("enterFrame", animate )
-	Runtime:removeEventListener("touch", onTouch)
-	timer.cancel(gameTimer)
-	gameTimer = nil
-	stopScrollingTerrain()
-end
-
-function onCreateEnemyBullet(event)
-	local bullet = EnemyBulletSingle:new(event.target.x, event.target.y, player)
-	mainGroup:insert(bullet)
-	bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
-	addLoop(bullet)
-end
-
-function onFireZeeMissile(event)
-	local missile = EnemyMissile:new(event.target.x, event.target.y, player)
-	mainGroup:insert(missile)
-	missile:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
-	addLoop(missile)
-end
-
-function createBullet1()
-	local bullet = PlayerBulletSingle:new(player.x, player.y)
-	mainGroup:insert(bullet)
-	bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
-	addLoop(bullet)
-end
-
-function createRailGun()
-	if(rail == nil) then
-		rail = PlayerRailGun:new(player.x, player.y)
-		rail:addEventListener("animeFinished", onRailGunComplete)
-		mainGroup:insert(rail)
-	end
-end
-
-function onRailGunComplete(event)
-	rail:removeEventListener("animeFinished", onRailGunComplete)
-	rail = nil
-end
-
-function createBullet2()
-	
-end
-
-function createBullet3()
-	
-end
-
-function setPowerUpLevel(level)
-	if(level > 3) then
-		level = 3
+		playerWeapons.enabled = false
+		handled = true
 	end
 	
-	powerUpLevel = level
-	if(powerUpLevel <= 3) then
-		PLAYER_BULLET_SPEED = 10
-		--PLAYER_MOVE_SPEED = 7
-		--player.speed = constants.PLAYER_MOVE_SPEED
-	end
-	
-
-	if(powerUpLevel == 1) then
-		bulletRegulator.fireFunc = createBullet1
-	elseif(powerUpLevel == 2) then
-		bulletRegulator.fireFunc = createBullet2
-	elseif(powerUpLevel == 3) then
-		bulletRegulator.fireFunc = createBullet3
-	end
-
-		--bulletRegulator.fireFunc = createRailGun
-	
-	
-	--[[
-	elseif(powerUpLevel == 4) then
-		return
-		PLAYER_BULLET_SPEED = 14
-		PLAYER_MOVE_SPEED = 11
-		plane.speed = PLAYER_MOVE_SPEED
-	end
-	]]--
+	return handled
 end
 
 function startBossFight()
-	print("-- startBossFight --")
 	if(fightingBoss == false) then
 		fightingBoss = true
-		removeLoop(gameTicker)
-		gameTimer = nil
 		local delayTable = {}
 		function delayTable:timer(event)
 		   createBoss()
@@ -234,7 +82,7 @@ function createBoss()
 	boss:addEventListener("removeFromGameLoop", onBossDead)
 	boss:addEventListener("fireShots", onFireBossShots)
 	mainGroup:insert(boss)
-	addLoop(boss)
+	gameLoop:addLoop(boss)
 end
 
 function onFireBossShots(event)
@@ -242,7 +90,7 @@ function onFireBossShots(event)
 		local bullet = EnemyBulletSingle:new(point.x, point.y, player)
 		mainGroup:insert(bullet)
 		bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
-		addLoop(bullet)
+		gameLoop:addLoop(bullet)
 	end
 end
 
@@ -250,7 +98,7 @@ function onBossDead(event)
 	local boss = event.target
 	boss:removeEventListener("removeFromGameLoop", onBossDead)
 	boss:removeEventListener("fireShots", onFireBossShots)
-	removeLoop(boss)
+	gameLoop:removeLoop(boss)
 	-- TODO: use correct animation, sucka! In fact, make an epic one!
 	local death = EnemySmallShipDeath:new(boss.x, boss.y)
 	mainGroup:insert(death)
@@ -268,178 +116,132 @@ function initKeys()
 	        return true
 	end
 
-	-- Add the key callback
 	Runtime:addEventListener( "key", onKeyEvent );
-		
 end
 
 
 function startGame()
-	gamePaused = false
-	Runtime:addEventListener("enterFrame", animate )
+	-- TOOD: use director, pause it
+	gameLoop:reset()
+	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
-	if(gameTicker == nil) then
-		gameTicker = {}
-		gameTicker.milliseconds = 0
-		gameTicker.counter = 0
-		function gameTicker:tick(millisecondsPassed)
-			
-			gameTicker.milliseconds = gameTicker.milliseconds + millisecondsPassed
-			if(gameTicker.milliseconds < 500) then
-				return
-			else
-				-- TODO/FIXME: I'm tired, fix this
-				gameTicker.milliseconds = 0
-			end
-			gameTicker.counter = gameTicker.counter + 1
-			--event.time
-			-- timer.cancel( event.source ) 
-			local randomX = stage.width * math.random()
-			if(randomX < 20) then
-				randomX = 20
-			end
-		
-			if(randomX > stage.width - 20) then
-				randomX = stage.width - 20
-			end
-
-			local enemy
-			if(self.counter == 3 or self.counter == 5 or self.counter == 7 or self.counter == 9) then
-				enemy = EnemyMissileJet:new(randomX, 0, stage.height)
-				enemy:addEventListener("fireZeeMissile", onFireZeeMissile)
-			else
-				enemy = EnemySmallShip:new(randomX, 0, stage.height)
-				enemy:addEventListener("createEnemyBullet", onCreateEnemyBullet)
-			end
-
-			function onDead(event)
-				-- TODO: use a Command/Controller you bad developer you
-				PlayerModel.instance:addToScore(100)
-				assert(removeLoop(event.target), "Failed to remove enemy plane from game loop.")
-				if(event.target.classType ~= nil and event.target.classType == "enemies.EnemyMissleJet") then
-					enemy:removeEventListener("fireZeeMissile", onFireZeeMissile)
-				elseif(event.target.classType ~= nil and event.target.classType == "enemies.EnemySmallShip") then
-					enemy:removeEventListener("createEnemyBullet", onCreateEnemyBullet)
-				end
-
-				local shipDeath = EnemySmallShipDeath:new(event.target.x, event.target.y)
-				mainGroup:insert(shipDeath)
-				enemies = enemies - 1
-				if(enemies <= 0) then
-					startBossFight()
-				end
-			
-				powerCount = powerCount - 1
-				if(powerCount <= 0) then
-					powerCount = POWER_MAX_COUNT
-					-- NOTE: You have to set a delay; adding physics bodies during a collision event (within the stack)
-					-- will cause a hard crash
-					local delayTable = {}
-					delayTable.x = event.target.x
-					delayTable.y = event.target.y
-					function delayTable:timer(event)
-						-- TODO: re-implement
-					    --createPowerUp(self.x, self.y)
-			        end
-			        timer.performWithDelay(200, delayTable)
-				end
-			end
-			enemy:addEventListener("enemyDead", onDead)
-			mainGroup:insert(enemy)
-			addLoop(enemy)
-		end
-	end
-	
-	addLoop(gameTicker)
-		
-	
 	startScrollingTerrain()
 end
 
-function pauseGame()
-	gamePaused = true
-	Runtime:removeEventListener("enterFrame", animate )
+function stopGame()
+	gameLoop:stop()
 	Runtime:removeEventListener("touch", onTouch)
+	stopScrollingTerrain()
+end
+
+function pauseGame()
+	print("pauseGame")
+	gameLoop:pause()
+	Runtime:removeEventListener("touch", onTouch)
+	return true
 end
 
 function unpauseGame()
-	gamePaused = false
-	Runtime:addEventListener("enterFrame", animate )
+	print("unpauseGame")
+	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
+	return true
 end
 
 function togglePause()
-	if(gamePaused == true) then
-		unpauseGame()
+	if(gameLoop.paused == true) then
+		return unpauseGame()
 	else
-		pauseGame()
+		return pauseGame()
 	end
 end
 
+function onPauseTouch(event)
+	print("onPauseTouch")
+	if(event.phase == "began") then
+		togglePause()
+	end
+	
+	return true
+end
 
+function onKeyEvent( event )
+	if(event.keyName == "menu") then
+		if(gameLoop.paused == true) then
+			unpauseGame()
+		else
+			pauseGame()
+		end
+	end
+end
+
+function onStartGameTouched(event)
+	screenTitle:hide()
+end
+
+function onTitleScreenHideComplete()
+	screenTitle:removeEventListener("screenTitle", onStartGameTouched)
+	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
+	screenTitle:destroy()
+	initializeGame()
+end
 
 function initializeGame()
+	print("initializeGame")
+	
+	print("\tstarting physics")
 	physics.start()
 	--physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
 	
+	print("\initializing MainContext")
 	context = require("MainContext").new()
 	context:init()
 	
+	print("\tmain group")
 	mainGroup 						= display.newGroup()
-
-	tickers 						= {}
-	powerUpLevel 					= 1
-	enemies 						= 10
-	fightingBoss 					= false
-	powerCount 						= 3
-	POWER_MAX_COUNT 				= 3
-
-	bullets 						= 0
-	bulletRegulator 				= {} -- Mount up!
-	bulletRegulator.fireSpeed 		= 400
-	bulletRegulator.lastFire 		= 0
-	bulletRegulator.fireFunc 		= nil
-	
-	function bulletRegulator:tick(millisecondsPassed)
-		self.lastFire = self.lastFire + millisecondsPassed
-		if(self.lastFire >= self.fireSpeed) then
-			self.fireFunc(player.x, player.y)
-			self.lastFire = 0
-		end
-	end
-
-
 	stage = display.getCurrentStage()
 	
 	--initTerrain()
 	--initEnemeyDeath()
 
-
+	print("\tdamaged hud")
 	damageHUD = DamageHUD:new()
 	context:createMediator(damageHUD)
-	damageHUD.x = stage.width - damageHUD.width
-	damageHUD.y = 8
-
+	damageHUD.x = stage.width - 30
+	damageHUD.y = 0
+	
+	print("\tscore view")
 	scoreView = ScoreView:new()
 	context:createMediator(scoreView)
 	scoreView.x = scoreView.width / 2
 	scoreView.y = damageHUD.y
 
+	print("\tflight path")
+	flightPath = FlightPath:new()
+	flightPath:setProgress(1, 10)
+	flightPath.x = (stage.width / 2) - (flightPath.width / 2)
+
+	print("\tinit sounds")
 	initSounds()
 	--initPlayerDeath()
 	
+	print("\tPlayer")
 	player = Player.new()
 	mainGroup:insert(player)
 	context:createMediator(player)
 	--plane:addEventListener("hitPointsChanged", )
 
-	setPowerUpLevel(powerUpLevel)
 
-	lastTick = system.getTimer()
-
-	addLoop(player)
-
+	print("\tgame loop")
+	gameLoop = GameLoop:new()
+	gameLoop:addLoop(player)
+	
+	print("\tbullet regulator")
+	playerWeapons = PlayerWeapons:new(player, mainGroup, gameLoop)
+	playerWeapons:setPowerLevel(1)
+	
+	print("\tplane targeting")
 	player.planeXTarget = stage.width / 2
 	player.planeYTarget = stage.height / 2
 	player:move(player.planeXTarget, player.planeYTarget)
@@ -449,51 +251,40 @@ function initializeGame()
 	mainGroup:insert(headAnime)
 	--]]
 	
+	print("\tpause button")
 	local pauseButton = PauseButton:new(4, stage.height - 40)
 	pauseButton:addEventListener("touch", onPauseTouch)
+
+	print("\tparsing level")
+	level = LoadLevelService:new("level.json")
 	
+	print("\tdrawing flight path checkpoints")
+	flightPath:drawCheckpoints(level)
+
+	--[[
+	moviePlayer = MoviePlayerView:new()
+	local t = {}
+	function t:movieEnded(event)
+		print("movieEnded, event: ", event)
+	end
+	--]]
+
+	print("\thiding status bar")
+	display.setStatusBar( display.HiddenStatusBar )
+
+	print("\tinitializing keys")
 	initKeys()
 	
-	startGame()
+	print("\tdone initializeGame!")
 end
 
-function onPauseTouch(event)
-	if(event.phase == "began") then
-		togglePause()
-		return true
-	end
-end
+initializeGame()
+startGame()
 
-function onKeyEvent( event )
-	if(event.keyName == "menu") then
-		if(gamePaused == true) then
-			unpauseGame()
-		else
-			pauseGame()
-		end
-	end
-end
- 
--- Add the key callback
-Runtime:addEventListener( "key", onKeyEvent );
 
---initializeGame()
 
-display.setStatusBar( display.HiddenStatusBar )
-screenTitle = ScreenTitle:new()
 
-function onStartGameTouched(event)
-	screenTitle:hide()
-end
-
-function onTitleScreenHideComplete()
-	print("hideComplete")
-	screenTitle:removeEventListener("screenTitle", onStartGameTouched)
-	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
-	screenTitle:destroy()
-	initializeGame()	
-end
-
+-- tests
 --[[
 screenTitle:addEventListener("startGame", onStartGameTouched)
 screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
@@ -507,14 +298,47 @@ dialogue:setCharacter(constants.CHARACTER_JESTERXL)
 dialogue:show()
 ]]--
 
-local level = LoadLevelService:new("level.json")
-local movie = level["events"][1]
-print("movie: ", movie, ", classType: ", movie.classType)
-local moviePlayer = MoviePlayerView:new()
-local t = {}
-function t:movieEnded(event)
-	print("movieEnded, event: ", event)
-end
-moviePlayer:addEventListener("movieEnded", t)
-moviePlayer:startMovie(movie)
+
+
+--moviePlayer:addEventListener("movieEnded", t)
+--moviePlayer:startMovie(movie)
+
+
+
+--point = FlightPathCheckpoint:new()
+--[[
+path = FlightPath:new()
+path:drawCheckpoints(level)
+print("level.totalTime: ", level.totalTime)
+path:setProgress(10, 10)
+local stage = display.getCurrentStage()
+path.x = (stage.width / 2) - (path.width / 2)
+  ]]--
+
+--[[
+local group = display.newGroup()
+--group:setReferencePoint(display.TopLeftReferencePoint)
+group.x = 100
+group.y = 100
+
+--local subGroup = display.newGroup()
+
+
+local rect = display.newRect(0, 0, 100, 100)
+rect:setReferencePoint(display.TopLeftReferencePoint)
+rect:setFillColor(255, 255, 255, 100) 
+rect:setStrokeColor(255, 0, 0) 
+rect.strokeWidth = 4
+rect.x = group.x
+rect.y = group.y
+rect.isVisible = false
+
+local greenRect = display.newRect(50, 50, 100, 100)
+greenRect:setReferencePoint(display.TopLeftReferencePoint)
+greenRect:setFillColor(255, 255, 255, 100) 
+greenRect:setStrokeColor(0, 255, 0) 
+greenRect.strokeWidth = 4
+group:insert(greenRect)
+]]--
+
 

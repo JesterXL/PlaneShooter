@@ -1,14 +1,9 @@
 require "constants"
 
-function new(startX, startY)
-	--[[
-	if(bullets + 1 > MAX_BULLET_COUNT) then
-		return
-	else
-		bullets = bullets + 1
-	end
-	--]]
-	
+PlayerBulletDual = {}
+
+function PlayerBulletDual:new(startX, startY)
+
 	local img = display.newImage("player_bullet_2.png")
 	img.name = "Bullet"
 	img.speed = constants.PLAYER_BULLET_SPEED
@@ -20,16 +15,9 @@ function new(startX, startY)
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 2, maskBits = 4 }
 							} )
-	
-	-- TODO: add to game loop							
-	--addLoop(img)
-	
+
 	function img:destroy()
-		-- TODO: remove from game loop, decrement bullet count
-	--[[
-		bullets = bullets - 1
-		removeLoop(self)
-	--]]
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
 	end
 	
@@ -65,3 +53,5 @@ function new(startX, startY)
 	
 	return img
 end
+
+return PlayerBulletDual

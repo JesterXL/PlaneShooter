@@ -1,6 +1,8 @@
 require "constants"
 
-function new(x, y)
+PowerUp = {}
+
+function PowerUp:new(x, y)
 	local img = display.newImage("icon_power_up.png")
 	img.x = x
 	img.y = y
@@ -13,9 +15,6 @@ function new(x, y)
 								isBullet = false, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 16, maskBits = 1 }
 							} )
-	
-	-- TODO: add to game loop			
-	--addLoop(img)
 			
 	function onHit(self, event)
 		if(event.other.name == "Player") then
@@ -44,3 +43,5 @@ function new(x, y)
 	
 	return img
 end
+
+return PowerUp

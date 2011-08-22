@@ -70,6 +70,8 @@ function Player:new()
 	end
 	
 	function img:tick(millisecondsPassed)
+		-- TODO/BUG/FIXME: if you touch ON the plane itself, it auto-jumps and follows your finger; fix
+		
 		if(self.x == self.planeXTarget and self.y == self.planeYTarget) then
 			return
 		else
@@ -77,10 +79,16 @@ function Player:new()
 			local deltaY = self.y - self.planeYTarget
 			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
+			-- WHY 100!??!?1
+			local moveX = self.speed * (deltaX / dist) * millisecondsPassed
+			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
+			--print("deltaX: ", deltaX, ", deltaY: ", deltaY)
+			--print("dist: ", dist, ", speed: ", self.speed, ", moveX: ", moveX, ", moveY: ", moveY, ", mil: ", millisecondsPassed)
+			-- dist: 	3	, speed: 	0.03	, moveX: 	0.99110999999999	, moveY: 	0	, mil: 	33.037
+			-- dist: 	20	, speed: 	0.2	, moveX: 	0	, moveY: 	-6.6014000000003	, mil: 	33.007000000001
+			
 
-			if (self.speed >= dist) then
+			if ((self.speed * 100) >= dist) then
 				self.x = self.planeXTarget
 				self.y = self.planeYTarget
 			else

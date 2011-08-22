@@ -10,10 +10,12 @@ constants.ENEMY_MISSLE_JET_MISSLE_SPEED 		= 5
 constants.ENEMY_MISSLE_JET_FIRE_INTERVAL		= 700 -- milliseconds
 
 constants.MAX_BULLET_COUNT 						= 6
-constants.PLAYER_MOVE_SPEED 					= 7
-constants.PLAYER_BULLET_SPEED 					= 10
+constants.PLAYER_MOVE_SPEED 					= .2
+constants.PLAYER_BULLET_SPEED 					= .3
 constants.TERRAIN_SCROLL_SPEED 					= 1
+
 constants.POWER_UP_LIFETIME						= 5000 -- milliseconds
+constants.POWER_UP_COUNT_MAX					= 5 -- how many enemies to kill before powerup shows
 
 constants.CHARACTER_JESTERXL					= "JesterXL"
 constants.CHARACTER_BINDY						= "Bindy"

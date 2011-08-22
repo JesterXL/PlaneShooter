@@ -1,16 +1,9 @@
 require "constants"
 
-function new(startX, startY)
-	
-	-- TODO: check bullet count
---[[
-	if(bullets + 1 > MAX_BULLET_COUNT) then
-		return
-	else
-		bullets = bullets + 1
-	end
---]]
-	
+PlayerBulletSpread = {}
+
+function PlayerBulletSpread:new(startX, startY)
+
 	local centerImage = display.newImage("player_bullet_2.png")
 	local leftImage = display.newImage("player_bullet_1.png")
 	local rightImage = display.newImage("player_bullet_1.png")
@@ -46,37 +39,19 @@ function new(startX, startY)
 								filter = { categoryBits = 2, maskBits = 4 }
 							} )						
 								
-	-- TODO: add bullets to game loop
-	--[[
-	addLoop(leftImage)
-	addLoop(rightImage)
-	addLoop(centerImage)
-	--]]
-	
+
 	function leftImage:destroy()
-		-- TODO: remove from game loop and decrement bullet count
-		--[[
-		bullets = bullets - 1
-		removeLoop(self)
-		--]]
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
 	end
 	
 	function rightImage:destroy()
-		-- TODO: remove from game loop and decrement bullet count
-		--[[
-		bullets = bullets - 1
-		removeLoop(self)
-		--]]
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
 	end
 	
 	function centerImage:destroy()
-		-- TODO: remove from game loop and decrement bullet count
-		--[[
-		bullets = bullets - 1
-		removeLoop(self)
-		--]]
+		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
 	end
 	
@@ -134,3 +109,5 @@ function new(startX, startY)
 	
 	return centerImage, leftImage, rightImage
 end
+
+return PlayerBulletSpread

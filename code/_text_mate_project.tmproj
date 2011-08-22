@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>gamegui_DialogueView.lua</string>
+	<string>player_Player.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -18,76 +18,106 @@
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
-	<integer>300</integer>
+	<integer>203</integer>
 	<key>metaData</key>
 	<dict>
-		<key>constants.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>31</integer>
-				<key>line</key>
-				<integer>17</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>5</integer>
-		</dict>
-		<key>gamegui_DialogueView.lua</key>
+		<key>GameLoop.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
 				<integer>3</integer>
 				<key>line</key>
-				<integer>50</integer>
+				<integer>21</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>34</integer>
 		</dict>
-		<key>gamegui_MoviePlayerView.lua</key>
+		<key>config.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>27</integer>
+				<integer>19</integer>
 				<key>line</key>
-				<integer>65</integer>
+				<integer>8</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>40</integer>
+			<integer>0</integer>
+		</dict>
+		<key>constants.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>39</integer>
+				<key>line</key>
+				<integer>14</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>1</integer>
 		</dict>
 		<key>main.lua</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>29</integer>
+				<integer>0</integer>
 				<key>line</key>
-				<integer>518</integer>
+				<integer>30</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>501</integer>
+			<integer>22</integer>
+		</dict>
+		<key>player_Player.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>73</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>68</integer>
+		</dict>
+		<key>player_PlayerBulletSingle.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>26</integer>
+				<key>line</key>
+				<integer>51</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>38</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>gamegui_MoviePlayerView.lua</string>
-		<string>constants.lua</string>
-		<string>gamegui_DialogueView.lua</string>
 		<string>main.lua</string>
+		<string>config.lua</string>
+		<string>player_Player.lua</string>
+		<string>constants.lua</string>
+		<string>player_PlayerBulletSingle.lua</string>
+		<string>GameLoop.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
-	<true/>
+	<false/>
 	<key>windowFrame</key>
-	<string>{{403, 198}, {1013, 680}}</string>
+	<string>{{376, 413}, {1048, 465}}</string>
 </dict>
 </plist>
