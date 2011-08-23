@@ -7,7 +7,7 @@ application =
                 scale = "letterbox",
 				xAlign = "left",
 				yAlign = "top",
-				fps = 60,
+				fps = 30,
 				antialias = false,
         },
 }

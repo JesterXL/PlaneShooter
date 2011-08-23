@@ -72,10 +72,10 @@ function EnemyMissile:new(startX, startY, player)
 		local deltaY = self.y - self.player.y
 		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
+		local moveX = self.speed * (deltaX / dist) * millisecondsPassed
+		local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 
-		if (self.speed >= dist) then
+		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 			self.x = self.player.x
 			self.y = self.player.y
 		else

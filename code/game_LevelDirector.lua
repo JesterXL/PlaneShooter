@@ -1,7 +1,15 @@
 LevelDirector = {}
 
 function LevelDirector:new(level, player, mainGroup, gameLoop)
-	local director = {}
+
+	assert(level ~= nil, "level cannot be nil")
+	assert(player ~= nil, "player cannot be nil")
+	assert(mainGroup ~= nil, "mainGroup cannot be nil")
+	assert(gameLoop ~= nil, "gameLoop cannot be nil")
+
+	-- TODO: make just a table, making group now so I can use events w/o using MessageBus
+	--local director = {}
+	local director = display.newGroup()
 
 	director.level = level
 	director.player = player
@@ -16,6 +24,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 	director.powerCount = nil
 	director.powerCountMax = nil
 	director.initialized = false
+	director.paused = true
 
 	local delayTable = {}
 	director.delayTable = delayTable -- used for adding to physics engine later to avoid bug (adding objects during collision == crash)
@@ -47,8 +56,30 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		self.initialized = true
 	end
 
+	function director:start()
+		if self.paused == true then
+			self.gameLoop:addLoop(self)
+		end
+	end
+
+	function director:pause()
+		if self.paused == false then
+			self.gameLoop:removeLoop(self)
+		end
+	end
+
 	function director:tick(millisecondsPassed)
 		self.milliseconds = self.milliseconds + millisecondsPassed
+		local progress = self.milliseconds / (self.level.totalTime * 1000)
+		self:dispatchEvent({name="onLevelProgress", target=self, progress=progress})
+		
+		if self.milliseconds / 1000 >= self.level.totalTime then
+			print("DONE")
+			self:pause()
+			self:dispatchEvent({name="onLevelComplete", target=self})
+			return true
+		end
+		
 		local events = self.level.events
 		local oldEvents = self.oldEvents
 		local milliseconds = self.milliseconds
@@ -69,7 +100,13 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		end
 	end
 
+	function director:processMovie(movie)
+		self:pause()
+		self:dispatchEvent({name="onMovie", target=self, movie=movie})
+	end
+
 	function director:processEnemey(event)
+		--print("LevelDirector::processEnemy")
 		local stage = director.stage
 
 		local randomX = stage.width * math.random()
@@ -143,7 +180,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 
 	function director:fireZeeMissile(event)
 		local missile = EnemyMissile:new(event.target.x, event.target.y, self.player)
-		mainGroup:insert(missile)
+		self.mainGroup:insert(missile)
 		missile:addEventListener("removeFromGameLoop", self)
 		self.gameLoop:addLoop(missile)
 	end

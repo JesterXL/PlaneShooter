@@ -27,7 +27,7 @@ function BossBigPlane:new(player)
 	local middle = (stage.width / 2) - (boss.width / 2)
 	boss.x = middle
 	boss.y = -boss.height
-	boss.speed = 1
+	boss.speed = constants.ENEMY_BOSS_BIG_PLANE
 	boss.targetX = stage.width / 2 - boss.width / 2
 	boss.targetY = boss.height
 	--[[
@@ -88,10 +88,10 @@ function BossBigPlane:new(player)
 		local deltaY = self.y - self.targetY
 		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
+		local moveX = self.speed * (deltaX / dist) * millisecondsPassed
+		local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 		
-		if (self.speed >= dist) then
+		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 			boss.tick = insanityFiringMode
 		else
 			self.x = self.x - moveX

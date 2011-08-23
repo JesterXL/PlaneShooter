@@ -40,10 +40,10 @@ function PlayerBulletDual:new(startX, startY)
 			local deltaY = self.y - 0
 			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
+			local moveX = self.speed * (deltaX / dist) * millisecondsPassed
+			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 			
-			if (self.speed >= dist) then
+			if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 				self:destroy()
 			else
 				self.y = self.y - moveY

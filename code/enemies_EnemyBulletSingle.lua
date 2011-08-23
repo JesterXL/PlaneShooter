@@ -42,8 +42,8 @@ function EnemyBulletSingle:new(startX, startY, targetPoint)
 		-- TODO: make sure using milliseconds vs. hardcoding step speed
 		
 		--print("angle: ", self.angle, ", math.cos(self.angle): ", math.cos(self.angle))
-		self.x = self.x + math.cos(self.angle) * self.speed
-	   	self.y = self.y + math.sin(self.angle) * self.speed
+		self.x = self.x + math.cos(self.angle) * self.speed * millisecondsPassed
+	   	self.y = self.y + math.sin(self.angle) * self.speed * millisecondsPassed
 		
 		--[[
 		local deltaX = self.x + math.cos(self.angle)

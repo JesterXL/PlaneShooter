@@ -22,6 +22,7 @@ function Player:new()
 	img.name = "Player"
 	img.maxHitPoints = 3
 	img.hitPoints = 3
+	img.reachedDestination = true
 	img.planeXTarget = 0
 	img.planeYTarget = 0
 	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
@@ -39,6 +40,11 @@ function Player:new()
 	function img:move(x, y)
 		self.x = x
 		self.y = y
+	end
+	function img:setDestination(x, y)
+		self.planeXTarget = x
+		self.planeYTarget = y
+		self.reachedDestination = false
 	end
 	
 	function img:onBulletHit(event)
@@ -71,6 +77,7 @@ function Player:new()
 	
 	function img:tick(millisecondsPassed)
 		-- TODO/BUG/FIXME: if you touch ON the plane itself, it auto-jumps and follows your finger; fix
+		if self.reachedDestination == true then return true end
 		
 		if(self.x == self.planeXTarget and self.y == self.planeYTarget) then
 			return
@@ -78,19 +85,13 @@ function Player:new()
 			local deltaX = self.x - self.planeXTarget
 			local deltaY = self.y - self.planeYTarget
 			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-			-- WHY 100!??!?1
 			local moveX = self.speed * (deltaX / dist) * millisecondsPassed
 			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
-			--print("deltaX: ", deltaX, ", deltaY: ", deltaY)
-			--print("dist: ", dist, ", speed: ", self.speed, ", moveX: ", moveX, ", moveY: ", moveY, ", mil: ", millisecondsPassed)
-			-- dist: 	3	, speed: 	0.03	, moveX: 	0.99110999999999	, moveY: 	0	, mil: 	33.037
-			-- dist: 	20	, speed: 	0.2	, moveX: 	0	, moveY: 	-6.6014000000003	, mil: 	33.007000000001
-			
-
-			if ((self.speed * 100) >= dist) then
+				
+			if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 				self.x = self.planeXTarget
 				self.y = self.planeYTarget
+				self.reachedDestination = true
 			else
 				self.x = self.x - moveX
 				self.y = self.y - moveY

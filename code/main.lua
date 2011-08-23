@@ -2,10 +2,10 @@ require "sprite"
 require "physics"
 require "constants"
 require "ScrollingTerrain"
-require "GameLoop"
-require "LevelDirector"
-require "player_PlayerWeapons"
+require "game_GameLoop"
+require "game_LevelDirector"
 
+require "player_PlayerWeapons"
 require "player_Player"
 require "player_PlayerBulletSingle"
 require "player_PlayerRailGun"
@@ -48,8 +48,7 @@ function onTouch(event)
 	--print("onTouch, event.phase: ", event.phase)
 	local handled = false
 	if(event.phase == "began" or event.phase == "moved") then
-		player.planeXTarget = event.x
-		player.planeYTarget = event.y
+		player:setDestination(event.x, event.y)
 		handled = true
 	end
 
@@ -126,18 +125,43 @@ function startGame()
 	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
 	startScrollingTerrain()
+	levelDirector:start()
 end
 
 function stopGame()
-	gameLoop:stop()
+	gameLoop:pause()
 	Runtime:removeEventListener("touch", onTouch)
 	stopScrollingTerrain()
+	levelDirector:pause()
+end
+
+function onMovieStarted(evnet)
+	Runtime:removeEventListener("touch", onTouch)
+	stopScrollingTerrain()
+	moviePlayer:startMovie(event.movie)
+	return true
+end
+
+function onMovieEnded()
+	Runtime:addEventListener("touch", onTouch)
+	startScrollingTerrain()
+	return true
+end
+
+function onLevelProgress(event)
+	flightPath:setProgress(event.progress, 1)
+end
+
+function onLevelComplete(event)
+	stopGame()
+	return true
 end
 
 function pauseGame()
 	print("pauseGame")
 	gameLoop:pause()
 	Runtime:removeEventListener("touch", onTouch)
+	levelDirector:pause()
 	return true
 end
 
@@ -145,6 +169,7 @@ function unpauseGame()
 	print("unpauseGame")
 	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
+	levelDirector:start()
 	return true
 end
 
@@ -184,6 +209,7 @@ function onTitleScreenHideComplete()
 	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
 	screenTitle:destroy()
 	initializeGame()
+	startGame()
 end
 
 function initializeGame()
@@ -203,7 +229,6 @@ function initializeGame()
 	stage = display.getCurrentStage()
 	
 	--initTerrain()
-	--initEnemeyDeath()
 
 	print("\tdamaged hud")
 	damageHUD = DamageHUD:new()
@@ -224,7 +249,6 @@ function initializeGame()
 
 	print("\tinit sounds")
 	initSounds()
-	--initPlayerDeath()
 	
 	print("\tPlayer")
 	player = Player.new()
@@ -261,14 +285,19 @@ function initializeGame()
 	print("\tdrawing flight path checkpoints")
 	flightPath:drawCheckpoints(level)
 
-	--[[
-	moviePlayer = MoviePlayerView:new()
-	local t = {}
-	function t:movieEnded(event)
-		print("movieEnded, event: ", event)
-	end
-	--]]
+	print("\tlevel director")
+	levelDirector = LevelDirector:new(level, player, mainGroup, gameLoop)
+	assert(levelDirector ~= nil, "Level Director is null, yo!")
+	levelDirector:initialize()
+	print("levelDirector: ", levelDirector)
+	print("levelDirector.addEventListener: ", levelDirector.addEventListener)
+	levelDirector:addEventListener("onMovieStarted", onMovieStarted)
+	levelDirector:addEventListener("onLevelProgress", onLevelProgress)
+	levelDirector:addEventListener("onLevelComplete", onLevelComplete)
 
+	print("\tmovie player")
+	moviePlayer = MoviePlayerView:new()
+	moviePlayer:addEventListener("movieEnded", onMovieEnded)
 	print("\thiding status bar")
 	display.setStatusBar( display.HiddenStatusBar )
 
@@ -278,19 +307,15 @@ function initializeGame()
 	print("\tdone initializeGame!")
 end
 
-initializeGame()
-startGame()
+--initializeGame()
+--startGame()
 
-
-
-
--- tests
---[[
+screenTitle = ScreenTitle:new()
 screenTitle:addEventListener("startGame", onStartGameTouched)
 screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
 screenTitle:show()
-]]--
 
+-- tests
 --[[
 local dialogue = DialogueView:new()
 dialogue:setText("Hello, G funk era!")

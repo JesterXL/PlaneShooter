@@ -80,10 +80,10 @@ function PlayerBulletSpread:new(startX, startY)
 			local deltaY = self.y - 0
 			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
 
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
+			local moveX = self.speed * (deltaX / dist) * millisecondsPassed
+			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 			
-			if (self.speed >= dist) then
+			if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 				self:destroy()
 			else
 				self.y = self.y - moveY
@@ -98,13 +98,13 @@ function PlayerBulletSpread:new(startX, startY)
 	rightImage.angle = (rightImage.rot -90) * math.pi / 180;
 	
 	function leftImage:tick(millisecondsPassed)
-		self.x = self.x + math.cos(self.angle) * self.speed
-	   	self.y = self.y + math.sin(self.angle) * self.speed
+		self.x = self.x + math.cos(self.angle) * self.speed * millisecondsPassed
+	   	self.y = self.y + math.sin(self.angle) * self.speed * millisecondsPassed
 	end
 	
 	function rightImage:tick(millisecondsPassed)
-		self.x = self.x + math.cos(self.angle) * self.speed
-	   	self.y = self.y + math.sin(self.angle) * self.speed
+		self.x = self.x + math.cos(self.angle) * self.speed * millisecondsPassed
+	   	self.y = self.y + math.sin(self.angle) * self.speed * millisecondsPassed
 	end
 	
 	return centerImage, leftImage, rightImage

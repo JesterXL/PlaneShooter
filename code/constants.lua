@@ -1,13 +1,14 @@
 
 
 constants = {}
-constants.SMALL_SHIP_SPEED 						= 4
+constants.SMALL_SHIP_SPEED 						= .15
 constants.SMALL_SHIP_FIRE_INTERVAL				= 1500 -- milliseconds
-constants.ENEMY_1_BULLET_SPEED					= 7
+constants.ENEMY_1_BULLET_SPEED					= .3
 
-constants.ENEMY_MISSLE_JET_SPEED				= 5
-constants.ENEMY_MISSLE_JET_MISSLE_SPEED 		= 5
+constants.ENEMY_MISSLE_JET_SPEED				= .3
+constants.ENEMY_MISSLE_JET_MISSLE_SPEED 		= .3
 constants.ENEMY_MISSLE_JET_FIRE_INTERVAL		= 700 -- milliseconds
+constants.ENEMY_BOSS_BIG_PLANE					= .1
 
 constants.MAX_BULLET_COUNT 						= 6
 constants.PLAYER_MOVE_SPEED 					= .2

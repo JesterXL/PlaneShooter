@@ -12,7 +12,7 @@ function EnemySmallShipDeath:new(targetX, targetY)
 	
 	local si = sprite.newSprite(EnemySmallShipDeath.smallShipDeathSet)
 	si.name = "smallShipDeath"
-	si.classType = "enemies.SmallShipDeath"
+	si.classType = "enemies_SmallShipDeath"
 	si:prepare("smallShipDeath")
 	
 	function onEnd(event)

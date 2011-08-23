@@ -49,7 +49,7 @@ function PlayerBulletSingle:new(startX, startY)
 			local moveX = self.speed * (deltaX / dist) * millisecondsPassed
 			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 			
-			if ((self.speed * 100) >= dist) then
+			if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
 				self:destroy()
 			else
 				self.y = self.y - moveY
