@@ -3,6 +3,9 @@ require "constants"
 BossBigPlane = {}
 
 function BossBigPlane:new(player)
+	
+	assert(player ~= nil, "You must pass a non-nil player to BossBigPlane.")
+	
 	if(BossBigPlane.bossSheet == nil) then
 		local bossSheet = sprite.newSpriteSheet("boss_big_plane_sheet.png", 142, 98)
 		local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
@@ -75,7 +78,7 @@ function BossBigPlane:new(player)
 							
 	function boss:destroy()
 		-- TODO: remove from game loop and handle death dispatch
-		self:dispatchEvent({name="removeFromGameLoop", target=self})
+		self:dispatchEvent({name="enemyDead", target=self})
 		
 		-- TODO: fix sound
 		--local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound)
@@ -92,6 +95,8 @@ function BossBigPlane:new(player)
 		local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 		
 		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
+			self.x = self.targetX
+			self.y = self.targetY
 			boss.tick = insanityFiringMode
 		else
 			self.x = self.x - moveX
@@ -114,9 +119,13 @@ function BossBigPlane:new(player)
 		end
 		--]]
 		
-		boss.gunPoint1Image.rotation = boss:getRotation(boss.gunPoint1Image)
-		boss.gunPoint2Image.rotation = boss:getRotation(boss.gunPoint2Image)
-		boss.gunPoint3Image.rotation = boss:getRotation(boss.gunPoint3Image)
+		local gunPoint1Img = boss.gunPoint1Image
+		local gunPoint2Img  = boss.gunPoint2Image
+		local gunPoint3Img  = boss.gunPoint3Image
+		
+		gunPoint1Img.rotation = boss:getRotation(gunPoint1Img )
+		gunPoint2Img.rotation = boss:getRotation(gunPoint2Img )
+		gunPoint3Img.rotation = boss:getRotation(gunPoint3Img )
 		
 		if(self.lastTick >= self.fireSpeed) then
 			if(boss.fireCount + 1 <= boss.fireCountMax) then
@@ -125,13 +134,17 @@ function BossBigPlane:new(player)
 				boss.fireCount = 1
 			end
 			
-			
+			local gunPoint1 = self.gunPoint1
+			local gunPoint2 = self.gunPoint2
+			local gunPoint3 = self.gunPoint3
+			local leftGunPoint = self.leftGunPoint
+			local rightGunPoint = self.rightGunPoint
 			local points = {
-				{x=self.gunPoint1.x + self.x, y=self.gunPoint1.y + self.y},
-				{x=self.gunPoint2.x + self.x, y=self.gunPoint2.y + self.y},
-				{x=self.gunPoint3.x + self.x, y=self.gunPoint3.y + self.y},
-				{x=self.leftGunPoint.x + self.x, y=self.leftGunPoint.y + self.y}, 
-				{x=self.rightGunPoint.x + self.x, y=self.rightGunPoint.y + self.y}
+				{x=gunPoint1.x + self.x, y=gunPoint1.y + self.y},
+				{x=gunPoint2.x + self.x, y=gunPoint2.y + self.y},
+				{x=gunPoint3.x + self.x, y=gunPoint3.y + self.y},
+				{x=leftGunPoint.x + self.x, y=leftGunPoint.y + self.y}, 
+				{x=rightGunPoint.x + self.x, y=rightGunPoint.y + self.y}
 			}
 			
 			--[[

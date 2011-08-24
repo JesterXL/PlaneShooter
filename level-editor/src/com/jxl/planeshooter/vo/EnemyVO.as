@@ -24,5 +24,13 @@ package com.jxl.planeshooter.vo
 			obj.configurations				= configurations;
 			return obj;
 		}
+		
+		public function buildFromObject(obj:Object):void
+		{
+			when 					= obj.when;
+			pause					= obj.pause;
+			type					= obj.type;
+			configurations			= obj.configurations;
+		}
 	}
 }

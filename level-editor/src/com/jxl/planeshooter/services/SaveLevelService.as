@@ -1,4 +1,4 @@
-package com.jxl.planeshooter
+package com.jxl.planeshooter.services
 {
 	import com.adobe.serialization.json.JSON;
 	import com.jxl.planeshooter.events.SaveLevelServiceEvent;
@@ -28,8 +28,29 @@ package com.jxl.planeshooter
 		
 		public function saveLevel(level:LevelVO):void
 		{
-			var obj:Object = level.toObject();
-			str = JSON.encode(obj);
+			try
+			{
+				var obj:Object = level.toObject();
+			}
+			catch(err:Error)
+			{
+				Debug.error("SaveLevelService::saveLevel, error in converting LevelVO to Object: " + err);
+				dispatchEvent(new SaveLevelServiceEvent(SaveLevelServiceEvent.SAVE_ERROR));
+				return;
+			}
+			
+			try
+			{
+				str = JSON.encode(obj);
+			}
+			catch(err:Error)
+			{
+				Debug.error("SaveLevelService::saveLevel, error in serializing JSON string: " + err);
+				dispatchEvent(new SaveLevelServiceEvent(SaveLevelServiceEvent.SAVE_ERROR));
+				return;
+			}
+			
+			
 			
 			if(file == null)
 			{

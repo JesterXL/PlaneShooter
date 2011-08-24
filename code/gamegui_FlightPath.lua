@@ -73,8 +73,12 @@ function FlightPath:new()
 	-- NOTE: it's assumed you're passing in value=current time and total=totalTime
 	function group:setProgress(value, total)
 		local percentage = value / total
+		--if percentage < 0 then percentage = 0 end
+		--if percentage > 1 then percentage = 1 end
 		local frame = percentage * 100
 		frame = math.floor(frame / 10)
+		--print("value: ", value, ", total: ", total, ", percentage: ", percentage, ", frame: ", frame)
+		if frame <= 0 then frame = 1 end
 		bar:stopAtFrame(frame)
 		plane.x = (group.BAR_WIDTH * percentage) - (plane.width / 2)
 		plane.y = bar.y - (plane.height / 4)

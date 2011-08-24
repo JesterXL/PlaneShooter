@@ -26,5 +26,14 @@ package com.jxl.planeshooter.vo
 			obj.message							= message;
 			return obj;
 		}
+		
+		public function buildFromObject(obj:Object):void
+		{
+			characterName			= obj.characterName;
+			emotion					= obj.emotion;
+			audioName				= obj.audioName;
+			audioFile				= obj.audioFile;
+			message					= obj.message;
+		}
 	}
 }

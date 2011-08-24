@@ -76,33 +76,6 @@ function startBossFight()
 	end
 end
 
-function createBoss()
-	local boss = BossBigPlane:new(player)
-	boss:addEventListener("removeFromGameLoop", onBossDead)
-	boss:addEventListener("fireShots", onFireBossShots)
-	mainGroup:insert(boss)
-	gameLoop:addLoop(boss)
-end
-
-function onFireBossShots(event)
-	for i,point in ipairs(event.points) do
-		local bullet = EnemyBulletSingle:new(point.x, point.y, player)
-		mainGroup:insert(bullet)
-		bullet:addEventListener("removeFromGameLoop", onRemoveFromGameLoop)
-		gameLoop:addLoop(bullet)
-	end
-end
-
-function onBossDead(event)
-	local boss = event.target
-	boss:removeEventListener("removeFromGameLoop", onBossDead)
-	boss:removeEventListener("fireShots", onFireBossShots)
-	gameLoop:removeLoop(boss)
-	-- TODO: use correct animation, sucka! In fact, make an epic one!
-	local death = EnemySmallShipDeath:new(boss.x, boss.y)
-	mainGroup:insert(death)
-end
-
 function initKeys()
 
 	local function onKeyEvent( event )
@@ -135,16 +108,17 @@ function stopGame()
 	levelDirector:pause()
 end
 
-function onMovieStarted(evnet)
+function onMovieStarted(event)
 	Runtime:removeEventListener("touch", onTouch)
 	stopScrollingTerrain()
 	moviePlayer:startMovie(event.movie)
 	return true
 end
 
-function onMovieEnded()
+function onMovieEnded(event)
 	Runtime:addEventListener("touch", onTouch)
 	startScrollingTerrain()
+	levelDirector:start()
 	return true
 end
 
@@ -291,7 +265,7 @@ function initializeGame()
 	levelDirector:initialize()
 	print("levelDirector: ", levelDirector)
 	print("levelDirector.addEventListener: ", levelDirector.addEventListener)
-	levelDirector:addEventListener("onMovieStarted", onMovieStarted)
+	levelDirector:addEventListener("onMovie", onMovieStarted)
 	levelDirector:addEventListener("onLevelProgress", onLevelProgress)
 	levelDirector:addEventListener("onLevelComplete", onLevelComplete)
 

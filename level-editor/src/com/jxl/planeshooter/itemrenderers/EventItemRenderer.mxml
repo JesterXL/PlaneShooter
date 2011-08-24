@@ -8,6 +8,7 @@
 	
 	<fx:Metadata>
 		[Event(name="editMovie", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
+		[Event(name="deleteItem", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
 	</fx:Metadata>
 	
 	<fx:Script>
@@ -95,6 +96,18 @@
 			{
 				enemyIcon = "assets/images/" + enemy.type + ".png";
 			}
+			
+			private function onDelete():void
+			{
+				var evt:EventItemRendererEvent = new EventItemRendererEvent(EventItemRendererEvent.DELETE_ITEM);
+				evt.item = data;
+				dispatchEvent(evt);
+			}
+			
+			private function onPause():void
+			{
+				data.pause = pauseCheckBox.selected;
+			}
 		]]>
 	</fx:Script>
 	
@@ -117,26 +130,20 @@
 		</s:stroke>
 	</s:Rect>
 	
-	<s:Form >
-		<s:layout>
-			<s:FormLayout gap="-10"  />
-		</s:layout>
-		<s:FormHeading label="Enemy" includeIn="enemy" />
-		<s:FormHeading label="Movie" includeIn="movie" />
-		<s:FormItem label="Time:" >
-			<s:NumericStepper id="timeNumericStepper" minimum="0" maximum="300" 
-							  value="{data.when}"
-							  change="onTimeChange()" />
-			<s:Label id="timeLabel" />
-		</s:FormItem>
-		<s:FormItem label="Type:" includeIn="enemy">
-			<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" />
-			<s:Image width="45" height="45" id="enemyIconImage" source="{enemyIcon}" />
-		</s:FormItem>
-		<s:FormItem label="Movie Name:" includeIn="movie">
-			<s:Label text="{movie.name}"  />
-			<mx:LinkButton label="Edit" click="onEditMovie()" />
-		</s:FormItem>
-	</s:Form>
+	<s:HGroup verticalAlign="middle" gap="4" paddingBottom="4" paddingTop="4" paddingLeft="4" paddingRight="4">
+		<s:Label text="Enemy" fontWeight="bold" includeIn="enemy" />
+		<s:Label text="Movie" fontWeight="bold" includeIn="movie" />
+		<s:Label text="Time:" />
+		<s:NumericStepper id="timeNumericStepper" minimum="0" maximum="300" 
+						  value="{data.when}"
+						  change="onTimeChange()" />
+		<s:Label id="timeLabel" />
+		<s:Label text="Enemy:"  includeIn="enemy" />
+		<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" includeIn="enemy" />
+		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="false" includeIn="enemy" click="onPause()" />
+		<s:Image width="22" height="22" id="enemyIconImage" source="{enemyIcon}" includeIn="enemy" />
+		<mx:LinkButton label="Edit" click="onEditMovie()" includeIn="movie" />
+		<s:Button label="X" width="40" click="onDelete()" />
+	</s:HGroup>
 	
 </s:ItemRenderer>

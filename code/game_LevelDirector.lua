@@ -58,37 +58,55 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 
 	function director:start()
 		if self.paused == true then
+			self.paused = false
 			self.gameLoop:addLoop(self)
 		end
 	end
 
 	function director:pause()
 		if self.paused == false then
+			self.paused = true
 			self.gameLoop:removeLoop(self)
 		end
 	end
 
 	function director:tick(millisecondsPassed)
+		if self.paused == true then
+			return true
+		end
+		
 		self.milliseconds = self.milliseconds + millisecondsPassed
 		local progress = self.milliseconds / (self.level.totalTime * 1000)
 		self:dispatchEvent({name="onLevelProgress", target=self, progress=progress})
 		
-		if self.milliseconds / 1000 >= self.level.totalTime then
-			print("DONE")
+		local events = self.level.events
+		local index = #events
+		local seconds = self.milliseconds / 1000
+		--print("index: ", index, ", index2: ", index2)
+		
+		if seconds >= self.level.totalTime and index == 0 then
+			print("DONE, index: ")
 			self:pause()
 			self:dispatchEvent({name="onLevelComplete", target=self})
 			return true
 		end
 		
-		local events = self.level.events
+		
 		local oldEvents = self.oldEvents
 		local milliseconds = self.milliseconds
 		local i = 1
 		while events[i] do
 			local event = events[i]
-			if event.when <= milliseconds then
+			--print("\tseconds: ", seconds, ", when: ", event.when, ", type: ", event.classType)
+			if event.when <= seconds then
 				table.remove(events, i)
 				table.insert(oldEvents, event)
+				
+				print("event.pause: ", event.pause)
+				if event.pause == true then
+					self:pause()
+				end
+				
 				if event.classType == "enemy" then
 					self:processEnemey(event)
 				elseif event.classType == "movie" then
@@ -101,12 +119,13 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 	end
 
 	function director:processMovie(movie)
+		print("LevelDirector::processMovie")
 		self:pause()
 		self:dispatchEvent({name="onMovie", target=self, movie=movie})
 	end
 
 	function director:processEnemey(event)
-		--print("LevelDirector::processEnemy")
+		print("LevelDirector::processEnemy")
 		local stage = director.stage
 
 		local randomX = stage.width * math.random()
@@ -131,13 +150,29 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 			enemy = EnemyMissileJet:new(randomX, -10, stage.height)
 		elseif enemyType == "Bomber" then
 			enemy = BossBigPlane:new(player)
+			enemy:addEventListener("fireShots", onFireBossShots)
 		elseif enemyType == "UFO" then
 			return true
 		end
 
+		enemy.levelDirectorEvent = event
 		enemy:addEventListener("enemyDead", self)
 		self.mainGroup:insert(enemy)
 		self.gameLoop:addLoop(enemy)
+	end
+	
+	function onFireBossShots(event)
+		local self = director
+		local i = 1
+		local points = event.points
+		while points[i] do
+			local point = event.points[i]
+			local bullet = EnemyBulletSingle:new(point.x, point.y, player)
+			self.mainGroup:insert(bullet)
+			bullet:addEventListener("removeFromGameLoop", self)
+			self.gameLoop:addLoop(bullet)
+			i = i + 1
+		end
 	end
 
 	function director:enemyDead(event)
@@ -152,6 +187,12 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 			local smallShipDeath = EnemySmallShipDeath:new(enemy.x, enemy.y)
 			director.mainGroup:insert(smallShipDeath)
 		end
+		
+		if enemy.levelDirectorEvent.pause == true then
+			enemy.levelDirectorEvent = nil
+			self:start()
+		end
+		
 		assert(director.gameLoop:removeLoop(enemy), "Failed to remove enemy from game loop.")
 
 		self.powerCount = self.powerCount + 1

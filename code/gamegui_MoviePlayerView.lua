@@ -16,6 +16,8 @@ function MoviePlayerView:new()
 	group.tweenIn = nil
 	group.tweenOut = nil
 	group.firstTime = false
+	group:addEventListener("touch", function() return true end)
+	group:addEventListener("tap", function() return true end)
 
 	function group:startMovie(movie)
 		assert(movie ~= nil, "Movie cannot be nil.")
@@ -37,6 +39,7 @@ function MoviePlayerView:new()
 	end
 	
 	function group:hideDialogue(dialogueView)
+		assert(dialogueView ~= nil, "You cannot pass in a nil dialogue view.")
 		if self.tweenOut ~= nil then
 			transition.cancel(self.tweenOut)
 			self.tweenOut = nil
@@ -101,6 +104,7 @@ function MoviePlayerView:new()
 					dialogueView = self.lastDialogueView
 				else
 					dialogueView = self.dialogueView1
+					self.lastDialogueView = dialogueView
 				end
 			end
 			
@@ -122,6 +126,7 @@ function MoviePlayerView:new()
 		else
 			-- end of conversation
 			self:hideDialogue(self.lastDialogueView)
+			print("MoviePlayerView::dispatching movieEnded")
 			self:dispatchEvent({name="movieEnded", target=self})
 		end
 

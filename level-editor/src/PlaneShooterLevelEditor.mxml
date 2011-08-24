@@ -2,7 +2,8 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   width="222" height="189" applicationComplete="init()">
+					   width="222" height="189" applicationComplete="init()"
+					   addedToStage="onAdded()">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -11,12 +12,27 @@
 	
 	<fx:Script>
 		<![CDATA[
+			import com.jxl.planeshooter.events.OpenLevelServiceEvent;
+			import com.jxl.planeshooter.services.OpenLevelService;
 			import com.jxl.planeshooter.views.LevelEditor;
 			import com.jxl.planeshooter.vo.LevelVO;
 			
 			import mx.managers.PopUpManager;
 			
 			import spark.components.Window;
+			
+			private var openLevelService:OpenLevelService;
+			
+			
+			private function onAdded():void
+			{
+				this.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onError);
+			}
+			
+			private function onError(event:UncaughtErrorEvent):void
+			{
+				Debug.error("onError: " + event);
+			}
 			
 			private function init():void
 			{
@@ -37,6 +53,7 @@
 				win.width = 580;
 				win.height = 430;
 				win.move(Screen.mainScreen.bounds.width + win.width, Screen.mainScreen.bounds.height - win.height);
+
 			}
 			
 			private function onNewLevel():void
@@ -48,8 +65,37 @@
 				win.move(nativeWindow.x + width, nativeWindow.y);
 			}
 			
+			private function onOpenLevel():void
+			{
+				if(openLevelService == null)
+				{
+					openLevelService = new OpenLevelService();
+					openLevelService.addEventListener(OpenLevelServiceEvent.OPEN_ERROR, onOpenError);
+					openLevelService.addEventListener(OpenLevelServiceEvent.OPEN_SUCCESS, onOpenSuccess);
+				}
+				openLevelService.openLevel();
+			}
+			
+			private function onOpenError(event:OpenLevelServiceEvent):void
+			{
+				
+			}
+			
+			private function onOpenSuccess(event:OpenLevelServiceEvent):void
+			{
+				var win:LevelEditor = new LevelEditor();
+				win.open(true);
+				win.level = openLevelService.level;
+				win.move(nativeWindow.x + width, nativeWindow.y);
+			}
+			
 		]]>
 	</fx:Script>
-	<s:Button width="200" height="60" label="New Level" click="onNewLevel()"/>
+	
+	<s:VGroup>
+		<s:Button width="200" height="60" label="New Level" click="onNewLevel()"/>
+		<s:Button width="200" height="60" label="Open Level" click="onOpenLevel()" />
+	</s:VGroup>
+	
 	
 </s:WindowedApplication>

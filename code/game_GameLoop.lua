@@ -7,7 +7,7 @@ function GameLoop:new()
 
 	gameLoop.classType = "GameLoop"
 	gameLoop.tickers = {}
-	gameLoop.lastTick = 0
+	gameLoop.lastTick = system.getTimer()
 	gameLoop.paused = true
 	gameLoop.stage = display.getCurrentStage()
 
@@ -63,7 +63,7 @@ function GameLoop:new()
 	end
 
 	function gameLoop:reset()
-		self.lastTick = 0
+		self.lastTick = system.getTimer()
 	end
 
 	function gameLoop:start()

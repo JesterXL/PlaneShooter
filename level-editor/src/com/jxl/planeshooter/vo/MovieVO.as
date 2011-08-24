@@ -32,5 +32,24 @@ package com.jxl.planeshooter.vo
 			}
 			return obj;	
 		}
+		
+		public function buildFromObject(obj:Object):void
+		{
+			when 				= obj.when;
+			pause				= obj.pause;
+			name				= obj.name;
+			dialogues 			= new ArrayCollection();
+			if(obj.dialogues && obj.dialogues.length > 0)
+			{
+				var len:int = obj.dialogues.length;
+				for(var index:int = 0; index < len; index++)
+				{
+					var dObj:Object = obj.dialogues[index];
+					var dialogue:DialogueVO = new DialogueVO();
+					dialogue.buildFromObject(dObj);
+					dialogues.addItem(dialogue);
+				}
+			}
+		}
 	}
 }
