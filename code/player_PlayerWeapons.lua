@@ -21,7 +21,7 @@ function PlayerWeapons:new(player, mainGroup, gameLoop)
 	regulator.lastFire 			= 0
 	regulator.fireFunc 			= nil
 	regulator.enabled			= false
-
+	
 	function regulator:tick(millisecondsPassed)
 		if self.enabled == false then return true end
 		if self.fireFunc == nil then return true end

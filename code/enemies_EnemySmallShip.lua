@@ -2,8 +2,10 @@ require "constants"
 require "robotlegs_globals"
 
 EnemySmallShip = {}
+EnemySmallShip.soundsInited = false
+
 function EnemySmallShip:new(startX, startY, bottom)
-	print("EnemySmallShip::new, bottom: ", bottom)
+	--print("EnemySmallShip::new, bottom: ", bottom)
 	if(EnemySmallShip.soundsInited == false) then
 		EnemySmallShip.soundsInited = true
 		EnemySmallShip.smallShipDeathSound = audio.loadSound("enemy_death_1.mp3")
@@ -40,21 +42,14 @@ function EnemySmallShip:new(startX, startY, bottom)
 		if(event.other.name == "Bullet") then
 			-- TODO: create enemy death
 			--createEnemyDeath(self.x, self.y)
-			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
-			--audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
-			print("ship is dead, ID: ", self.ID)
+			--print("ship is dead, ID: ", self.ID)
 			event.other:destroy()
-			self:destroy()
 		elseif(event.other.name == "Player") then
-			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
-			--audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
 			event.other:onBulletHit()
-			self:destroy()
-		elseif(event.other.name == "BulletRail") then
-			local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound, {loops=0})
-			--audio.setVolume(.25, {channel = smallShipDeathSoundChannel})
-			self:destroy()
 		end
+		local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound)
+		audio.setVolume(.4, {channel = smallShipDeathSoundChannel})
+		self:destroy()
 	end
 	
 	function img:destroy()

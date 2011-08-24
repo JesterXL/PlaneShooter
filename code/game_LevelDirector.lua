@@ -85,7 +85,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		--print("index: ", index, ", index2: ", index2)
 		
 		if seconds >= self.level.totalTime and index == 0 then
-			print("DONE, index: ")
+			print("DONE")
 			self:pause()
 			self:dispatchEvent({name="onLevelComplete", target=self})
 			return true
@@ -97,7 +97,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		local i = 1
 		while events[i] do
 			local event = events[i]
-			--print("\tseconds: ", seconds, ", when: ", event.when, ", type: ", event.classType)
+			print("\tseconds: ", seconds, ", when: ", event.when, ", type: ", event.classType)
 			if event.when <= seconds then
 				table.remove(events, i)
 				table.insert(oldEvents, event)
@@ -140,6 +140,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		local enemyType = event.type
 		local enemy
 		local player = director.player
+		print("enemyType: ", enemyType)
 		if enemyType == "Plane" then
 			enemy = EnemySmallShip:new(randomX, -10, stage.height)
 			enemy:addEventListener("createEnemyBullet", self)
@@ -149,6 +150,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		elseif enemyType == "Jet" then
 			enemy = EnemyMissileJet:new(randomX, -10, stage.height)
 		elseif enemyType == "Bomber" then
+			print("creating big bomber boss")
 			enemy = BossBigPlane:new(player)
 			enemy:addEventListener("fireShots", onFireBossShots)
 		elseif enemyType == "UFO" then

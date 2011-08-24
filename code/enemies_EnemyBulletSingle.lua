@@ -38,28 +38,8 @@ function EnemyBulletSingle:new(startX, startY, targetPoint)
 	end
 	
 	function img:tick(millisecondsPassed)
-		
-		-- TODO: make sure using milliseconds vs. hardcoding step speed
-		
-		--print("angle: ", self.angle, ", math.cos(self.angle): ", math.cos(self.angle))
 		self.x = self.x + math.cos(self.angle) * self.speed * millisecondsPassed
 	   	self.y = self.y + math.sin(self.angle) * self.speed * millisecondsPassed
-		
-		--[[
-		local deltaX = self.x + math.cos(self.angle)
-		local deltaY = self.y + math.sin(self.angle)
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
-		
-		if (self.speed >= dist) then
-			self:destroy()
-		else
-			self.x = self.x + moveX
-			self.y = self.y + moveY
-		end
-		]]--
 	end
 	
 	return img

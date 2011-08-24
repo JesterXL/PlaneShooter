@@ -76,7 +76,6 @@ function Player:new()
 	end
 	
 	function img:tick(millisecondsPassed)
-		-- TODO/BUG/FIXME: if you touch ON the plane itself, it auto-jumps and follows your finger; fix
 		if self.reachedDestination == true then return true end
 		
 		if(self.x == self.planeXTarget and self.y == self.planeYTarget) then

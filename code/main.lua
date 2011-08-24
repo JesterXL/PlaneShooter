@@ -32,8 +32,10 @@ require "screen_title"
 
 
 local function initSounds()
+	audio.reserveChannels(2)
 	planeShootSound = audio.loadSound("plane_shoot.wav")
-
+	planeShootSoundChannel = 1
+	audio.setVolume(.2, {channel=planeShootSoundChannel})
 end
 
 function startScrollingTerrain()
@@ -54,11 +56,15 @@ function onTouch(event)
 
 	if(event.phase == "began") then
 		playerWeapons.enabled = true
+		audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1})
 		handled = true
 	end
 
 	if(event.phase == "ended" or event.phase == "cancelled") then
 		playerWeapons.enabled = false
+		if planeShootSoundChannel ~= nil then
+			audio.stop(planeShootSoundChannel)
+		end
 		handled = true
 	end
 	
