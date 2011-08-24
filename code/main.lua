@@ -32,10 +32,13 @@ require "screen_title"
 
 
 local function initSounds()
+	planeShootSound = {}
+	--[[
 	audio.reserveChannels(2)
 	planeShootSound = audio.loadSound("plane_shoot.wav")
 	planeShootSoundChannel = 1
 	audio.setVolume(.2, {channel=planeShootSoundChannel})
+	]]--
 end
 
 function startScrollingTerrain()
@@ -50,7 +53,7 @@ function onTouch(event)
 	--print("onTouch, event.phase: ", event.phase)
 	local handled = false
 	if(event.phase == "began" or event.phase == "moved") then
-		player:setDestination(event.x, event.y)
+		player:setDestination(event.x, event.y - 40)
 		handled = true
 	end
 
@@ -189,62 +192,77 @@ function onTitleScreenHideComplete()
 	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
 	screenTitle:destroy()
 	initializeGame()
-	startGame()
+	--startGame()
 end
 
-function initializeGame()
-	print("initializeGame")
-	
+function step1()
 	print("\tstarting physics")
 	physics.start()
 	--physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
-	
+end
+
+function step2()
 	print("\initializing MainContext")
 	context = require("MainContext").new()
 	context:init()
-	
+end
+
+function step3()	
 	print("\tmain group")
 	mainGroup 						= display.newGroup()
 	stage = display.getCurrentStage()
-	
-	--initTerrain()
+end
 
+function step4()
 	print("\tdamaged hud")
 	damageHUD = DamageHUD:new()
 	context:createMediator(damageHUD)
 	damageHUD.x = stage.width - 30
 	damageHUD.y = 0
-	
+end
+
+function step5()
 	print("\tscore view")
 	scoreView = ScoreView:new()
 	context:createMediator(scoreView)
 	scoreView.x = scoreView.width / 2
 	scoreView.y = damageHUD.y
+end
 
+function step6()
 	print("\tflight path")
 	flightPath = FlightPath:new()
 	flightPath:setProgress(1, 10)
 	flightPath.x = (stage.width / 2) - (flightPath.width / 2)
+end
 
+function step7()
 	print("\tinit sounds")
 	initSounds()
-	
+end
+
+function step8()
 	print("\tPlayer")
 	player = Player.new()
 	mainGroup:insert(player)
 	context:createMediator(player)
 	--plane:addEventListener("hitPointsChanged", )
+end
 
-
+function step9()
 	print("\tgame loop")
 	gameLoop = GameLoop:new()
 	gameLoop:addLoop(player)
-	
+end
+
+function step10()
 	print("\tbullet regulator")
 	playerWeapons = PlayerWeapons:new(player, mainGroup, gameLoop)
 	playerWeapons:setPowerLevel(1)
-	
+end
+
+function step11()
 	print("\tplane targeting")
 	player.planeXTarget = stage.width / 2
 	player.planeYTarget = stage.height / 2
@@ -254,17 +272,25 @@ function initializeGame()
 	headAnime = HeadNormalAnime:new(4, stage.height - 104)
 	mainGroup:insert(headAnime)
 	--]]
-	
+end
+
+function step12()
 	print("\tpause button")
 	local pauseButton = PauseButton:new(4, stage.height - 40)
 	pauseButton:addEventListener("touch", onPauseTouch)
+end
 
+function step13()
 	print("\tparsing level")
 	level = LoadLevelService:new("level.json")
-	
+end
+
+function step14()
 	print("\tdrawing flight path checkpoints")
 	flightPath:drawCheckpoints(level)
+end
 
+function step15()
 	print("\tlevel director")
 	levelDirector = LevelDirector:new(level, player, mainGroup, gameLoop)
 	assert(levelDirector ~= nil, "Level Director is null, yo!")
@@ -274,23 +300,111 @@ function initializeGame()
 	levelDirector:addEventListener("onMovie", onMovieStarted)
 	levelDirector:addEventListener("onLevelProgress", onLevelProgress)
 	levelDirector:addEventListener("onLevelComplete", onLevelComplete)
+end
 
+function step16()
 	print("\tmovie player")
 	moviePlayer = MoviePlayerView:new()
 	moviePlayer:addEventListener("movieEnded", onMovieEnded)
+end
+
+function step17()
 	print("\thiding status bar")
 	display.setStatusBar( display.HiddenStatusBar )
+end
 
+function step18()
 	print("\tinitializing keys")
 	initKeys()
-	
-	print("\tdone initializeGame!")
 end
+
+function initializeGame()
+	print("initializeGame")
+	
+	--[[
+	step1()
+	
+	step2()
+	
+	step3()
+	
+	--initTerrain()
+
+	step4()
+	
+	step5()
+	
+	step6()
+
+	step7()
+	
+	step8()
+
+	step9()
+	
+	step10()
+	
+	step11()
+
+	step12()
+	
+	step13()
+
+	step14()
+
+	step15()
+	
+	step16()
+	
+	step17()
+
+	step18()
+	
+	]]--
+	
+	
+
+	
+	
+	--print("\tdone initializeGame!")
+	startSteps()
+end
+
+currentStep = 0
+delayTime = 100
+local delayTable = {}
+function delayTable:timer(event)
+	currentStep = currentStep + 1
+	if currentStep < 19 then
+		local functionName = "step" .. currentStep
+		debug("running step " .. currentStep)
+	   	_G[functionName]()
+		timer.performWithDelay(delayTime, delayTable)
+	else
+		startGame()
+	end
+end
+
+function startSteps()
+	print("startSteps")
+	debugText = display.newText("", 0, 0, native.systemFont, 16)
+	debugText:setTextColor(255, 0, 0)
+	debugText.y = 400
+	debugText.x = 150
+    timer.performWithDelay(delayTime, delayTable)	
+end
+
+function debug(o)
+	print(o)
+	debugText.text = o
+end
+
 
 --initializeGame()
 --startGame()
 
-screenTitle = ScreenTitle:new()
+local stage = display.getCurrentStage()
+screenTitle = ScreenTitle:new(stage.width, stage.height)
 screenTitle:addEventListener("startGame", onStartGameTouched)
 screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
 screenTitle:show()

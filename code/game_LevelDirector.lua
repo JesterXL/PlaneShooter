@@ -97,7 +97,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		local i = 1
 		while events[i] do
 			local event = events[i]
-			print("\tseconds: ", seconds, ", when: ", event.when, ", type: ", event.classType)
+			--print("\tseconds: ", seconds, ", when: ", event.when, ", type: ", event.classType)
 			if event.when <= seconds then
 				table.remove(events, i)
 				table.insert(oldEvents, event)

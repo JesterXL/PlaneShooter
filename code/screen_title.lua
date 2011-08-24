@@ -1,11 +1,15 @@
 local gtween = require("gtween")
 ScreenTitle = {}
 
-function ScreenTitle:new()
+function ScreenTitle:new(width, height)
 	local screen = display.newGroup()
 
 	local img = display.newImage("screen_title.png", 0, 0)
+	img:setReferencePoint(display.TopLeftReferencePoint)
 	screen:insert(img)
+	img.width = width
+	img.height = height
+	
 
 	local startButton = display.newImage("button_start.png")
 	function startButton:touch(event)
@@ -20,7 +24,7 @@ function ScreenTitle:new()
 	
 	startButton.y = display.getCurrentStage().height - (134 / 2)
 	
-	local cover = display.newRect(0, 0, 480, 800)
+	local cover = display.newRect(0, 0, width, height)
 	cover:setFillColor(0, 0, 0)
 	screen:insert(cover)
 	
