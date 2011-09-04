@@ -4,12 +4,11 @@ ScreenTitle = {}
 function ScreenTitle:new(width, height)
 	local screen = display.newGroup()
 
-	local img = display.newImage("screen_title.png", 0, 0)
+	local img = display.newImage("screen_title.png")
 	img:setReferencePoint(display.TopLeftReferencePoint)
 	screen:insert(img)
 	img.width = width
 	img.height = height
-	
 
 	local startButton = display.newImage("button_start.png")
 	function startButton:touch(event)
@@ -25,8 +24,13 @@ function ScreenTitle:new(width, height)
 	startButton.y = display.getCurrentStage().height - (134 / 2)
 	
 	local cover = display.newRect(0, 0, width, height)
+	cover:setReferencePoint(display.TopLeftReferencePoint)
 	cover:setFillColor(0, 0, 0)
 	screen:insert(cover)
+	cover.width = width
+	cover.height = height
+	cover.x = 0
+	cover.y = 0
 	
 
 	function screen:destroy()

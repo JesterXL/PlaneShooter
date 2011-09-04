@@ -24,6 +24,7 @@ require "gamegui_DialogueView"
 require "gamegui_MoviePlayerView"
 require "gamegui_FlightPathCheckpoint"
 require "gamegui_FlightPath"
+require "gamegui_LevelCompleteOverlay"
 
 require "services_LoadLevelService"
 
@@ -32,13 +33,11 @@ require "screen_title"
 
 
 local function initSounds()
-	planeShootSound = {}
-	--[[
+--	planeShootSound = {}
 	audio.reserveChannels(2)
-	planeShootSound = audio.loadSound("plane_shoot.wav")
+	planeShootSound = audio.loadSound("plane_shoot.mp3")
 	planeShootSoundChannel = 1
-	audio.setVolume(.2, {channel=planeShootSoundChannel})
-	]]--
+	audio.setVolume(.1, {channel=planeShootSoundChannel})
 end
 
 function startScrollingTerrain()
@@ -115,19 +114,20 @@ function stopGame()
 	Runtime:removeEventListener("touch", onTouch)
 	stopScrollingTerrain()
 	levelDirector:pause()
+	playerWeapons.enabled = false
+	if planeShootSoundChannel ~= nil then
+		audio.stop(planeShootSoundChannel)
+	end
 end
 
 function onMovieStarted(event)
-	Runtime:removeEventListener("touch", onTouch)
-	stopScrollingTerrain()
+	pauseGame()
 	moviePlayer:startMovie(event.movie)
 	return true
 end
 
 function onMovieEnded(event)
-	Runtime:addEventListener("touch", onTouch)
-	startScrollingTerrain()
-	levelDirector:start()
+	unpauseGame()
 	return true
 end
 
@@ -136,8 +136,22 @@ function onLevelProgress(event)
 end
 
 function onLevelComplete(event)
-	stopGame()
+	--gameLoop:pause()
+	Runtime:removeEventListener("touch", onTouch)
+	stopScrollingTerrain()
+	levelDirector:pause()
+	playerWeapons.enabled = false
+	if planeShootSoundChannel ~= nil then
+		audio.stop(planeShootSoundChannel)
+	end
+	
+	levelCompleteOverlay = LevelCompleteOverlay:new(stage.width, stage.height)
+	levelCompleteOverlay:addEventListener("onDone", onDone)
 	return true
+end
+
+function onDone(event)
+	
 end
 
 function pauseGame()
@@ -145,6 +159,10 @@ function pauseGame()
 	gameLoop:pause()
 	Runtime:removeEventListener("touch", onTouch)
 	levelDirector:pause()
+	playerWeapons.enabled = false
+	if planeShootSoundChannel ~= nil then
+		audio.stop(planeShootSoundChannel)
+	end
 	return true
 end
 
@@ -153,6 +171,7 @@ function unpauseGame()
 	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
 	levelDirector:start()
+	playerWeapons.enabled = true
 	return true
 end
 
@@ -192,105 +211,87 @@ function onTitleScreenHideComplete()
 	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
 	screenTitle:destroy()
 	initializeGame()
-	--startGame()
+	startGame()
 end
 
-function step1()
+function onSystemEvent(event)
+	if event.type == "applicationExit" or event.type == "applicationSuspend" then
+		os.exit()
+	end
+
+	--elseif event.type == "applicationResume"
+end
+
+function initializeGame()
+	print("initializeGame")
 	print("\tstarting physics")
 	physics.start()
-	--physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
-end
 
-function step2()
 	print("\initializing MainContext")
 	context = require("MainContext").new()
 	context:init()
-end
 
-function step3()	
 	print("\tmain group")
 	mainGroup 						= display.newGroup()
 	stage = display.getCurrentStage()
-end
 
-function step4()
 	print("\tdamaged hud")
 	damageHUD = DamageHUD:new()
 	context:createMediator(damageHUD)
 	damageHUD.x = stage.width - 30
 	damageHUD.y = 0
-end
 
-function step5()
 	print("\tscore view")
 	scoreView = ScoreView:new()
 	context:createMediator(scoreView)
 	scoreView.x = scoreView.width / 2
 	scoreView.y = damageHUD.y
-end
 
-function step6()
 	print("\tflight path")
 	flightPath = FlightPath:new()
 	flightPath:setProgress(1, 10)
 	flightPath.x = (stage.width / 2) - (flightPath.width / 2)
-end
 
-function step7()
 	print("\tinit sounds")
 	initSounds()
-end
 
-function step8()
 	print("\tPlayer")
 	player = Player.new()
 	mainGroup:insert(player)
 	context:createMediator(player)
 	--plane:addEventListener("hitPointsChanged", )
-end
 
-function step9()
 	print("\tgame loop")
 	gameLoop = GameLoop:new()
 	gameLoop:addLoop(player)
-end
 
-function step10()
 	print("\tbullet regulator")
 	playerWeapons = PlayerWeapons:new(player, mainGroup, gameLoop)
 	playerWeapons:setPowerLevel(1)
-end
 
-function step11()
+
 	print("\tplane targeting")
 	player.planeXTarget = stage.width / 2
 	player.planeYTarget = stage.height / 2
 	player:move(player.planeXTarget, player.planeYTarget)
 	--[[
-	
+
 	headAnime = HeadNormalAnime:new(4, stage.height - 104)
 	mainGroup:insert(headAnime)
 	--]]
-end
 
-function step12()
 	print("\tpause button")
-	local pauseButton = PauseButton:new(4, stage.height - 40)
-	pauseButton:addEventListener("touch", onPauseTouch)
-end
+	--local pauseButton = PauseButton:new(4, stage.height - 40)
+--	pauseButton:addEventListener("touch", onPauseTouch)
 
-function step13()
 	print("\tparsing level")
-	level = LoadLevelService:new("level.json")
-end
+	level = LoadLevelService:new("level2.json")
 
-function step14()
 	print("\tdrawing flight path checkpoints")
 	flightPath:drawCheckpoints(level)
-end
 
-function step15()
 	print("\tlevel director")
 	levelDirector = LevelDirector:new(level, player, mainGroup, gameLoop)
 	assert(levelDirector ~= nil, "Level Director is null, yo!")
@@ -300,98 +301,20 @@ function step15()
 	levelDirector:addEventListener("onMovie", onMovieStarted)
 	levelDirector:addEventListener("onLevelProgress", onLevelProgress)
 	levelDirector:addEventListener("onLevelComplete", onLevelComplete)
-end
 
-function step16()
 	print("\tmovie player")
 	moviePlayer = MoviePlayerView:new()
 	moviePlayer:addEventListener("movieEnded", onMovieEnded)
-end
 
-function step17()
 	print("\thiding status bar")
 	display.setStatusBar( display.HiddenStatusBar )
-end
 
-function step18()
 	print("\tinitializing keys")
 	initKeys()
-end
+	
+	Runtime:addEventListener("system", onSystemEvent)
 
-function initializeGame()
-	print("initializeGame")
-	
-	--[[
-	step1()
-	
-	step2()
-	
-	step3()
-	
-	--initTerrain()
-
-	step4()
-	
-	step5()
-	
-	step6()
-
-	step7()
-	
-	step8()
-
-	step9()
-	
-	step10()
-	
-	step11()
-
-	step12()
-	
-	step13()
-
-	step14()
-
-	step15()
-	
-	step16()
-	
-	step17()
-
-	step18()
-	
-	]]--
-	
-	
-
-	
-	
-	--print("\tdone initializeGame!")
-	startSteps()
-end
-
-currentStep = 0
-delayTime = 100
-local delayTable = {}
-function delayTable:timer(event)
-	currentStep = currentStep + 1
-	if currentStep < 19 then
-		local functionName = "step" .. currentStep
-		debug("running step " .. currentStep)
-	   	_G[functionName]()
-		timer.performWithDelay(delayTime, delayTable)
-	else
-		startGame()
-	end
-end
-
-function startSteps()
-	print("startSteps")
-	debugText = display.newText("", 0, 0, native.systemFont, 16)
-	debugText:setTextColor(255, 0, 0)
-	debugText.y = 400
-	debugText.x = 150
-    timer.performWithDelay(delayTime, delayTable)	
+	print("\tdone initializeGame!")
 end
 
 function debug(o)
@@ -403,11 +326,30 @@ end
 --initializeGame()
 --startGame()
 
-local stage = display.getCurrentStage()
-screenTitle = ScreenTitle:new(stage.width, stage.height)
-screenTitle:addEventListener("startGame", onStartGameTouched)
-screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
-screenTitle:show()
+function startThisMug()
+	local stage = display.getCurrentStage()
+	screenTitle = ScreenTitle:new(stage.width, stage.height)
+	screenTitle.x = 0
+	screenTitle.y = 0
+	screenTitle:addEventListener("startGame", onStartGameTouched)
+	screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
+	screenTitle:show()
+end
+
+--startThisMug()
+
+display.setStatusBar( display.HiddenStatusBar )
+
+local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)
+local fortressSheetSet = sprite.newSpriteSet(fortressSheet, 1, 6)
+sprite.add(fortressSheetSet, "fortress", 1, 6, 700, 0)
+local fortress = sprite.newSprite(fortressSheetSet)
+fortress:setReferencePoint(display.TopLeftReferencePoint)
+fortress:prepare("fortress")
+fortress:play()
+fortress.x = 0
+fortress.y = 0
+
 
 -- tests
 --[[

@@ -14,12 +14,6 @@ function PlayerBulletSingle:new(startX, startY)
 	img.x = startX
 	img.y = startY
 	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )
-
 	function img:destroy()
 		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeEventListener("collision", img)
@@ -34,8 +28,18 @@ function PlayerBulletSingle:new(startX, startY)
 		end
 	end
 	
-	img.collision = onHit
-	img:addEventListener("collision", img)
+	
+	
+	function img:init()
+		img.collision = onHit
+		img:addEventListener("collision", img)
+		
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+									bodyType = "kinematic", 
+									isBullet = true, isSensor = true, isFixedRotation = true,
+									filter = { categoryBits = 2, maskBits = 4 }
+								} )
+	end
 	
 	function img:tick(millisecondsPassed)
 		if(self.y < 0) then
@@ -56,6 +60,8 @@ function PlayerBulletSingle:new(startX, startY)
 			end
 		end
 	end
+	
+	img:init()
 	
 	return img
 end

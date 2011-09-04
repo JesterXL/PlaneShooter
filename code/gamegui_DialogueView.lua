@@ -10,6 +10,7 @@ function DialogueView:new(right)
 	group.classType = "DialogueView"
 	group:setReferencePoint(display.TopLeftReferencePoint)
 
+	-- 383, 118
 	local img
 	if right == nil or right == false then
 		group.right = false
@@ -46,11 +47,17 @@ function DialogueView:new(right)
 		lightsAnime.y = 91
 	end
 
-	local text = display.newText("", 0, 0, native.systemFont, 16)
-	--local text = native.newTextBox( 0, 0, 267, 70 )
-	--text:setReferencePoint(display.TopLeftReferencePoint)
+	--local text = display.newText("", 0, 0, native.systemFont, 16)
+	local text = native.newTextBox( 0, 0, 278, 68 )
+	text:setReferencePoint(display.TopLeftReferencePoint)
 	text:setTextColor(255, 255, 255)
+	text.hasBackground = false
+	text.isEditable = false
+	text.align = "left"
+	text.size = 16
+	text.font = native.newFont( native.systemFont, 16 )
 	group:insert(text)
+	
 	
 	function group:setText(value)
 		-- TODO: wipe this in (animate mask or whatever)
@@ -59,13 +66,14 @@ function DialogueView:new(right)
 		text.x = 100
 		text.y = 16
 		
+		--[[
 		if group.right == false then
 			text.x = 100 + (text.width / 2)
 		else
 			text.x = 16 + (text.width / 2)
 		end
 		text.y = 16 + (text.height / 2)
-		
+		]]--
 		
 		--[[
 		if group.rect ~= nil then

@@ -25,3 +25,5 @@ constants.DIALOGUE_FADE_IN_TIME					= 300
 constants.DIALOGUE_FADE_OUT_TIME				= 100
 constants.DIALOGUE_MOVE_IN_TIME					= 500
 constants.DIALOGUE_MOVE_OUT_TIME				= 100
+
+constants.LEVEL_COMPLETE_TITLE_SPEED			= 1000

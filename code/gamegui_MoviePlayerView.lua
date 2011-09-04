@@ -47,7 +47,7 @@ function MoviePlayerView:new()
 		local targetY = dialogueView.y
 		targetY = targetY - (dialogueView.height / 2)
 		dialogueView.alpha = 1
-		self.tweenOut = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_OUT_TIME, y=targetY, alpha=0, transition=easing.inExpo})
+		self.tweenOut = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_OUT_TIME, y=targetY, alpha=0, transition=easing.inExpo, onComplete=onHideDialogueComplete})
 		return true
 	end
 	
@@ -62,11 +62,16 @@ function MoviePlayerView:new()
 		local targetY = stage.height - dialogueView.height
 		dialogueView.y = targetY + (dialogueView.height / 2)
 		dialogueView.alpha = 0
+		dialogueView.isVisible = true
 		self.tweenIn = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_IN_TIME, y=targetY, alpha=1, transition=easing.outExpo, onComplete=onShowDialogueComplete})
 	end
 	
 	function onShowDialogueComplete(dialogueView)
 		dialogueView:showLights()
+	end
+	
+	function onHideDialogueComplete(dialogueView)
+		dialogueView.isVisible = false
 	end
 
 	function group:nextDialogue()

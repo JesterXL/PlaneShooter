@@ -59,7 +59,7 @@ function BossBigPlane:new(player)
 	boss.fireCount = 0 -- which gun is firing, cycle through 5
 	boss.fireCountMax = 5
 	boss.lastTick = 0
-	boss.hitPoints = 10
+	boss.hitPoints = 50
 	boss.player = player
 	boss.rot = math.atan2(boss.y -  boss.player.x,  boss.x - boss.player.y) / math.pi * 180 -90;
 	boss.angle = (boss.rot -90) * math.pi / 180;
