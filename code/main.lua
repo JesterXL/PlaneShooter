@@ -226,7 +226,7 @@ function initializeGame()
 	print("initializeGame")
 	print("\tstarting physics")
 	physics.start()
-	physics.setDrawMode( "hybrid" )
+	--physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
 
 	print("\initializing MainContext")
@@ -340,6 +340,7 @@ end
 
 display.setStatusBar( display.HiddenStatusBar )
 
+--[[
 local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)
 local fortressSheetSet = sprite.newSpriteSet(fortressSheet, 1, 6)
 sprite.add(fortressSheetSet, "fortress", 1, 6, 700, 0)
@@ -350,6 +351,49 @@ fortress:play()
 fortress.x = 0
 fortress.y = 0
 
+]]--
+
+--[[
+require "Timer"
+
+timer = Timer:new()
+timer:start()
+
+function printTime(event)
+	print("time: ", (timer.totalTime / 1000) .. " seconds")
+end
+
+function togglePause()
+	if timer.paused == false then
+		timer:pause()
+	else
+		timer:unpause()
+	end
+end
+
+Runtime:addEventListener("enterFrame", printTime)
+]]--
+
+--[[
+local img = display.newImage("player.png")
+
+function img:fade()
+	self.alpha = 0
+	self.tween = transition.to(self, {time=500, alpha=1, onComplete=img.onFadeIn})
+end
+
+function img:onFadeIn()
+	transition.cancel(self.tween)
+	self.tween = transition.to(self, {time=500, alpha=0, onComplete=img.onFadeOut})
+end
+
+function img:onFadeOut()
+	transition.cancel(self.tween)
+	self:removeSelf()
+end
+
+img:fade()
+]]--
 
 -- tests
 --[[
@@ -403,3 +447,103 @@ group:insert(greenRect)
 ]]--
 
 
+--[[
+
+
+require "gamegui_StoreAndScoresView"
+require "gameNetwork"
+require "gamegui_BuySellEquipView"
+require "gamegui_StoreInventory"
+
+
+function onHighscores()
+	print("onHighscore")
+	local platform = system.getInfo("platformName")
+	
+	showOpenFeint()
+	
+	--if platform == "Android" then
+		-- Papaya for Android
+	--	showPapaya()
+	--elseif platform == "iPhone OS" then
+		-- OpenFeint for iOS
+	--	showOpenFeint()
+	--end
+	
+	return true
+end
+
+function showPapaya()
+	gameNetwork.init("papaya", "asdf")
+	gameNetwork.show("leaderboards")
+end
+
+function showOpenFeint()
+	gameNetwork.init("openfeint", "asdf", "asdf", "JesterXL: Invaded Skies", "1337")
+	gameNetwork.show("leaderboards")
+end
+
+function onStore()
+	storeAndScoresView:hide()
+	
+	buySellEquipView = BuySellEquipView:new(stage.width, stage.height)
+	print("buySellEquipView: ", buySellEquipView)
+	local t = {}
+	function t:onBack(event)
+		print("onBack")
+	end
+	function t:onBuy(event)
+		buySellEquipView:hide()
+		if storeInventory == nil then
+			storeInventory = StoreInventory:new(stage.width, stage.height)
+		end
+		
+	end
+	function t:onSell(event)
+		print("onSell")
+	end
+	function t:onEquip(event)
+		print("onEquip")
+	end
+	buySellEquipView:addEventListener("onBack", t)
+	buySellEquipView:addEventListener("onBuy", t)
+	buySellEquipView:addEventListener("onSell", t)
+	buySellEquipView:addEventListener("onEquip", t)
+	buySellEquipView:show()
+end
+
+stage = display.getCurrentStage()
+storeAndScoresView = StoreAndScoresView:new(stage.width, stage.height)
+--storeAndScoresView:addEventListener("onLeave", onLeave)
+storeAndScoresView:addEventListener("onStore", onStore)
+storeAndScoresView:addEventListener("onHighscores", onHighscores)
+storeAndScoresView:show()
+
+]]--
+
+require "gamegui_InventoryList"
+stage = display.getCurrentStage()
+inventoryList = InventoryList:new(300, 400)
+
+items = {}
+local i
+local max = 20
+for i=1,max,1 do
+	local vo = {icon="jxl_logo.png", description="Some item, yo. It's often that you'll encounter cow to eat muffins on Wednesdays before 3:00pm. You dig?"}
+	table.insert(items, vo)
+end
+inventoryList:setDataProvider(items)
+
+--[[
+require "gtween"
+local img = display.newImage("player.png")
+img.x = 400
+gtween.new(img, .5, {x=0}, {ease=gtween.easing.outBounce})
+]]--
+
+--[[
+require "gtween"
+local img = display.newImage("player.png")
+img.x = 400
+gtween.new(img, .5, {x=0}, {transitionEase=gtween.easing.outBounce})
+]]--

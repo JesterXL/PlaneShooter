@@ -1,4 +1,5 @@
-local gtween = require("gtween")
+require("gtween")
+
 ScreenTitle = {}
 
 function ScreenTitle:new(width, height)
