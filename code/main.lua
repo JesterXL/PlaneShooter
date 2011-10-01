@@ -1,34 +1,41 @@
 require "sprite"
 require "physics"
-require "constants"
-require "ScrollingTerrain"
-require "game_GameLoop"
-require "game_LevelDirector"
 
-require "player_PlayerWeapons"
-require "player_Player"
-require "player_PlayerBulletSingle"
-require "player_PlayerRailGun"
-require "enemies_EnemySmallShip"
-require "enemies_EnemySmallShipDeath"
-require "enemies_EnemyBulletSingle"
-require "gamegui_DamageHUD"
-require "enemies_BossBigPlane"
-require "enemies_EnemyMissileJet"
-require "enemies_EnemyMissile"
+require "com.jessewarden.planeshooter.core.constants"
 
-require "gamegui_animations_HeadNormalAnime"
-require "gamegui_buttons_PauseButton"
-require "gamegui_ScoreView"
-require "gamegui_DialogueView"
-require "gamegui_MoviePlayerView"
-require "gamegui_FlightPathCheckpoint"
-require "gamegui_FlightPath"
-require "gamegui_LevelCompleteOverlay"
+require "com.jessewarden.planeshooter.gamegui.controls.ScrollingTerrain"
+require "com.jessewarden.planeshooter.core.GameLoop"
+require "com.jessewarden.planeshooter.core.LevelDirector"
 
-require "services_LoadLevelService"
+require "com.jessewarden.planeshooter.sprites.player.PlayerWeapons"
+require "com.jessewarden.planeshooter.sprites.player.Player"
+require "com.jessewarden.planeshooter.sprites.player.PlayerBulletSingle"
+require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
 
-require "screen_title"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShip"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShipDeath"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
+require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissileJet"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
+
+require "com.jessewarden.planeshooter.gamegui.DamageHUD"
+
+require "com.jessewarden.planeshooter.gamegui.animations.HeadNormalAnime"
+require "com.jessewarden.planeshooter.gamegui.controls.PauseButton"
+require "com.jessewarden.planeshooter.gamegui.ScoreView"
+require "com.jessewarden.planeshooter.gamegui.DialogueView"
+require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
+require "com.jessewarden.planeshooter.gamegui.FlightPathCheckpoint"
+require "com.jessewarden.planeshooter.gamegui.FlightPath"
+require "com.jessewarden.planeshooter.gamegui.LevelCompleteOverlay"
+
+require "com.jessewarden.planeshooter.services.LoadLevelService"
+
+require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
+
+require "com.jessewarden.planeshooter.rl.MainContext"
+require "com.jessewarden.planeshooter.rl.mediators.PlayerMediator"
 
 
 
@@ -46,6 +53,7 @@ end
 
 function stopScrollingTerrain()
 	--removeLoop(terrainScroller)
+	return 1, 2, 3
 end
 
 function onTouch(event)
@@ -210,7 +218,12 @@ function onTitleScreenHideComplete()
 	screenTitle:removeEventListener("screenTitle", onStartGameTouched)
 	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
 	screenTitle:destroy()
-	initializeGame()
+	--assert(initializeGame(), "Failed to initialze game");
+	local status, err = pcall(initializeGame)
+	if status == false then
+		print("error: ", err)
+		return false
+	end
 	startGame()
 end
 
@@ -225,13 +238,13 @@ end
 function initializeGame()
 	print("initializeGame")
 	print("\tstarting physics")
-	physics.start()
-	--physics.setDrawMode( "hybrid" )
-	physics.setGravity( 0, 0 )
+	startPhysics()
 
-	print("\initializing MainContext")
-	context = require("MainContext").new()
-	context:init()
+	print("\tinitializing MainContext")
+	print("\tMainContext: ", MainContext)
+	context = assert(MainContext:new(), "Failed to create MainContext")
+	print("\tcontext: ", context, ", context.init: ", context.init)
+	assert(context:startup(), "Failed to boot Robotlegs.")
 
 	print("\tmain group")
 	mainGroup 						= display.newGroup()
@@ -315,12 +328,15 @@ function initializeGame()
 	Runtime:addEventListener("system", onSystemEvent)
 
 	print("\tdone initializeGame!")
+	return true
 end
 
-function debug(o)
-	print(o)
-	debugText.text = o
+function startPhysics()
+	physics.start()
+	physics.setDrawMode( "hybrid" )
+	physics.setGravity( 0, 0 )
 end
+
 
 
 --initializeGame()
@@ -328,7 +344,7 @@ end
 
 function startThisMug()
 	local stage = display.getCurrentStage()
-	screenTitle = ScreenTitle:new(stage.width, stage.height)
+	screenTitle = TitleScreen:new(stage.width, stage.height)
 	screenTitle.x = 0
 	screenTitle.y = 0
 	screenTitle:addEventListener("startGame", onStartGameTouched)
@@ -336,9 +352,75 @@ function startThisMug()
 	screenTitle:show()
 end
 
---startThisMug()
+startThisMug()
 
 display.setStatusBar( display.HiddenStatusBar )
+
+local function testingMainContext()
+	print("testingMainContext")
+	local context = assert(MainContext:new(), "Failed to instantiate MainContext.")
+	print("context: ", context)
+end
+--testingMainContext()
+
+local function testingMainContextInit()
+	print("testingMainContext")
+	local context = assert(MainContext:new(), "Failed to instantiate MainContext.")
+	print("context: ", context)
+	assert(context:startup(), "Failed to startup MainContext.")
+end
+--testingMainContextInit()
+
+local function reflectionTest()
+	for key,value in pairs(_G["Player"]) do
+	    print("found member " .. key);
+	end
+end
+--reflectionTest()
+
+local function packageParseTest()
+	local first = "Player"
+	local startIndex = 1
+	local endIndex = 1
+	local lastStartIndex = 1
+	local lastEndIndex = 1
+	while startIndex do
+		startIndex,endIndex = first:find(".", startIndex, true)
+		if startIndex ~= nil and endIndex ~= nil then
+			lastStartIndex = startIndex
+			lastEndIndex = endIndex
+			startIndex = startIndex + 1
+			endIndex = endIndex + 1
+		end
+	end
+	local className = first:sub(lastStartIndex + 1)
+	print("className: ", className)
+end
+--packageParseTest()
+
+local function mapTest()
+	local context = Context:new()
+	assert(context:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", 
+								"com.jessewarden.planeshooter.rl.mediators.PlayerMediator"), "Could not map mediators.")
+end
+--mapTest()
+
+local function testPlayer()
+	startPhysics()
+	local player = assert(Player:new(), "Failed to create player.")
+end
+--testPlayer()
+
+local function mapAndCreateTest()
+	startPhysics()
+	local context = Context:new()
+	assert(context:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", 
+								"com.jessewarden.planeshooter.rl.mediators.PlayerMediator"), "Could not map mediators.")
+	local player = assert(Player:new(), "Failed to create Player.")
+	assert(context:createMediator(player))
+end
+--mapAndCreateTest()
+	
 
 --[[
 local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)
@@ -446,14 +528,13 @@ greenRect.strokeWidth = 4
 group:insert(greenRect)
 ]]--
 
-
 --[[
 
-
-require "gamegui_StoreAndScoresView"
 require "gameNetwork"
-require "gamegui_BuySellEquipView"
-require "gamegui_StoreInventory"
+
+require "com.jessewarden.planeshooter.gamegui.StoreAndScoresView"
+require "com.jessewarden.planeshooter.gamegui.BuySellEquipView"
+require "com.jessewarden.planeshooter.gamegui.StoreInventory"
 
 
 function onHighscores()
@@ -521,6 +602,8 @@ storeAndScoresView:show()
 
 ]]--
 
+
+--[[
 require "gamegui_InventoryList"
 stage = display.getCurrentStage()
 inventoryList = InventoryList:new(300, 400)
@@ -533,6 +616,8 @@ for i=1,max,1 do
 	table.insert(items, vo)
 end
 inventoryList:setDataProvider(items)
+]]--
+
 
 --[[
 require "gtween"

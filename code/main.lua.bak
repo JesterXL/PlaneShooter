@@ -1,67 +1,50 @@
 require "sprite"
 require "physics"
-require "constants"
-require "Player"
+
+require "com.jessewarden.planeshooter.core.constants"
+
+require "com.jessewarden.planeshooter.gamegui.controls.ScrollingTerrain"
+require "com.jessewarden.planeshooter.core.GameLoop"
+require "com.jessewarden.planeshooter.core.LevelDirector"
+
+require "com.jessewarden.planeshooter.sprites.player.PlayerWeapons"
+require "com.jessewarden.planeshooter.sprites.player.Player"
+require "com.jessewarden.planeshooter.sprites.player.PlayerBulletSingle"
+require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
+
+require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShip"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShipDeath"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
+require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissileJet"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
+
+require "com.jessewarden.planeshooter.gamegui.DamageHUD"
+
+require "com.jessewarden.planeshooter.gamegui.animations.HeadNormalAnime"
+require "com.jessewarden.planeshooter.gamegui.controls.PauseButton"
+require "com.jessewarden.planeshooter.gamegui.ScoreView"
+require "com.jessewarden.planeshooter.gamegui.DialogueView"
+require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
+require "com.jessewarden.planeshooter.gamegui.FlightPathCheckpoint"
+require "com.jessewarden.planeshooter.gamegui.FlightPath"
+require "com.jessewarden.planeshooter.gamegui.LevelCompleteOverlay"
+
+require "com.jessewarden.planeshooter.services.LoadLevelService"
+
+require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
+
+require "com.jessewarden.planeshooter.rl.MainContext"
+require "com.jessewarden.planeshooter.rl.mediators.PlayerMediator"
 
 
-local function initEnemeyDeath()
-	enemyDeathSheet = sprite.newSpriteSheet("enemy_death_sheet_1.png", 24, 24)
-	enemyDeathSet = sprite.newSpriteSet(enemyDeathSheet, 1, 4)
-	sprite.add(enemyDeathSet, "enemyDeathSheet1", 1, 5, 1000, 1)
-end
 
-local function initPlayerDeath()
-	playerDeathSheet = sprite.newSpriteSheet("player_death_sheet.png", 18, 18)
-	playerDeathSet = sprite.newSpriteSet(playerDeathSheet, 1, 10)
-	sprite.add(playerDeathSet, "playerDeathSheet", 1, 10, 2000, 1)
-end
-
-local function initTerrain()
-	-- NOTE: getting emulator bug with images; hard to tell wtf, so aborting for now
-	if(true) then
-		return
-	end
-	
-	terrain1 = display.newImage("debug_terrain.png", 0, 0)
-	mainGroup:insert(terrain1)
-	terrain2 = display.newImage("debug_terrain.png", 0, 0)
-	mainGroup:insert(terrain2)
-	terrain1.x = 0
-	terrain1.y = 0
---	terrain2.isVisible = false
---	terrain2.x = 0
-	--terrain2.y = terrain1.y + terrain1.height + 4
-	
-	print("terrain1.y: ", terrain1.y, ", stage.y: ", stage.y)
-	
-	terrainScroller = {}
-	terrainScroller.speed = TERRAIN_SCROLL_SPEED
-	terrainScroller.onTerrain = terrain1
-	terrainScroller.offTerrain = terrain2
-	terrainScroller.targetY = -terrain1.height
-	
-	function terrainScroller:tick(millisecondsPassed)
-		local deltaX = self.onTerrain.x
-		local deltaY = self.onTerrain.y - self.targetY
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
-		print("self.onTerrain.y: ", self.onTerrain.y)
-
-		if (self.speed >= dist) then
-			self.y = self.targetY
-			self.onTerrain.y = self.offTerrain.y + self.offTerrain.height
-			local oldOn = self.onTerrain
-			self.onTerrain = self.offTerrain
-			self.offTerrain = oldOn
-		else
-			self.onTerrain.x = self.onTerrain.x - moveX
-			self.onTerrain.y = self.onTerrain.y - moveY
-			self.offTerrain.x = self.onTerrain.x
-			self.offTerrain.y = self.onTerrain.y + self.onTerrain.height + 2
-		end
-	end
+local function initSounds()
+--	planeShootSound = {}
+	audio.reserveChannels(2)
+	planeShootSound = audio.loadSound("plane_shoot.mp3")
+	planeShootSoundChannel = 1
+	audio.setVolume(.1, {channel=planeShootSoundChannel})
 end
 
 function startScrollingTerrain()
@@ -70,835 +53,562 @@ end
 
 function stopScrollingTerrain()
 	--removeLoop(terrainScroller)
-end
-
-local function initHealthBar()
-	healthBarBackground = display.newImage("health_bar_background.png", 0, 0)
-	mainGroup:insert(healthBarBackground)
-	healthBarBackground.x = stage.width - healthBarBackground.width - 8
-	healthBarBackground.y = 8
-	
-	healthBarForeground = display.newImage("health_bar_foreground.png", 0, 0)
-	mainGroup:insert(healthBarForeground)
-	healthBarForeground.x = healthBarBackground.x
-	healthBarForeground.y = healthBarBackground.y
-	healthBarForeground:setReferencePoint(display.TopLeftReferencePoint)
-end
-
-local function initSounds()
-	planeShootSound = audio.loadSound("plane_shoot.wav")
-	enemyDeath1Sound = audio.loadSound("enemy_death_1.mp3")
-	playerHitSound = audio.loadSound("player_hit_sound.mp3")
-	playerDeathSound = audio.loadSound("player_death_sound.mp3")
-end
-
--- from 0 to 1
-function setHealth(value)
-	if(value <= 0) then
-		value = 0.1
-	end
-	
-	healthBarForeground.xScale = value
-	-- NOTE: Makah-no-sense, ese. Basically, setting width is bugged, and Case #677 is documented.
-	-- Meaning, no matter what reference point you set, it ALWAYS resizes from center when setting width/height.
-	-- So, we just increment based on the negative xReference of "how far my left is from my left origin".
-	-- Wow, that was a fun hour.
-	healthBarForeground.x = healthBarBackground.x + healthBarForeground.xReference
-end
-
-function createEnemyDeath(targetX, targetY)
-	local si = sprite.newSprite(enemyDeathSet)
-	mainGroup:insert(si)
-	si.name = "enemyDeathSetYo"
-	si:prepare()
-	function onEnd(event)
-		if(event.phase == "loop") then
-			event.sprite:removeSelf()
-		end
-	end
-	si:addEventListener("sprite", onEnd)
-	si:play()
-	si.x = targetX
-	si.y = targetY
-	return si
-end
-
-function createPlayerDeath(targetX, targetY)
-	local si = sprite.newSprite(playerDeathSet)
-	mainGroup:insert(si)
-	si.name = "playerDeathSetYo"
-	si:prepare()
-	function onEnd(event)
-		if(event.phase == "loop") then
-			event.sprite:removeSelf()
-		end
-	end
-	si:addEventListener("sprite", onEnd)
-	si:play()
-	si.x = targetX
-	si.y = targetY
-	return si
-end
-
-
-
-local function createEnemyPlane(filename, name, startX, startY, bottom)
-	local img = display.newImage(filename)
-	mainGroup:insert(img)
-	img.name = name
-	img.speed = ENEMY_1_SPEED
-	img.x = startX
-	img.y = startY
-	img.bottom = bottom
-	img.fireTime = 1500 -- milliseconds
-	img.fired = false
-	
-	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 4, maskBits = 3 }
-							} )
-								
-	addLoop(img)
-	
-	function img:destroy()
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function onHit(self, event)
-		if(event.other.name == "Bullet") then
-			createEnemyDeath(self.x, self.y)
-			local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound, {loops=0})
-			audio.setVolume(.25, {channel = enemyDeath1SoundChannel})
-			self:dispatchEvent({name="enemyDead", target=self})
-			self:destroy()
-			event.other:destroy()
-		end
-	end
-	
-	img.collision = onHit
-	img:addEventListener("collision", img)
-	
-	function img:tick(millisecondsPassed)
-		
-		if(self.fired == false) then
-			self.fireTime = self.fireTime - millisecondsPassed
-			if(self.fireTime <= 0) then
-				self.fired = true
-				createEnemyBullet(self.x, self.y, plane)
-			end
-		end
-			
-		
-		if(self.y > bottom) then
-			return
-		else
-			local deltaX = 0
-			local deltaY = self.y - bottom
-			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
-
-			if (self.speed >= dist) then
-				self.y = bottom
-				self:destroy()
-			else
-				self.y = self.y - moveY
-			end
-		end
-			
-	end
-	
-	return img	
-end
-
-local function createBullet1(startX, startY)
-	if(bullets + 1 > MAX_BULLET_COUNT) then
-		return
-	else
-		bullets = bullets + 1
-	end
-	
-	local img = display.newImage("player_bullet_1.png")
-	mainGroup:insert(img)
-	img.name = "Bullet"
-	img.speed = PLAYER_BULLET_SPEED
-	img.x = startX
-	img.y = startY
-	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )
-								
-	addLoop(img)
-	
-	function img:destroy()
-		bullets = bullets - 1
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function onHit(self, event)
-		if(event.other.name == "Bullet") then
-			self:destroy()
-			event.other:destroy()
-		end
-	end
-	
-	img.collision = onHit
-	img:addEventListener("collision", img)
-	
-	function img:tick(millisecondsPassed)
-		if(self.y < 0) then
-			self:destroy()
-			return
-		else
-			local deltaX = 0
-			local deltaY = self.y - 0
-			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
-			
-			if (self.speed >= dist) then
-				self:destroy()
-			else
-				self.y = self.y - moveY
-			end
-		end
-	end
-	
-	return img
-end
-
-local function createBullet2(startX, startY)
-	if(bullets + 1 > MAX_BULLET_COUNT) then
-		return
-	else
-		bullets = bullets + 1
-	end
-	
-	local img = display.newImage("player_bullet_2.png")
-	mainGroup:insert(img)
-	img.name = "Bullet"
-	img.speed = PLAYER_BULLET_SPEED
-	img.x = startX
-	img.y = startY
-	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )
-								
-	addLoop(img)
-	
-	function img:destroy()
-		bullets = bullets - 1
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function onHit(self, event)
-		if(event.other.name == "Bullet") then
-			self:destroy()
-			event.other:destroy()
-		end
-	end
-	
-	img.collision = onHit
-	img:addEventListener("collision", img)
-	
-	function img:tick(millisecondsPassed)
-		if(self.y < 0) then
-			self:destroy()
-			return
-		else
-			local deltaX = 0
-			local deltaY = self.y - 0
-			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
-			
-			if (self.speed >= dist) then
-				self:destroy()
-			else
-				self.y = self.y - moveY
-			end
-		end
-	end
-	
-	return img
-end
-
-local function createBullet3(startX, startY)
-	if(bullets + 1 > MAX_BULLET_COUNT) then
-		return
-	else
-		bullets = bullets + 1
-	end
-	
-	local centerImage = display.newImage("player_bullet_2.png")
-	local leftImage = display.newImage("player_bullet_1.png")
-	local rightImage = display.newImage("player_bullet_1.png") 
-	mainGroup:insert(centerImage)
-	mainGroup:insert(leftImage)
-	mainGroup:insert(rightImage)
-	centerImage.name = "Bullet"
-	leftImage.name = "Bullet"
-	rightImage.name = "Bullet"
-	centerImage.speed = PLAYER_BULLET_SPEED
-	leftImage.speed = PLAYER_BULLET_SPEED
-	rightImage.speed = PLAYER_BULLET_SPEED
-	leftImage.x = startX
-	leftImage.y = startY
-	rightImage.x = startX
-	rightImage.y = startY
-	centerImage.x = startX
-	centerImage.y = startY
-	leftImage.rotation = -45
-	rightImage.rotation = 45
-	
-	physics.addBody( centerImage, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )
-	physics.addBody( leftImage, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )						
-	
-	physics.addBody( rightImage, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )						
-								
-	addLoop(leftImage)
-	addLoop(rightImage)
-	addLoop(centerImage)
-	
-	function leftImage:destroy()
-		bullets = bullets - 1
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function rightImage:destroy()
-		bullets = bullets - 1
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function centerImage:destroy()
-		bullets = bullets - 1
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function onHit(self, event)
-		if(event.other.name == "Bullet") then
-			self:destroy()
-			event.other:destroy()
-		end
-	end
-	
-	leftImage.collision = onHit
-	leftImage:addEventListener("collision", leftImage)
-	
-	rightImage.collision = onHit
-	rightImage:addEventListener("collision", rightImage)
-	
-	centerImage.collision = onHit
-	centerImage:addEventListener("collision", centerImage)
-	
-	function centerImage:tick(millisecondsPassed)
-		if(self.y < 0) then
-			self:destroy()
-			return
-		else
-			local deltaX = 0
-			local deltaY = self.y - 0
-			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-			local moveX = self.speed * (deltaX / dist)
-			local moveY = self.speed * (deltaY / dist)
-			
-			if (self.speed >= dist) then
-				self:destroy()
-			else
-				self.y = self.y - moveY
-			end
-		end
-	end
-	
-	leftImage.rot = math.atan2(leftImage.y -  -800,  leftImage.x - -800) / math.pi * 180 -90;
-	leftImage.angle = (leftImage.rot -90) * math.pi / 180;
-	
-	rightImage.rot = math.atan2(rightImage.y -  -800,  rightImage.x - 800) / math.pi * 180 -90;
-	rightImage.angle = (rightImage.rot -90) * math.pi / 180;
-	
-	function leftImage:tick(millisecondsPassed)
-		self.x = self.x + math.cos(self.angle) * self.speed
-	   	self.y = self.y + math.sin(self.angle) * self.speed
-	end
-	
-	function rightImage:tick(millisecondsPassed)
-		self.x = self.x + math.cos(self.angle) * self.speed
-	   	self.y = self.y + math.sin(self.angle) * self.speed
-	end
-	
-	return centerImage, leftImage, rightImage
-end
-
-function createEnemyBullet(startX, startY, targetPoint)
-	local img = display.newImage("bullet.png")
-	mainGroup:insert(img)
-	img.name = "Bullet"
-	img.speed = ENEMY_1_BULLET_SPEED
-	img.x = startX
-	img.y = startY
-	img.targetX = targetPoint.x
-	img.targetY = targetPoint.y
-	-- TODO: use math.deg vs. manual conversion
-	img.rot = math.atan2(img.y -  img.targetY,  img.x - img.targetX) / math.pi * 180 -90;
-	img.angle = (img.rot -90) * math.pi / 180;
-	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 8, maskBits = 1 }
-							} )
-								
-	addLoop(img)
-	
-	function onHit(self, event)
-		if(event.other.name == "Player") then
-			event.other:onBulletHit()
-			self:destroy()
-		end
-	end
-
-	img.collision = onHit
-	img:addEventListener("collision", img)
-	
-	function img:destroy()
-		removeLoop(self)
-		self:removeSelf()
-	end
-	
-	function img:tick(millisecondsPassed)
-		
-		-- TODO: make sure using milliseconds vs. hardcoding step speed
-		
-		--print("angle: ", self.angle, ", math.cos(self.angle): ", math.cos(self.angle))
-		self.x = self.x + math.cos(self.angle) * self.speed
-	   	self.y = self.y + math.sin(self.angle) * self.speed
-		
-		--[[
-		local deltaX = self.x + math.cos(self.angle)
-		local deltaY = self.y + math.sin(self.angle)
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
-		
-		if (self.speed >= dist) then
-			self:destroy()
-		else
-			self.x = self.x + moveX
-			self.y = self.y + moveY
-		end
-		]]--
-	end
-	
-	return img
-end
-
-function createPowerUp(x, y)
-	local img = display.newImage("icon_power_up.png")
-	img.x = x
-	img.y = y
-	img.lifetime = 5000 -- milliseconds
-	
-
-	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = false, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 16, maskBits = 1 }
-							} )
-				
-	addLoop(img)
-			
-	function onHit(self, event)
-		if(event.other.name == "Player") then
-			addPowerUp()
-			local result = removeLoop(img)
-			print("result of removing myself upon a collision: ", result)
-			img:removeSelf()
-			img = nil
-			return true
-		end
-	end
-	
-	function img:tick(millisecondsPassed)
-		-- TODO/FIXME/BUG: this is weird; it's a non-nil reference, but it's jsut a table
-		if(img.removeSelf ~= nil) then
-			img.lifetime = img.lifetime - millisecondsPassed
-			if(img.lifetime <= 0) then
-				img:removeSelf()
-			end
-		end
-	end
-	
-	img.collision = onHit
-	img:addEventListener("collision", img)
-	
-	return img
-end
-
-
-function createBoss()
-	local bossSheet = sprite.newSpriteSheet("boss_sheet_1.png", 143, 96)
-	local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
-	--sprite.add(bossSet, "bossSheetSet1", 1, 3, 500, 0)
-	local boss = sprite.newSprite(bossSet)
-	boss:setReferencePoint(display.TopLeftReferencePoint)
-	mainGroup:insert(boss)
-	boss.name = "Boss"
-	boss:prepare()
-	boss:play()
-	local middle = (stage.width / 2) - (boss.width / 2)
-	boss.x = middle
-	boss.y = -boss.height
-	boss.speed = 1
-	boss.targetX = stage.width / 2 - boss.width / 2
-	boss.targetY = boss.height
-	boss.gunPoint1 = {x = 71, y = 23}
-	boss.gunPoint2 = {x = 71, y = 44}
-	boss.gunPoint3 = {x = 71, y = 68}
-	boss.leftGunPoint = {x = 71, y = 68}
-	boss.rightGunPoint = {x = 71, y = 68}
-	boss.fireSpeed = 1600
-	boss.lastTick = 0
-	boss.hitPoints = 100
-	boss.hitSound = audio.loadSound("boss_hit_sound.mp3")
-	
-	local halfWidth = boss.width / 2
-	local halfHeight = boss.height / 2
-	local bossShape = {82-halfWidth,48-halfHeight, 98-halfWidth,94-halfHeight, 45-halfWidth,94-halfHeight, 62-halfWidth,48-halfHeight, 0-halfWidth,30-halfHeight, 0-halfWidth,0-halfHeight, 143-halfWidth,0-halfHeight, 143-halfWidth,30-halfHeight} 
-	
-	physics.addBody( boss, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = false, isSensor = true, isFixedRotation = false,
-								shape=bossShape,
-								filter = { categoryBits = 4, maskBits = 3 }
-							} )
-								
-	addLoop(boss)
-	
-	
-	function boss:destroy()
-		removeLoop(self)
-		createEnemyDeath(self.x, self.y)
-		local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound)
-		audio.setVolume(1, {channel = enemyDeath1SoundChannel})
-		self:dispatchEvent({name="enemyDead", target=self})
-		self:removeSelf()
-	end
-	
-	function moveToFiringPosition(self, millisecondsPassed)
-		local deltaX = self.x - self.targetX
-		local deltaY = self.y - self.targetY
-		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
-
-		local moveX = self.speed * (deltaX / dist)
-		local moveY = self.speed * (deltaY / dist)
-		
-		if (self.speed >= dist) then
-			boss.tick = insanityFiringMode
-		else
-			self.x = self.x - moveX
-			self.y = self.y - moveY
-		end
-	end
-	
-	function insanityFiringMode(self, millisecondsPassed)
-		self.lastTick = self.lastTick + millisecondsPassed
-		if(self.lastTick >= self.fireSpeed) then
-			-- TODO: making this harder for player would be to have fire at delayed times vs. all at once
-			createEnemyBullet(self.gunPoint1.x + self.x, self.gunPoint1.y + self.y, plane)
-			createEnemyBullet(self.gunPoint2.x + self.x, self.gunPoint2.y + self.y, plane)
-			createEnemyBullet(self.gunPoint3.x + self.x, self.gunPoint3.y + self.y, plane)
-			createEnemyBullet(self.leftGunPoint.x + self.x, self.leftGunPoint.y + self.y, {x = -30, y = self.leftGunPoint.y + self.y})
-			createEnemyBullet(self.rightGunPoint.x + self.x, self.rightGunPoint.y + self.y, {x = stage.width + 30, y = self.rightGunPoint.y + self.y})
-			self.lastTick = 0
-		else
-			self.lastTick = self.lastTick + millisecondsPassed
-		end
-	end
-	
-	boss.tick = moveToFiringPosition
-	
-	function onHit(self, event)
-		if(event.other.name == "Bullet") then
-			self.hitPoints = self.hitPoints - 1
-			if(self.hitPoints <= 0) then
-				self:destroy()
-			else
-				--local hitSoundChannel = audio.play(self.hitSound)
-				local hitSoundChannel = audio.play(playerHitSound)
-				audio.setVolume(.5, {channel=hitSoundChannel})
-				createEnemyDeath(event.other.x, event.other.y)
-				event.other:destroy()
-			end
-		end
-	end
-	
-	boss.collision = onHit
-	boss:addEventListener("collision", boss)
-	
-	return boss
-end
-
-function addPowerUp()
-	setPowerUpLevel(powerUpLevel + 1)
-end
-
-function removePowerUp()
-	if(powerUpLevel > 1) then
-		setPowerUpLevel(powerUpLevel - 1)
-	end
-end
-
-function addLoop(o)
-	table.insert(tickers, o)
-end
-
-function removeLoop(o)
-	for i,v in ipairs(tickers) do
-		if(v == o) then
-			table.remove(tickers, i)
-			return true
-		end	
-	end
-	print("!! item not found !!")
-	return false
-end
-
-local function startFiringBullets()
-	addLoop(bulletRegulator)
-	bulletRegulator:tick(333)
-end
-
-local function stopFiringBullets()
-	removeLoop(bulletRegulator)
-end
-
-function animate(event)
-	local now = system.getTimer()
-	local difference = now - lastTick
-	lastTick = now
-	
-	for i,v in ipairs(tickers) do
-		v:tick(difference)
-	end
+	return 1, 2, 3
 end
 
 function onTouch(event)
-	if(event.phase == "began") then
-		startFiringBullets()
-		if(planeShootSoundChannel == nil) then
-			audio.setVolume( .25, { channel=1 } )
-			planeShootSoundChannel = audio.play(planeShootSound, {channel=1, loops=-1, fadein=100})
-		end
-	end
-		
-		
+	--print("onTouch, event.phase: ", event.phase)
+	local handled = false
 	if(event.phase == "began" or event.phase == "moved") then
-		planeXTarget = event.x
-		planeYTarget = event.y
+		player:setDestination(event.x, event.y - 40)
+		handled = true
 	end
-	
+
+	if(event.phase == "began") then
+		playerWeapons.enabled = true
+		audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1})
+		handled = true
+	end
+
 	if(event.phase == "ended" or event.phase == "cancelled") then
-		stopPlayerInteraction()
-	end
-end
-
-function stopPlayerInteraction()
-	stopFiringBullets()
-	audio.fadeOut({channel=1, time=100})
-	planeShootSoundChannel = nil
-end
-
-function endGame()
-	print("endGame")
-	Runtime:removeEventListener("enterFrame", animate )
-	Runtime:removeEventListener("touch", onTouch)
-	timer.cancel(gameTimer)
-	gameTimer = nil
-	stopScrollingTerrain()
-end
-
-function setPowerUpLevel(level)
-	if(level > 3) then
-		level = 3
+		playerWeapons.enabled = false
+		if planeShootSoundChannel ~= nil then
+			audio.stop(planeShootSoundChannel)
+		end
+		handled = true
 	end
 	
-	powerUpLevel = level
-	if(powerUpLevel <= 3) then
-		PLAYER_BULLET_SPEED = 10
-		--PLAYER_MOVE_SPEED = 7
-		plane.speed = PLAYER_MOVE_SPEED
-	end
-	
-	if(powerUpLevel == 1) then
-		bulletRegulator.fireFunc = createBullet1
-	elseif(powerUpLevel == 2) then
-		bulletRegulator.fireFunc = createBullet2
-	elseif(powerUpLevel == 3) then
-		bulletRegulator.fireFunc = createBullet3
-	end
-	--[[
-	elseif(powerUpLevel == 4) then
-		return
-		PLAYER_BULLET_SPEED = 14
-		PLAYER_MOVE_SPEED = 11
-		plane.speed = PLAYER_MOVE_SPEED
-	end
-	]]--
+	return handled
 end
 
 function startBossFight()
-	print("-- startBossFight --")
 	if(fightingBoss == false) then
 		fightingBoss = true
-		timer.cancel(gameTimer)
-		gameTimer = nil
 		local delayTable = {}
 		function delayTable:timer(event)
-		    createBoss()
+		   createBoss()
         end
         timer.performWithDelay(200, delayTable)
 	end
 end
 
+function initKeys()
+
+	local function onKeyEvent( event )
+	        local phase = event.phase
+	        local keyName = event.keyName
+	        print("phase: ", phase, ", keyName: ", keyName)
+
+	        -- we handled the event, so return true.
+	        -- for default behavior, return false.
+	        return true
+	end
+
+	Runtime:addEventListener( "key", onKeyEvent );
+end
+
+
 function startGame()
-	Runtime:addEventListener("enterFrame", animate )
+	-- TOOD: use director, pause it
+	gameLoop:reset()
+	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
-	local t = {}
-	function t:timer(event)
-		--event.time
-		-- timer.cancel( event.source ) 
-		local randomX = stage.width * math.random()
-		if(randomX < 20) then
-			randomX = 20
-		end
-		
-		if(randomX > stage.width - 20) then
-			randomX = stage.width - 20
-		end
-			
-		local enemyPlane = createEnemyPlane("enemy_1.png", "Enemy1", randomX, 0, stage.height)
-		function onDead(event)
-			
-			enemies = enemies - 1
-			if(enemies <= 0) then
-				startBossFight()
-			end
-			
-			powerCount = powerCount - 1
-			if(powerCount <= 0) then
-				powerCount = POWER_MAX_COUNT
-				-- NOTE: You have to set a delay; adding physics bodies during a collision event (within the stack)
-				-- will cause a hard crash
-				local delayTable = {}
-				delayTable.x = event.target.x
-				delayTable.y = event.target.y
-				function delayTable:timer(event)
-				    createPowerUp(self.x, self.y)
-		        end
-		        timer.performWithDelay(200, delayTable)
-				
-			end
-		end
-		enemyPlane:addEventListener("enemyDead", onDead)
+	startScrollingTerrain()
+	levelDirector:start()
+end
+
+function stopGame()
+	gameLoop:pause()
+	Runtime:removeEventListener("touch", onTouch)
+	stopScrollingTerrain()
+	levelDirector:pause()
+	playerWeapons.enabled = false
+	if planeShootSoundChannel ~= nil then
+		audio.stop(planeShootSoundChannel)
+	end
+end
+
+function onMovieStarted(event)
+	pauseGame()
+	moviePlayer:startMovie(event.movie)
+	return true
+end
+
+function onMovieEnded(event)
+	unpauseGame()
+	return true
+end
+
+function onLevelProgress(event)
+	flightPath:setProgress(event.progress, 1)
+end
+
+function onLevelComplete(event)
+	--gameLoop:pause()
+	Runtime:removeEventListener("touch", onTouch)
+	stopScrollingTerrain()
+	levelDirector:pause()
+	playerWeapons.enabled = false
+	if planeShootSoundChannel ~= nil then
+		audio.stop(planeShootSoundChannel)
 	end
 	
-	gameTimer = timer.performWithDelay(500, t, 0)
+	levelCompleteOverlay = LevelCompleteOverlay:new(stage.width, stage.height)
+	levelCompleteOverlay:addEventListener("onDone", onDone)
+	return true
+end
+
+function onDone(event)
 	
-	startScrollingTerrain()
+end
+
+function pauseGame()
+	print("pauseGame")
+	gameLoop:pause()
+	Runtime:removeEventListener("touch", onTouch)
+	levelDirector:pause()
+	playerWeapons.enabled = false
+	if planeShootSoundChannel ~= nil then
+		audio.stop(planeShootSoundChannel)
+	end
+	return true
+end
+
+function unpauseGame()
+	print("unpauseGame")
+	gameLoop:start()
+	Runtime:addEventListener("touch", onTouch)
+	levelDirector:start()
+	playerWeapons.enabled = true
+	return true
+end
+
+function togglePause()
+	if(gameLoop.paused == true) then
+		return unpauseGame()
+	else
+		return pauseGame()
+	end
+end
+
+function onPauseTouch(event)
+	print("onPauseTouch")
+	if(event.phase == "began") then
+		togglePause()
+	end
+	
+	return true
+end
+
+function onKeyEvent( event )
+	if(event.keyName == "menu") then
+		if(gameLoop.paused == true) then
+			unpauseGame()
+		else
+			pauseGame()
+		end
+	end
+end
+
+function onStartGameTouched(event)
+	screenTitle:hide()
+end
+
+function onTitleScreenHideComplete()
+	screenTitle:removeEventListener("screenTitle", onStartGameTouched)
+	screenTitle:removeEventListener("hideComplete", onTitleScreenHideComplete)
+	screenTitle:destroy()
+	--assert(initializeGame(), "Failed to initialze game");
+	local status, err = pcall(initializeGame)
+	if status == false then
+		print("error: ", err)
+		return false
+	end
+	startGame()
+end
+
+function onSystemEvent(event)
+	if event.type == "applicationExit" or event.type == "applicationSuspend" then
+		os.exit()
+	end
+
+	--elseif event.type == "applicationResume"
+end
+
+function initializeGame()
+	print("initializeGame")
+	print("\tstarting physics")
+	startPhysics()
+
+	print("\tinitializing MainContext")
+	print("\tMainContext: ", MainContext)
+	context = assert(MainContext:new(), "Failed to create MainContext")
+	print("\tcontext: ", context, ", context.init: ", context.init)
+	assert(context:startup(), "Failed to boot Robotlegs.")
+
+	print("\tmain group")
+	mainGroup 						= display.newGroup()
+	stage = display.getCurrentStage()
+
+	print("\tdamaged hud")
+	damageHUD = DamageHUD:new()
+	context:createMediator(damageHUD)
+	damageHUD.x = stage.width - 30
+	damageHUD.y = 0
+
+	print("\tscore view")
+	scoreView = ScoreView:new()
+	context:createMediator(scoreView)
+	scoreView.x = scoreView.width / 2
+	scoreView.y = damageHUD.y
+
+	print("\tflight path")
+	flightPath = FlightPath:new()
+	flightPath:setProgress(1, 10)
+	flightPath.x = (stage.width / 2) - (flightPath.width / 2)
+
+	print("\tinit sounds")
+	initSounds()
+
+	print("\tPlayer")
+	player = Player.new()
+	mainGroup:insert(player)
+	context:createMediator(player)
+	--plane:addEventListener("hitPointsChanged", )
+
+	print("\tgame loop")
+	gameLoop = GameLoop:new()
+	gameLoop:addLoop(player)
+
+	print("\tbullet regulator")
+	playerWeapons = PlayerWeapons:new(player, mainGroup, gameLoop)
+	playerWeapons:setPowerLevel(1)
+
+
+	print("\tplane targeting")
+	player.planeXTarget = stage.width / 2
+	player.planeYTarget = stage.height / 2
+	player:move(player.planeXTarget, player.planeYTarget)
+	--[[
+
+	headAnime = HeadNormalAnime:new(4, stage.height - 104)
+	mainGroup:insert(headAnime)
+	--]]
+
+	print("\tpause button")
+	--local pauseButton = PauseButton:new(4, stage.height - 40)
+--	pauseButton:addEventListener("touch", onPauseTouch)
+
+	print("\tparsing level")
+	level = LoadLevelService:new("level2.json")
+
+	print("\tdrawing flight path checkpoints")
+	flightPath:drawCheckpoints(level)
+
+	print("\tlevel director")
+	levelDirector = LevelDirector:new(level, player, mainGroup, gameLoop)
+	assert(levelDirector ~= nil, "Level Director is null, yo!")
+	levelDirector:initialize()
+	print("levelDirector: ", levelDirector)
+	print("levelDirector.addEventListener: ", levelDirector.addEventListener)
+	levelDirector:addEventListener("onMovie", onMovieStarted)
+	levelDirector:addEventListener("onLevelProgress", onLevelProgress)
+	levelDirector:addEventListener("onLevelComplete", onLevelComplete)
+
+	print("\tmovie player")
+	moviePlayer = MoviePlayerView:new()
+	moviePlayer:addEventListener("movieEnded", onMovieEnded)
+
+	print("\thiding status bar")
+	display.setStatusBar( display.HiddenStatusBar )
+
+	print("\tinitializing keys")
+	initKeys()
+	
+	Runtime:addEventListener("system", onSystemEvent)
+
+	print("\tdone initializeGame!")
+	return true
+end
+
+function startPhysics()
+	physics.start()
+	physics.setDrawMode( "hybrid" )
+	physics.setGravity( 0, 0 )
 end
 
 
 
+--initializeGame()
+--startGame()
 
-physics.start()
-physics.setDrawMode( "hybrid" )
-physics.setGravity( 0, 0 )
+function startThisMug()
+	local stage = display.getCurrentStage()
+	screenTitle = TitleScreen:new(stage.width, stage.height)
+	screenTitle.x = 0
+	screenTitle.y = 0
+	screenTitle:addEventListener("startGame", onStartGameTouched)
+	screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
+	screenTitle:show()
+end
+
+--startThisMug()
+
+display.setStatusBar( display.HiddenStatusBar )
+
+local function testingMainContext()
+	print("testingMainContext")
+	local context = assert(MainContext:new(), "Failed to instantiate MainContext.")
+	print("context: ", context)
+end
+--testingMainContext()
+
+local function testingMainContextInit()
+	print("testingMainContext")
+	local context = assert(MainContext:new(), "Failed to instantiate MainContext.")
+	print("context: ", context)
+	assert(context:startup(), "Failed to startup MainContext.")
+end
+--testingMainContextInit()
+
+local function reflectionTest()
+	for key,value in pairs(_G["Player"]) do
+	    print("found member " .. key);
+	end
+end
+reflectionTest()
+
+local function mapTest()
+	local context = Context:new()
+	assert(context:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", 
+								"com.jessewarden.planeshooter.rl.mediators.PlayerMediator"), "Could not map mediators.")
+end
+--mapTest()
+
+local function testPlayer()
+	startPhysics()
+	local player = assert(Player:new(), "Failed to create player.")
+end
+--testPlayer()
+
+local function mapAndCreateTest()
+	startPhysics()
+	local context = Context:new()
+	assert(context:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", 
+								"com.jessewarden.planeshooter.rl.mediators.PlayerMediator"), "Could not map mediators.")
+	local player = assert(Player:new(), "Failed to create Player.")
+	assert(context:createMediator(player))
+end
+--mapAndCreateTest()
+	
+
+--[[
+local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)
+local fortressSheetSet = sprite.newSpriteSet(fortressSheet, 1, 6)
+sprite.add(fortressSheetSet, "fortress", 1, 6, 700, 0)
+local fortress = sprite.newSprite(fortressSheetSet)
+fortress:setReferencePoint(display.TopLeftReferencePoint)
+fortress:prepare("fortress")
+fortress:play()
+fortress.x = 0
+fortress.y = 0
+
+]]--
+
+--[[
+require "Timer"
+
+timer = Timer:new()
+timer:start()
+
+function printTime(event)
+	print("time: ", (timer.totalTime / 1000) .. " seconds")
+end
+
+function togglePause()
+	if timer.paused == false then
+		timer:pause()
+	else
+		timer:unpause()
+	end
+end
+
+Runtime:addEventListener("enterFrame", printTime)
+]]--
+
+--[[
+local img = display.newImage("player.png")
+
+function img:fade()
+	self.alpha = 0
+	self.tween = transition.to(self, {time=500, alpha=1, onComplete=img.onFadeIn})
+end
+
+function img:onFadeIn()
+	transition.cancel(self.tween)
+	self.tween = transition.to(self, {time=500, alpha=0, onComplete=img.onFadeOut})
+end
+
+function img:onFadeOut()
+	transition.cancel(self.tween)
+	self:removeSelf()
+end
+
+img:fade()
+]]--
+
+-- tests
+--[[
+local dialogue = DialogueView:new()
+dialogue:setText("Hello, G funk era!")
+dialogue:setCharacter(constants.CHARACTER_JESTERXL)
+dialogue:show()
+]]--
+
+
+
+--moviePlayer:addEventListener("movieEnded", t)
+--moviePlayer:startMovie(movie)
+
+
+
+--point = FlightPathCheckpoint:new()
+--[[
+path = FlightPath:new()
+path:drawCheckpoints(level)
+print("level.totalTime: ", level.totalTime)
+path:setProgress(10, 10)
+local stage = display.getCurrentStage()
+path.x = (stage.width / 2) - (path.width / 2)
+  ]]--
+
+--[[
+local group = display.newGroup()
+--group:setReferencePoint(display.TopLeftReferencePoint)
+group.x = 100
+group.y = 100
+
+--local subGroup = display.newGroup()
+
+
+local rect = display.newRect(0, 0, 100, 100)
+rect:setReferencePoint(display.TopLeftReferencePoint)
+rect:setFillColor(255, 255, 255, 100) 
+rect:setStrokeColor(255, 0, 0) 
+rect.strokeWidth = 4
+rect.x = group.x
+rect.y = group.y
+rect.isVisible = false
+
+local greenRect = display.newRect(50, 50, 100, 100)
+greenRect:setReferencePoint(display.TopLeftReferencePoint)
+greenRect:setFillColor(255, 255, 255, 100) 
+greenRect:setStrokeColor(0, 255, 0) 
+greenRect.strokeWidth = 4
+group:insert(greenRect)
+]]--
 
 --[[
 
-ENEMY_1_SPEED = 4
-ENEMY_1_BULLET_SPEED = 7
-MAX_BULLET_COUNT = 6
-PLAYER_MOVE_SPEED = 7
-PLAYER_BULLET_SPEED = 10
-TERRAIN_SCROLL_SPEED = 1
+require "gameNetwork"
+
+require "com.jessewarden.planeshooter.gamegui.StoreAndScoresView"
+require "com.jessewarden.planeshooter.gamegui.BuySellEquipView"
+require "com.jessewarden.planeshooter.gamegui.StoreInventory"
 
 
---]]
-mainGroup = display.newGroup()
-
-tickers = {}
-powerUpLevel = 1
-enemies = 10
-fightingBoss = false
-powerCount = 3
-POWER_MAX_COUNT = 3
-
-bullets = 0
-bulletRegulator = {} -- Mount up!
-bulletRegulator.fireSpeed = 400
-bulletRegulator.lastFire = 0
-bulletRegulator.fireFunc = nil
-function bulletRegulator:tick(millisecondsPassed)
-	self.lastFire = self.lastFire + millisecondsPassed
-	if(self.lastFire >= self.fireSpeed) then
-		self.fireFunc(plane.x, plane.y)
-		self.lastFire = 0
-	end
+function onHighscores()
+	print("onHighscore")
+	local platform = system.getInfo("platformName")
+	
+	showOpenFeint()
+	
+	--if platform == "Android" then
+		-- Papaya for Android
+	--	showPapaya()
+	--elseif platform == "iPhone OS" then
+		-- OpenFeint for iOS
+	--	showOpenFeint()
+	--end
+	
+	return true
 end
 
+function showPapaya()
+	gameNetwork.init("papaya", "asdf")
+	gameNetwork.show("leaderboards")
+end
+
+function showOpenFeint()
+	gameNetwork.init("openfeint", "asdf", "asdf", "JesterXL: Invaded Skies", "1337")
+	gameNetwork.show("leaderboards")
+end
+
+function onStore()
+	storeAndScoresView:hide()
+	
+	buySellEquipView = BuySellEquipView:new(stage.width, stage.height)
+	print("buySellEquipView: ", buySellEquipView)
+	local t = {}
+	function t:onBack(event)
+		print("onBack")
+	end
+	function t:onBuy(event)
+		buySellEquipView:hide()
+		if storeInventory == nil then
+			storeInventory = StoreInventory:new(stage.width, stage.height)
+		end
+		
+	end
+	function t:onSell(event)
+		print("onSell")
+	end
+	function t:onEquip(event)
+		print("onEquip")
+	end
+	buySellEquipView:addEventListener("onBack", t)
+	buySellEquipView:addEventListener("onBuy", t)
+	buySellEquipView:addEventListener("onSell", t)
+	buySellEquipView:addEventListener("onEquip", t)
+	buySellEquipView:show()
+end
 
 stage = display.getCurrentStage()
-initTerrain()
-initEnemeyDeath()
-initHealthBar()
-initSounds()
-initPlayerDeath()
+storeAndScoresView = StoreAndScoresView:new(stage.width, stage.height)
+--storeAndScoresView:addEventListener("onLeave", onLeave)
+storeAndScoresView:addEventListener("onStore", onStore)
+storeAndScoresView:addEventListener("onHighscores", onHighscores)
+storeAndScoresView:show()
+
+]]--
 
 
-plane = Player.new()
---plane:addEventListener("hitPointsChanged", )
+--[[
+require "gamegui_InventoryList"
+stage = display.getCurrentStage()
+inventoryList = InventoryList:new(300, 400)
 
-setPowerUpLevel(powerUpLevel)
+items = {}
+local i
+local max = 20
+for i=1,max,1 do
+	local vo = {icon="jxl_logo.png", description="Some item, yo. It's often that you'll encounter cow to eat muffins on Wednesdays before 3:00pm. You dig?"}
+	table.insert(items, vo)
+end
+inventoryList:setDataProvider(items)
+]]--
 
-lastTick = system.getTimer()
 
-addLoop(plane)
+--[[
+require "gtween"
+local img = display.newImage("player.png")
+img.x = 400
+gtween.new(img, .5, {x=0}, {ease=gtween.easing.outBounce})
+]]--
 
-planeXTarget = stage.width / 2
-planeYTarget = stage.height / 2
-plane:move(planeXTarget, planeYTarget)
-
-startGame()
+--[[
+require "gtween"
+local img = display.newImage("player.png")
+img.x = 400
+gtween.new(img, .5, {x=0}, {transitionEase=gtween.easing.outBounce})
+]]--
