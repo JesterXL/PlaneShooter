@@ -10,6 +10,10 @@ function MainContext:new()
 	
 	function context:startup()
 		print("MainContext::startup, ID: ", self.ID)
+		
+		print("\tmapping commands...")
+		self:mapCommand("startThisMug", "com.jessewarden.planeshooter.rl.commands.BootstrapCommand")
+		
 		print("\tmapping mediators...")
 		self:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", "com.jessewarden.planeshooter.rl.mediators.PlayerMediator")
 		self:mapMediator("com.jessewarden.planeshooter.gamegui.DamageHUD", "com.jessewarden.planeshooter.rl.mediators.DamageHUDMediator")

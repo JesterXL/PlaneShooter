@@ -1,5 +1,6 @@
 require "sprite"
 require "physics"
+require "gameNetwork"
 
 require "com.jessewarden.planeshooter.core.constants"
 
@@ -31,6 +32,7 @@ require "com.jessewarden.planeshooter.gamegui.FlightPath"
 require "com.jessewarden.planeshooter.gamegui.LevelCompleteOverlay"
 
 require "com.jessewarden.planeshooter.services.LoadLevelService"
+require "com.jessewarden.planeshooter.services.AchievementsProxy"
 
 require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
 
@@ -54,6 +56,10 @@ end
 function stopScrollingTerrain()
 	--removeLoop(terrainScroller)
 	return 1, 2, 3
+end
+
+function showMenu()
+	gameNetwork.show()
 end
 
 function onTouch(event)
@@ -95,13 +101,9 @@ end
 function initKeys()
 
 	local function onKeyEvent( event )
-	        local phase = event.phase
-	        local keyName = event.keyName
-	        print("phase: ", phase, ", keyName: ", keyName)
-
-	        -- we handled the event, so return true.
-	        -- for default behavior, return false.
-	        return true
+		Runtime:removeEventListener( "key", onKeyEvent );
+		showMenu()
+		return true
 	end
 
 	Runtime:addEventListener( "key", onKeyEvent );
@@ -176,6 +178,7 @@ end
 
 function unpauseGame()
 	print("unpauseGame")
+	gameLoop:reset()
 	gameLoop:start()
 	Runtime:addEventListener("touch", onTouch)
 	levelDirector:start()
@@ -200,6 +203,7 @@ function onPauseTouch(event)
 	return true
 end
 
+--[[
 function onKeyEvent( event )
 	if(event.keyName == "menu") then
 		if(gameLoop.paused == true) then
@@ -209,6 +213,7 @@ function onKeyEvent( event )
 		end
 	end
 end
+]]--
 
 function onStartGameTouched(event)
 	screenTitle:hide()
@@ -337,11 +342,6 @@ function startPhysics()
 	physics.setGravity( 0, 0 )
 end
 
-
-
---initializeGame()
---startGame()
-
 function startThisMug()
 	local stage = display.getCurrentStage()
 	screenTitle = TitleScreen:new(stage.width, stage.height)
@@ -352,9 +352,12 @@ function startThisMug()
 	screenTitle:show()
 end
 
+display.setStatusBar( display.HiddenStatusBar )
+
 startThisMug()
 
-display.setStatusBar( display.HiddenStatusBar )
+-----------------------------------------------------------------
+-- tests ---
 
 local function testingMainContext()
 	print("testingMainContext")
@@ -420,6 +423,13 @@ local function mapAndCreateTest()
 	assert(context:createMediator(player))
 end
 --mapAndCreateTest()
+
+local function testAchievementConstants()
+	print("constants.achievements.verteranPilot: ", constants.achievements.verteranPilot)
+	AchievementsProxy:init(constants.gameNetworkType, constants.achievements)
+	AchievementsProxy:unlock(constants.achievements.verteranPilot)
+end
+--testAchievementConstants()
 	
 
 --[[

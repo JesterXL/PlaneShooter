@@ -29,3 +29,13 @@ constants.DIALOGUE_MOVE_OUT_TIME				= 100
 constants.LEVEL_COMPLETE_TITLE_SPEED			= 1000
 
 constants.CREDITS_NAME							= " dollars"
+
+constants.gameNetworkType						= "openfeint"
+
+constants.achievements 							= {
+		
+	liftOff 		= {pid = 683, oid = 1269172},
+	firstBlood 		= {pid = 684, oid = 1269182},
+	dogFighter 		= {pid = 685, oid = 1269192},
+	verteranPilot 	= {pid = 686, oid = 1269202},
+}

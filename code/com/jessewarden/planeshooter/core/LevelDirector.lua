@@ -188,6 +188,8 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 			enemy:removeEventListener("createEnemyBullet", self)
 			local smallShipDeath = EnemySmallShipDeath:new(enemy.x, enemy.y)
 			director.mainGroup:insert(smallShipDeath)
+		elseif(enemy.classType ~= nil and enemy.classType == "BossBigPlane") then
+			AchievementsProxy:unlock(constants.achievements.verteranPilot)
 		end
 		
 		if enemy.levelDirectorEvent.pause == true then

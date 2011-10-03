@@ -3,14 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>org/robotlegs/Context.lua</string>
+	<string>com/jessewarden/planeshooter/core/LevelDirector.lua</string>
 	<key>documents</key>
 	<array>
 		<dict>
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-10-01T00:53:50Z</date>
+			<date>2011-10-02T19:47:00Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -29,6 +29,8 @@
 			<string>org</string>
 		</dict>
 		<dict>
+			<key>expanded</key>
+			<true/>
 			<key>name</key>
 			<string>com</string>
 			<key>regexFolderFilter</key>
@@ -39,6 +41,8 @@
 		<dict>
 			<key>filename</key>
 			<string>test.json</string>
+			<key>lastUsed</key>
+			<date>2011-10-02T15:47:36Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -73,6 +77,8 @@
 		<dict>
 			<key>filename</key>
 			<string>secretconfigs.lua</string>
+			<key>lastUsed</key>
+			<date>2011-10-02T19:39:29Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -402,7 +408,7 @@
 			<key>filename</key>
 			<string>main.lua</string>
 			<key>lastUsed</key>
-			<date>2011-10-01T00:54:27Z</date>
+			<date>2011-10-02T19:48:08Z</date>
 		</dict>
 		<dict>
 			<key>filename</key>
@@ -486,9 +492,81 @@
 		</dict>
 	</array>
 	<key>fileHierarchyDrawerWidth</key>
-	<integer>311</integer>
+	<integer>277</integer>
 	<key>metaData</key>
 	<dict>
+		<key>com/jessewarden/planeshooter/core/LevelDirector.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>0</integer>
+				<key>line</key>
+				<integer>182</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>171</integer>
+		</dict>
+		<key>com/jessewarden/planeshooter/core/constants.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>8</integer>
+				<key>line</key>
+				<integer>39</integer>
+			</dict>
+			<key>columnSelection</key>
+			<false/>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>13</integer>
+			<key>selectFrom</key>
+			<dict>
+				<key>column</key>
+				<integer>1</integer>
+				<key>line</key>
+				<integer>39</integer>
+			</dict>
+			<key>selectTo</key>
+			<dict>
+				<key>column</key>
+				<integer>14</integer>
+				<key>line</key>
+				<integer>39</integer>
+			</dict>
+		</dict>
+		<key>com/jessewarden/planeshooter/rl/mediators/LevelDirectorMediator.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>2</integer>
+				<key>line</key>
+				<integer>23</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
+		<key>com/jessewarden/planeshooter/services/AchievementsProxy.lua</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>26</integer>
+				<key>line</key>
+				<integer>30</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>0</integer>
+		</dict>
 		<key>gtween.lua</key>
 		<dict>
 			<key>caret</key>
@@ -524,38 +602,27 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>9</integer>
+				<integer>3</integer>
 				<key>line</key>
-				<integer>384</integer>
+				<integer>379</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>368</integer>
-		</dict>
-		<key>org/robotlegs/Context.lua</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>36</integer>
-				<key>line</key>
-				<integer>44</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>38</integer>
+			<integer>365</integer>
 		</dict>
 	</dict>
 	<key>openDocuments</key>
 	<array>
 		<string>main.lua</string>
-		<string>org/robotlegs/Context.lua</string>
+		<string>com/jessewarden/planeshooter/rl/mediators/LevelDirectorMediator.lua</string>
+		<string>com/jessewarden/planeshooter/core/constants.lua</string>
+		<string>com/jessewarden/planeshooter/core/LevelDirector.lua</string>
+		<string>com/jessewarden/planeshooter/services/AchievementsProxy.lua</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<true/>
 	<key>windowFrame</key>
-	<string>{{501, 188}, {981, 572}}</string>
+	<string>{{626, 197}, {981, 572}}</string>
 </dict>
 </plist>
