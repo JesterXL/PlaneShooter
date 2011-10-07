@@ -69,6 +69,7 @@ function Player:new()
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
 			audio.play(self.playerHitSound, {loops=0})
+			AchievementsProxy:unlock(constants.achievements.zeeMissile)
 		end
 	end
 	

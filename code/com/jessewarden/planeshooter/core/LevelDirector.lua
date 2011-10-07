@@ -182,14 +182,15 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		PlayerModel.instance:addToScore(100)
 
 		local enemy = event.target
-		if(enemy.classType ~= nil and enemy.classType == "enemies_EnemyMissleJet") then
+		if(enemy.classType ~= nil and enemy.classType == "EnemyMissleJet") then
 			enemy:removeEventListener("fireZeeMissile", self)
-		elseif(enemy.classType ~= nil and enemy.classType == "enemies_EnemySmallShip") then
+		elseif(enemy.classType ~= nil and enemy.classType == "EnemySmallShip") then
 			enemy:removeEventListener("createEnemyBullet", self)
 			local smallShipDeath = EnemySmallShipDeath:new(enemy.x, enemy.y)
 			director.mainGroup:insert(smallShipDeath)
+			AchievementsProxy:onKill()
 		elseif(enemy.classType ~= nil and enemy.classType == "BossBigPlane") then
-			AchievementsProxy:unlock(constants.achievements.verteranPilot)
+			AchievementsProxy:unlock(constants.achievements.veteranPilot)
 		end
 		
 		if enemy.levelDirectorEvent.pause == true then

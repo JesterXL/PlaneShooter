@@ -15,6 +15,7 @@ function EnemyMissile:new(startX, startY, player)
 	end
 
 	local img = sprite.newSprite(EnemyMissile.missleSet)
+	img.classType = "EnemyMissile"
 	img.name = "Bullet"
   	img:prepare("missleFlare")
   	img:play()

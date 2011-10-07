@@ -34,8 +34,9 @@ constants.gameNetworkType						= "openfeint"
 
 constants.achievements 							= {
 		
-	liftOff 		= {pid = 683, oid = 1269172},
-	firstBlood 		= {pid = 684, oid = 1269182},
-	dogFighter 		= {pid = 685, oid = 1269192},
-	verteranPilot 	= {pid = 686, oid = 1269202},
+	liftOff 		= {pid = 683, oid = 1269172, image = "achievement_Lift_Off.png", name="Lift Off"},
+	firstBlood 		= {pid = 684, oid = 1269182, image = "achievement_First_Blood.png", name="First Blood"},
+	dogFighter 		= {pid = 685, oid = 1269192, image = "achievement_Dogfighter.png", name="Dogfighter"},
+	veteranPilot 	= {pid = 686, oid = 1269202, image = "achievement_Veteran_Pilot.png", name="Veteran Pilot"},
+	zeeMissile		= {pid = -1,  oid = 1272282, image = nil, name="Zee Missile, It Does Nuffing!"}
 }

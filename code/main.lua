@@ -67,6 +67,7 @@ function onTouch(event)
 	local handled = false
 	if(event.phase == "began" or event.phase == "moved") then
 		player:setDestination(event.x, event.y - 40)
+		AchievementsProxy:unlock(constants.achievements.liftOff)
 		handled = true
 	end
 
@@ -355,6 +356,7 @@ end
 display.setStatusBar( display.HiddenStatusBar )
 
 startThisMug()
+AchievementsProxy.useMock = false
 
 -----------------------------------------------------------------
 -- tests ---
@@ -430,6 +432,16 @@ local function testAchievementConstants()
 	AchievementsProxy:unlock(constants.achievements.verteranPilot)
 end
 --testAchievementConstants()
+
+require "com.jessewarden.mock.openfeint.MockOpenFeint"
+
+local function testMockOpenFeint()
+	local mock = MockOpenFeint:new()
+	--mock:showInit("Welcome Back Player 2093i4akljsdj")
+	--mock:showAchievement("achievement_First_Blood.png", "First Blood")
+	mock:showAchievement("achievement_Dogfighter.png", "Dogfighter")
+end
+--testMockOpenFeint()
 	
 
 --[[

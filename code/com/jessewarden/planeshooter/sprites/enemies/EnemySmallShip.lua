@@ -12,7 +12,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 	end
 	
 	local img = display.newImage("enemy_1.png")
-	img.classType = "enemies_EnemySmallShip"
+	img.classType = "EnemySmallShip"
 	img.name = "Enemy1"
 	img.ID = globals.getID()
 	img.speed = constants.SMALL_SHIP_SPEED
