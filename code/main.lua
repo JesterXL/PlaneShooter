@@ -355,7 +355,7 @@ end
 
 display.setStatusBar( display.HiddenStatusBar )
 
-startThisMug()
+--startThisMug()
 AchievementsProxy.useMock = false
 
 -----------------------------------------------------------------
@@ -366,7 +366,7 @@ local function testingMainContext()
 	local context = assert(MainContext:new(), "Failed to instantiate MainContext.")
 	print("context: ", context)
 end
---testingMainContext()
+
 
 local function testingMainContextInit()
 	print("testingMainContext")
@@ -374,14 +374,14 @@ local function testingMainContextInit()
 	print("context: ", context)
 	assert(context:startup(), "Failed to startup MainContext.")
 end
---testingMainContextInit()
+
 
 local function reflectionTest()
 	for key,value in pairs(_G["Player"]) do
 	    print("found member " .. key);
 	end
 end
---reflectionTest()
+
 
 local function packageParseTest()
 	local first = "Player"
@@ -401,20 +401,20 @@ local function packageParseTest()
 	local className = first:sub(lastStartIndex + 1)
 	print("className: ", className)
 end
---packageParseTest()
+
 
 local function mapTest()
 	local context = Context:new()
 	assert(context:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", 
 								"com.jessewarden.planeshooter.rl.mediators.PlayerMediator"), "Could not map mediators.")
 end
---mapTest()
+
 
 local function testPlayer()
 	startPhysics()
 	local player = assert(Player:new(), "Failed to create player.")
 end
---testPlayer()
+
 
 local function mapAndCreateTest()
 	startPhysics()
@@ -424,14 +424,14 @@ local function mapAndCreateTest()
 	local player = assert(Player:new(), "Failed to create Player.")
 	assert(context:createMediator(player))
 end
---mapAndCreateTest()
+
 
 local function testAchievementConstants()
 	print("constants.achievements.verteranPilot: ", constants.achievements.verteranPilot)
 	AchievementsProxy:init(constants.gameNetworkType, constants.achievements)
 	AchievementsProxy:unlock(constants.achievements.verteranPilot)
 end
---testAchievementConstants()
+
 
 require "com.jessewarden.mock.openfeint.MockOpenFeint"
 
@@ -441,8 +441,51 @@ local function testMockOpenFeint()
 	--mock:showAchievement("achievement_First_Blood.png", "First Blood")
 	mock:showAchievement("achievement_Dogfighter.png", "Dogfighter")
 end
---testMockOpenFeint()
-	
+
+
+local function testTitleScreen()
+	require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
+	stage = display.getCurrentStage()
+	local screen = TitleScreen:new(stage.width, stage.height)
+	screen:show()
+	screen:addEventListener("onStartGameTouched", function(e)
+		screen:hide()
+		end
+	)
+end
+
+local function testNewContinueLevelsScreen()
+	require "com.jessewarden.planeshooter.gamegui.screens.NewContinueLevelsScreen"
+	stage = display.getCurrentStage()
+	local screen = NewContinueLevelsScreen:new(stage.width, stage.height)
+	screen:show(true)
+	local t = function(e)
+		screen:hide(e.target)
+	end
+	screen:addEventListener("onNewGameTouched", t)
+	screen:addEventListener("onContinueTouched", t)
+	screen:addEventListener("onLevelSelectTouched", t)
+end
+
+function testStageIntroScreen()
+	require "com.jessewarden.planeshooter.gamegui.screens.StageIntroScreen"
+	stage = display.getCurrentStage()
+	local screen = StageIntroScreen:new(stage.width, stage.height, 1, "Delivery")
+	screen:show()
+end
+
+--testAchievementConstants()
+--testMockOpenFeint()	
+--mapAndCreateTest()
+--testPlayer()
+--mapTest()
+--packageParseTest()
+--reflectionTest()
+--testingMainContextInit()
+--testingMainContext()
+--testTitleScreen()
+--testNewContinueLevelsScreen()
+testStageIntroScreen()
 
 --[[
 local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)

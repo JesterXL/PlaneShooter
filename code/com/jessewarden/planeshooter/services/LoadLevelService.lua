@@ -1,4 +1,4 @@
-require "json"
+json = require "json"
 
 LoadLevelService = {}
 LoadLevelService.loader = nil

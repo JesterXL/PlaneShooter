@@ -21,8 +21,8 @@ function Player:new()
 	img.maxHitPoints = 3
 	img.hitPoints = 3
 	img.reachedDestination = true
-	img.planeXTarget = 0
-	img.planeYTarget = 0
+	img.planeXTarget = 200
+	img.planeYTarget = 200
 	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
 	img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
 	

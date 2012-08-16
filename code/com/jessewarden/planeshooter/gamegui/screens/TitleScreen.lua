@@ -1,5 +1,7 @@
 require("gtween")
 
+require "com.jessewarden.planeshooter.utils.TweenUtils"
+
 TitleScreen = {}
 
 function TitleScreen:new(width, height)
@@ -14,7 +16,7 @@ function TitleScreen:new(width, height)
 	local startButton = display.newImage("button_start.png")
 	function startButton:touch(event)
 		if(event.phase == "ended") then
-			screen:dispatchEvent({name="startGame", target=screen})
+			screen:dispatchEvent({name="onStartGameTouched", target=self})
 			return true
 		end
 	end
@@ -68,7 +70,7 @@ function TitleScreen:new(width, height)
 	
 	function screen:hide()
 		if startButton.tween then startButton.tween:pause() end
-		transition.to(startButton, {time=500, alpha=0, transition=easing.outExpo})
+		TweenUtils.tweenButtonHit(startButton, 1)
 		transition.to(cover, {time=500, alpha=1, transition=easing.inExpo, onComplete=hideComplete})
 	end
 
