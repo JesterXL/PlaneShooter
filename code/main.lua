@@ -472,6 +472,11 @@ function testStageIntroScreen()
 	stage = display.getCurrentStage()
 	local screen = StageIntroScreen:new(stage.width, stage.height, 1, "Delivery")
 	screen:show()
+
+	local t = function()
+		screen:hide()
+	end
+	timer.performWithDelay(3 * 1000, t)
 end
 
 --testAchievementConstants()
