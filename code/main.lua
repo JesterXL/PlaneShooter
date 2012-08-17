@@ -470,13 +470,12 @@ end
 function testStageIntroScreen()
 	require "com.jessewarden.planeshooter.gamegui.screens.StageIntroScreen"
 	stage = display.getCurrentStage()
-	local screen = StageIntroScreen:new(stage.width, stage.height, 1, "Delivery")
+	local screen = StageIntroScreen:new(1, "Delivery")
 	screen:show()
+	screen:addEventListener("onScreenAnimationCompleted", function()
+		screen:show()
+	end)
 
-	local t = function()
-		screen:hide()
-	end
-	timer.performWithDelay(3 * 1000, t)
 end
 
 --testAchievementConstants()

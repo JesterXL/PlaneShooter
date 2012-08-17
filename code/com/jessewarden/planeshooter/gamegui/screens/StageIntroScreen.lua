@@ -2,7 +2,7 @@ require "gtween"
 
 StageIntroScreen = {}
 
-function StageIntroScreen:new(width, height, stageNumber, title)
+function StageIntroScreen:new(stageNumber, title)
 
 	local screen = display.newGroup()
 	
@@ -15,6 +15,18 @@ function StageIntroScreen:new(width, height, stageNumber, title)
 
 		local titleText = display.newText(screen, title, 0, 0, native.systemFont, 18)
 		screen:initChild("titleText", titleText)
+
+		self:createReadyAndGo()
+	end
+
+	function screen:createReadyAndGo()
+		if self.readyText ~= nil then
+			self.readyText:removeSelf()
+		end
+
+		if self.goText ~= nil then
+			self.goText:removeSelf()
+		end
 
 		local readyText = display.newText(screen, "Ready?", 0, 0, native.systemFont, 14)
 		screen:initChild("readyText", readyText)
@@ -30,6 +42,8 @@ function StageIntroScreen:new(width, height, stageNumber, title)
 	end
 
 	function screen:show()
+		self:createReadyAndGo()
+
 		local stage = display.getCurrentStage()
 
 		local stageNumberText = self.stageNumberText
@@ -168,6 +182,9 @@ function StageIntroScreen:new(width, height, stageNumber, title)
 	end
 
 	function screen:onGoInMiddle()
+		print("after after: ", self.readyText.width)
+
+
 		local tweenSpeed = 0.5
 		local goText = self.goText
 		local tweenSpeed = 0.5
@@ -192,11 +209,14 @@ function StageIntroScreen:new(width, height, stageNumber, title)
 		end
 		goText.tween = gtween.new(goText, tweenSpeed, {y=bottom, alpha=0, width=w2, height=h2}, 
 			{ease=gtween.easing.outExponential})
+		goText.tween.onComplete = function()
+			screen:dispatchEvent({name="onScreenAnimationCompleted", target=screen})
+		end
 	end
 
 	function screen:stopTween(tween)
 		if tween ~= nil then
-			if tween.pause then tween.pause() end
+			if tween.pause then tween:pause() end
 			if tween.onComplete then tween.onComplete = nil end
 			transition.cancel(tween)
 		end
@@ -209,11 +229,11 @@ function StageIntroScreen:new(width, height, stageNumber, title)
 		local readyText = self.readyText
 		local goText = self.goText
 
-		self:stopTween(stageNumberText)
-		self:stopTween(line)
-		self:stopTween(titleText)
-		self:stopTween(readyText)
-		self:stopTween(goText)
+		self:stopTween(stageNumberText.tween)
+		self:stopTween(line.tween)
+		self:stopTween(titleText.tween)
+		self:stopTween(readyText.tween)
+		self:stopTween(goText.tween)
 
 		self:hideText(stageNumberText)
 		self:hideText(line)
