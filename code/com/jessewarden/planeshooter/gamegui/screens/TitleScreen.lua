@@ -47,7 +47,7 @@ function TitleScreen:new(width, height)
 	end
 
 	function hideComplete()
-		screen:dispatchEvent({name="hideComplete", target=screen})
+		screen:dispatchEvent({name="onHideComplete", target=screen})
 	end
 
 	function screen:show()

@@ -348,8 +348,8 @@ function startThisMug()
 	screenTitle = TitleScreen:new(stage.width, stage.height)
 	screenTitle.x = 0
 	screenTitle.y = 0
-	screenTitle:addEventListener("startGame", onStartGameTouched)
-	screenTitle:addEventListener("hideComplete", onTitleScreenHideComplete)
+	screenTitle:addEventListener("onStartGameTouched", onStartGameTouched)
+	screenTitle:addEventListener("onHideComplete", onTitleScreenHideComplete)
 	screenTitle:show()
 end
 
@@ -600,6 +600,7 @@ function testLevelCompleteScreen()
 	end)
 end
 
+startThisMug()
 
 --testAchievementConstants()
 --testMockOpenFeint()	
@@ -619,5 +620,5 @@ end
 
 --testTitleScreen()
 --testNewContinueLevelsScreen()
-testStageIntroScreen()
+--testStageIntroScreen()
 --testLevelCompleteScreen()
