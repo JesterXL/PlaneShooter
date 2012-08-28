@@ -475,8 +475,131 @@ function testStageIntroScreen()
 	screen:addEventListener("onScreenAnimationCompleted", function()
 		screen:show()
 	end)
-
 end
+
+function testFlyingFortress()
+	local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)
+	local fortressSheetSet = sprite.newSpriteSet(fortressSheet, 1, 6)
+	sprite.add(fortressSheetSet, "fortress", 1, 6, 700, 0)
+	local fortress = sprite.newSprite(fortressSheetSet)
+	fortress:setReferencePoint(display.TopLeftReferencePoint)
+	fortress:prepare("fortress")
+	fortress:play()
+	fortress.x = 0
+	fortress.y = 0
+
+	local t = function(e)
+		fortress.y = fortress.y + 0.1
+	end
+	Runtime:addEventListener("enterFrame", t)
+end
+
+function testDialogue()
+	local dialogue = DialogueView:new()
+	dialogue:setText("Hello, G funk era!")
+	dialogue:setCharacter(constants.CHARACTER_JESTERXL)
+	dialogue:show()
+end
+
+function testFlightPath()
+	local level = LoadLevelService:new("level2.json")
+	--point = FlightPathCheckpoint:new()
+	path = FlightPath:new()
+	path:drawCheckpoints(level)
+	print("level.totalTime: ", level.totalTime)
+	path:setProgress(7, 10)
+	local stage = display.getCurrentStage()
+	path.x = (stage.width / 2) - (path.width / 2)
+end
+
+function testHighScores()
+	require "gameNetwork"
+
+	require "com.jessewarden.planeshooter.gamegui.StoreAndScoresView"
+	require "com.jessewarden.planeshooter.gamegui.BuySellEquipView"
+	require "com.jessewarden.planeshooter.gamegui.StoreInventory"
+
+
+	function onHighscores()
+		print("onHighscore")
+		local platform = system.getInfo("platformName")
+		
+		showOpenFeint()
+		
+		--if platform == "Android" then
+			-- Papaya for Android
+		--	showPapaya()
+		--elseif platform == "iPhone OS" then
+			-- OpenFeint for iOS
+		--	showOpenFeint()
+		--end
+		
+		return true
+	end
+
+	function showPapaya()
+		gameNetwork.init("papaya", "asdf")
+		gameNetwork.show("leaderboards")
+	end
+
+	function showOpenFeint()
+		gameNetwork.init("openfeint", "asdf", "asdf", "JesterXL: Invaded Skies", "1337")
+		gameNetwork.show("leaderboards")
+	end
+
+	function onStore()
+		storeAndScoresView:hide()
+		
+		buySellEquipView = BuySellEquipView:new(stage.width, stage.height)
+		print("buySellEquipView: ", buySellEquipView)
+		local t = {}
+		function t:onBack(event)
+			print("onBack")
+		end
+		function t:onBuy(event)
+			buySellEquipView:hide()
+			if storeInventory == nil then
+				storeInventory = StoreInventory:new(stage.width, stage.height)
+			end
+			
+		end
+		function t:onSell(event)
+			print("onSell")
+		end
+		function t:onEquip(event)
+			print("onEquip")
+		end
+		buySellEquipView:addEventListener("onBack", t)
+		buySellEquipView:addEventListener("onBuy", t)
+		buySellEquipView:addEventListener("onSell", t)
+		buySellEquipView:addEventListener("onEquip", t)
+		buySellEquipView:show()
+	end
+
+	stage = display.getCurrentStage()
+	storeAndScoresView = StoreAndScoresView:new(stage.width, stage.height)
+	--storeAndScoresView:addEventListener("onLeave", onLeave)
+	storeAndScoresView:addEventListener("onStore", onStore)
+	storeAndScoresView:addEventListener("onHighscores", onHighscores)
+	storeAndScoresView:show()
+end
+
+function testGtween()
+	require "gtween"
+	local img = display.newImage("player.png")
+	img.x = 400
+	gtween.new(img, .5, {x=0}, {ease=gtween.easing.outBounce})
+end
+
+function testLevelCompleteScreen()
+	require "com.jessewarden.planeshooter.gamegui.screens.LevelCompleteScreen"
+	local screen = LevelCompleteScreen:new(1, 3000)
+	screen:show()
+	screen:addEventListener("onAnimationCompleted", function()
+		screen:hide()
+	end)
+end
+
 
 --testAchievementConstants()
 --testMockOpenFeint()	
@@ -487,217 +610,14 @@ end
 --reflectionTest()
 --testingMainContextInit()
 --testingMainContext()
+
+--testFlyingFortress()
+--testDialogue()
+--testFlightPath()
+--testHighScores()
+--testGTween()
+
 --testTitleScreen()
 --testNewContinueLevelsScreen()
 testStageIntroScreen()
-
---[[
-local fortressSheet = sprite.newSpriteSheet("npc_FlyingFortress_sheet.png", 295, 352)
-local fortressSheetSet = sprite.newSpriteSet(fortressSheet, 1, 6)
-sprite.add(fortressSheetSet, "fortress", 1, 6, 700, 0)
-local fortress = sprite.newSprite(fortressSheetSet)
-fortress:setReferencePoint(display.TopLeftReferencePoint)
-fortress:prepare("fortress")
-fortress:play()
-fortress.x = 0
-fortress.y = 0
-
-]]--
-
---[[
-require "Timer"
-
-timer = Timer:new()
-timer:start()
-
-function printTime(event)
-	print("time: ", (timer.totalTime / 1000) .. " seconds")
-end
-
-function togglePause()
-	if timer.paused == false then
-		timer:pause()
-	else
-		timer:unpause()
-	end
-end
-
-Runtime:addEventListener("enterFrame", printTime)
-]]--
-
---[[
-local img = display.newImage("player.png")
-
-function img:fade()
-	self.alpha = 0
-	self.tween = transition.to(self, {time=500, alpha=1, onComplete=img.onFadeIn})
-end
-
-function img:onFadeIn()
-	transition.cancel(self.tween)
-	self.tween = transition.to(self, {time=500, alpha=0, onComplete=img.onFadeOut})
-end
-
-function img:onFadeOut()
-	transition.cancel(self.tween)
-	self:removeSelf()
-end
-
-img:fade()
-]]--
-
--- tests
---[[
-local dialogue = DialogueView:new()
-dialogue:setText("Hello, G funk era!")
-dialogue:setCharacter(constants.CHARACTER_JESTERXL)
-dialogue:show()
-]]--
-
-
-
---moviePlayer:addEventListener("movieEnded", t)
---moviePlayer:startMovie(movie)
-
-
-
---point = FlightPathCheckpoint:new()
---[[
-path = FlightPath:new()
-path:drawCheckpoints(level)
-print("level.totalTime: ", level.totalTime)
-path:setProgress(10, 10)
-local stage = display.getCurrentStage()
-path.x = (stage.width / 2) - (path.width / 2)
-  ]]--
-
---[[
-local group = display.newGroup()
---group:setReferencePoint(display.TopLeftReferencePoint)
-group.x = 100
-group.y = 100
-
---local subGroup = display.newGroup()
-
-
-local rect = display.newRect(0, 0, 100, 100)
-rect:setReferencePoint(display.TopLeftReferencePoint)
-rect:setFillColor(255, 255, 255, 100) 
-rect:setStrokeColor(255, 0, 0) 
-rect.strokeWidth = 4
-rect.x = group.x
-rect.y = group.y
-rect.isVisible = false
-
-local greenRect = display.newRect(50, 50, 100, 100)
-greenRect:setReferencePoint(display.TopLeftReferencePoint)
-greenRect:setFillColor(255, 255, 255, 100) 
-greenRect:setStrokeColor(0, 255, 0) 
-greenRect.strokeWidth = 4
-group:insert(greenRect)
-]]--
-
---[[
-
-require "gameNetwork"
-
-require "com.jessewarden.planeshooter.gamegui.StoreAndScoresView"
-require "com.jessewarden.planeshooter.gamegui.BuySellEquipView"
-require "com.jessewarden.planeshooter.gamegui.StoreInventory"
-
-
-function onHighscores()
-	print("onHighscore")
-	local platform = system.getInfo("platformName")
-	
-	showOpenFeint()
-	
-	--if platform == "Android" then
-		-- Papaya for Android
-	--	showPapaya()
-	--elseif platform == "iPhone OS" then
-		-- OpenFeint for iOS
-	--	showOpenFeint()
-	--end
-	
-	return true
-end
-
-function showPapaya()
-	gameNetwork.init("papaya", "asdf")
-	gameNetwork.show("leaderboards")
-end
-
-function showOpenFeint()
-	gameNetwork.init("openfeint", "asdf", "asdf", "JesterXL: Invaded Skies", "1337")
-	gameNetwork.show("leaderboards")
-end
-
-function onStore()
-	storeAndScoresView:hide()
-	
-	buySellEquipView = BuySellEquipView:new(stage.width, stage.height)
-	print("buySellEquipView: ", buySellEquipView)
-	local t = {}
-	function t:onBack(event)
-		print("onBack")
-	end
-	function t:onBuy(event)
-		buySellEquipView:hide()
-		if storeInventory == nil then
-			storeInventory = StoreInventory:new(stage.width, stage.height)
-		end
-		
-	end
-	function t:onSell(event)
-		print("onSell")
-	end
-	function t:onEquip(event)
-		print("onEquip")
-	end
-	buySellEquipView:addEventListener("onBack", t)
-	buySellEquipView:addEventListener("onBuy", t)
-	buySellEquipView:addEventListener("onSell", t)
-	buySellEquipView:addEventListener("onEquip", t)
-	buySellEquipView:show()
-end
-
-stage = display.getCurrentStage()
-storeAndScoresView = StoreAndScoresView:new(stage.width, stage.height)
---storeAndScoresView:addEventListener("onLeave", onLeave)
-storeAndScoresView:addEventListener("onStore", onStore)
-storeAndScoresView:addEventListener("onHighscores", onHighscores)
-storeAndScoresView:show()
-
-]]--
-
-
---[[
-require "gamegui_InventoryList"
-stage = display.getCurrentStage()
-inventoryList = InventoryList:new(300, 400)
-
-items = {}
-local i
-local max = 20
-for i=1,max,1 do
-	local vo = {icon="jxl_logo.png", description="Some item, yo. It's often that you'll encounter cow to eat muffins on Wednesdays before 3:00pm. You dig?"}
-	table.insert(items, vo)
-end
-inventoryList:setDataProvider(items)
-]]--
-
-
---[[
-require "gtween"
-local img = display.newImage("player.png")
-img.x = 400
-gtween.new(img, .5, {x=0}, {ease=gtween.easing.outBounce})
-]]--
-
---[[
-require "gtween"
-local img = display.newImage("player.png")
-img.x = 400
-gtween.new(img, .5, {x=0}, {transitionEase=gtween.easing.outBounce})
-]]--
+--testLevelCompleteScreen()

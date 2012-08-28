@@ -1,5 +1,5 @@
 require "gtween"
-
+-- com.jessewarden.planetshooter.utils.TweenUtils
 TweenUtils = {}
 
 TweenUtils.tweenButtonHit = function(button, time)
@@ -29,6 +29,14 @@ TweenUtils.tweenButtonOut = function(button, time)
 	local w = button.width / 2
 	local h = button.height / 2
 	button.tween = gtween.new(button, time, {x=targetX, y=targetY, width=w, height=h, alpha=0, rotation=rot}, {ease=gtween.easing.outExponential})
+end
+
+TweenUtils.stopTween = function(tween)
+	if tween ~= nil then
+		if tween.pause then tween:pause() end
+		if tween.onComplete then tween.onComplete = nil end
+		transition.cancel(tween)
+	end
 end
 
 

@@ -1,4 +1,5 @@
 require "gtween"
+require "com.jessewarden.planeshooter.utils.TweenUtils"
 
 StageIntroScreen = {}
 
@@ -80,15 +81,11 @@ function StageIntroScreen:new(stageNumber, title)
 		line.tween = gtween.new(line, tweenSpeed, {x=lineCenter, alpha=1}, 
 			{ease=gtween.easing.outBack})
 
-		if stageNumberText.tween ~= nil then
-			transition.cancel(stageNumberText.tween)
-		end
+		TweenUtils.stopTween(stageNumberText.tween)
 		stageNumberText.tween = gtween.new(stageNumberText, tweenSpeed, {x=centerX, alpha=1}, 
 			{ease=gtween.easing.outBack, delay=0.2})
 
-		if titleText.tween ~= nil then
-			transition.cancel(titleText.tween)
-		end
+		TweenUtils.stopTween(titleText.tween)
 		titleText.tween = gtween.new(titleText, tweenSpeed, {x=centerX, alpha=1}, 
 			{ease=gtween.easing.outBack, delay=1.5})	
 		titleText.tween.onComplete = function(e)
@@ -110,16 +107,12 @@ function StageIntroScreen:new(stageNumber, title)
 			{ease=gtween.easing.inExponential, delay=delay})
 
 		delay = delay + .3
-		if stageNumberText.tween ~= nil then
-			transition.cancel(stageNumberText.tween)
-		end
+		TweenUtils.stopTween(stageNumberText.tween)
 		stageNumberText.tween = gtween.new(stageNumberText, tweenSpeed, {x=-250, alpha=0}, 
 			{ease=gtween.easing.inExponential, delay=delay})
 
 		delay = delay + .2
-		if titleText.tween ~= nil then
-			transition.cancel(titleText.tween)
-		end
+		TweenUtils.stopTween(titleText.tween)
 		titleText.tween = gtween.new(titleText, tweenSpeed, {x=left, alpha=0}, 
 			{ease=gtween.easing.inExponential, delay=delay})
 		titleText.tween.onComplete = function(e)
@@ -145,9 +138,7 @@ function StageIntroScreen:new(stageNumber, title)
 		goText.isVisible = true
 		goText.alpha = 0
 
-		if readyText.tween ~= nil then
-			transition.cancel(readyText.tween)
-		end
+		TweenUtils.stopTween(readyText.tween)
 		readyText.tween = gtween.new(readyText, tweenSpeed, {y=middle, alpha=1}, 
 			{ease=gtween.easing.outBack})
 		readyText.tween.onComplete = function(e)
@@ -165,15 +156,11 @@ function StageIntroScreen:new(stageNumber, title)
 		local w2 = readyText.width * 2
 		local h2 = readyText.height * 2
 
-		if readyText.tween ~= nil then
-			transition.cancel(readyText.tween)
-		end
+		TweenUtils.stopTween(readyText.tween)
 		readyText.tween = gtween.new(readyText, tweenSpeed, {y=bottom, alpha=0, width=w2, height=h2}, 
 			{ease=gtween.easing.inExponential, delay=1})
 
-		if goText.tween ~= nil then
-			transition.cancel(goText.tween)
-		end
+		TweenUtils.stopTween(goText.tween)
 		goText.tween = gtween.new(goText, tweenSpeed, {y=middle, alpha=1}, 
 			{ease=gtween.easing.outExponential, delay=1.2})
 		goText.tween.onComplete = function()
@@ -188,9 +175,7 @@ function StageIntroScreen:new(stageNumber, title)
 		local tweenSpeed = 0.5
 		local goText = self.goText
 		local tweenSpeed = 0.5
-		if goText.tween ~= nil then
-			transition.cancel(goText.tween)
-		end
+		TweenUtils.stopTween(goText.tween)
 		goText.tween = gtween.new(goText, tweenSpeed, {rotation=360}, 
 			{ease=gtween.easing.inBack, delay=1})
 		goText.tween.onComplete = function()
@@ -204,21 +189,11 @@ function StageIntroScreen:new(stageNumber, title)
 		local bottom = stage.height + 20
 		local w2 = goText.width * 2
 		local h2 = goText.height * 2
-		if goText.tween ~= nil then
-			transition.cancel(goText.tween)
-		end
+		TweenUtils.stopTween(goText.tween)
 		goText.tween = gtween.new(goText, tweenSpeed, {y=bottom, alpha=0, width=w2, height=h2}, 
 			{ease=gtween.easing.outExponential})
 		goText.tween.onComplete = function()
 			screen:dispatchEvent({name="onScreenAnimationCompleted", target=screen})
-		end
-	end
-
-	function screen:stopTween(tween)
-		if tween ~= nil then
-			if tween.pause then tween:pause() end
-			if tween.onComplete then tween.onComplete = nil end
-			transition.cancel(tween)
 		end
 	end
 
@@ -229,17 +204,13 @@ function StageIntroScreen:new(stageNumber, title)
 		local readyText = self.readyText
 		local goText = self.goText
 
-		self:stopTween(stageNumberText.tween)
-		self:stopTween(line.tween)
-		self:stopTween(titleText.tween)
-		self:stopTween(readyText.tween)
-		self:stopTween(goText.tween)
+		TweenUtils.stopTween(stageNumberText.tween)
+		TweenUtils.stopTween(line.tween)
+		TweenUtils.stopTween(titleText.tween)
+		TweenUtils.stopTween(readyText.tween)
+		TweenUtils.stopTween(goText.tween)
 
-		self:hideText(stageNumberText)
-		self:hideText(line)
-		self:hideText(titleText)
-		self:hideText(readyText)
-		self:hideText(goText)
+		
 	end
 
 	function screen:hideText(text)
