@@ -5,6 +5,7 @@ PlayerWeapons = {}
 
 function PlayerWeapons:new(player, mainGroup, gameLoop)
 
+
 	assert(player ~= nil, "Must pass in a player.")
 	assert(mainGroup ~= nil, "Must pass in a mainGroup")
 	assert(gameLoop ~= nil, "Must pass in a gameLoop")
