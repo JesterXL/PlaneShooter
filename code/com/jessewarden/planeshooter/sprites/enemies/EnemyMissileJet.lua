@@ -27,12 +27,13 @@ function EnemyMissileJet:new(startX, startY, bottom)
 	img.fireTime = constants.ENEMY_MISSLE_JET_FIRE_INTERVAL -- milliseconds
 	img.fired = false
 
+--[[
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2,
 								bodyType = "kinematic",
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
-
+]]--
 	function onHit(self, event)
 		-- TODO/FIXME: string names? Really? That's great man..........
 	  -- TODO/FIXME: seriously man, you need to re-factor this out or into a base class or
@@ -57,13 +58,14 @@ function EnemyMissileJet:new(startX, startY, bottom)
 		self:dispatchEvent({name="enemyDead", target=self})
 		self:removeEventListener("collision", img)
 		self:removeSelf()
+		self.tick = function()end
 	end
 
 	img.collision = onHit
 	img:addEventListener("collision", img)
 
 	function img:tick(millisecondsPassed)
-		
+
 		if(self.fired == false) then
 			self.fireTime = self.fireTime - millisecondsPassed
 			if(self.fireTime <= 0) then
@@ -88,7 +90,7 @@ function EnemyMissileJet:new(startX, startY, bottom)
 
 	end
 	
-	audio.play(EnemyMissileJet.jetSound)
+	--audio.play(EnemyMissileJet.jetSound)
 
 	return img
 end

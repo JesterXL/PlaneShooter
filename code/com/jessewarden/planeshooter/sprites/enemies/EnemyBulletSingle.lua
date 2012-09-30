@@ -14,12 +14,13 @@ function EnemyBulletSingle:new(startX, startY, targetPoint)
 	img.rot = math.atan2(img.y -  img.targetY,  img.x - img.targetX) / math.pi * 180 -90;
 	img.angle = (img.rot -90) * math.pi / 180;
 	
+	--[[
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 8, maskBits = 1 }
 							} )
-								
+		]]--						
 	
 	function onHit(self, event)
 		if(event.other.name == "Player") then

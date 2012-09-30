@@ -26,12 +26,13 @@ function EnemyMissile:new(startX, startY, player)
 	img.currentLife = 0
 	img.lifeTime = 3000 -- milliseconds
 
+--[[
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2,
 								bodyType = "kinematic",
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
-
+]]--
 
 	function onHit(self, event)
 		if(event.other == self.player) then
@@ -47,6 +48,7 @@ function EnemyMissile:new(startX, startY, player)
 		self:removeEventListener("collision", img)
 		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
+		self.tick = function()end
 	end
 
 	function img:getRotation()

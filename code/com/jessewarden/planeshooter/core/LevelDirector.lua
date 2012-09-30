@@ -143,7 +143,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		print("enemyType: ", enemyType)
 		if enemyType == "Plane" then
 			enemy = EnemySmallShip:new(randomX, -10, stage.height)
-			enemy:addEventListener("createEnemyBullet", self)
+			enemy:addEventListener("onCreateEnemyBullet", self)
 		elseif enemyType == "Missile" then
 			enemy = EnemyMissile:new(randomX, -10, player)
 			enemy:addEventListener("fireZeeMissile", self)
@@ -185,7 +185,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		if(enemy.classType ~= nil and enemy.classType == "EnemyMissleJet") then
 			enemy:removeEventListener("fireZeeMissile", self)
 		elseif(enemy.classType ~= nil and enemy.classType == "EnemySmallShip") then
-			enemy:removeEventListener("createEnemyBullet", self)
+			enemy:removeEventListener("onCreateEnemyBullet", self)
 			local smallShipDeath = EnemySmallShipDeath:new(enemy.x, enemy.y)
 			director.mainGroup:insert(smallShipDeath)
 			AchievementsProxy:onKill()
@@ -217,7 +217,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		self.gameLoop:removeLoop(event.target)
 	end
 
-	function director:createEnemyBullet(event)
+	function director:onCreateEnemyBullet(event)
 		local bullet = EnemyBulletSingle:new(event.target.x, event.target.y, self.player)
 		self.mainGroup:insert(bullet)
 		bullet:addEventListener("removeFromGameLoop", self)

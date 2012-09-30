@@ -3,25 +3,25 @@
 
 ScrollingTerrain = {}
 
-function ScrollingTerrain:new()
+function ScrollingTerrain:new(image)
 	
 	local terrain = display.newGroup()
 	
-	terrain1 = display.newImage("debug_terrain.png", 0, 0)
+	local terrain1 = display.newImage(image, 0, 0)
 	terrain:insert(terrain1)
-	terrain2 = display.newImage("debug_terrain.png", 0, 0)
+	local terrain2 = display.newImage(image, 0, 0)
 	terrain:insert(terrain2)
 	terrain1.x = 0
 	terrain1.y = 0
+	terrain2.x = 0
+	terrain2.y = terrain1.y + terrain1.height
 	
-	local terrainScroller = {}
-	terrain.terrainScroller = terrainScroller
-	terrainScroller.speed = TERRAIN_SCROLL_SPEED
-	terrainScroller.onTerrain = terrain1
-	terrainScroller.offTerrain = terrain2
-	terrainScroller.targetY = -terrain1.height
+	terrain.speed = 0.2
+	terrain.onTerrain = terrain1
+	terrain.offTerrain = terrain2
+	terrain.targetY = terrain1.height
 	
-	function terrainScroller:tick(millisecondsPassed)
+	function terrain:tick(millisecondsPassed)
 		local deltaX = self.onTerrain.x
 		local deltaY = self.onTerrain.y - self.targetY
 		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
@@ -30,7 +30,6 @@ function ScrollingTerrain:new()
 		local moveY = self.speed * (deltaY / dist)
 
 		if (self.speed >= dist) then
-			self.y = self.targetY
 			self.onTerrain.y = self.offTerrain.y + self.offTerrain.height
 			local oldOn = self.onTerrain
 			self.onTerrain = self.offTerrain
@@ -39,9 +38,11 @@ function ScrollingTerrain:new()
 			self.onTerrain.x = self.onTerrain.x - moveX
 			self.onTerrain.y = self.onTerrain.y - moveY
 			self.offTerrain.x = self.onTerrain.x
-			self.offTerrain.y = self.onTerrain.y + self.onTerrain.height + 2
+			self.offTerrain.y = self.onTerrain.y - self.onTerrain.height
 		end
 	end
+
+	return terrain
 end
 
 return ScrollingTerrain

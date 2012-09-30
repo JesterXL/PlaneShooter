@@ -26,13 +26,13 @@ function Player:new()
 	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
 	img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
 	
-	
+	--[[
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 1, maskBits = 28 }
 							} )
-
+]]--
 						
 	function img:move(x, y)
 		self.x = x

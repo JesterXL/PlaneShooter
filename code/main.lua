@@ -51,6 +51,7 @@ end
 
 function startScrollingTerrain()
 	--addLoop(terrainScroller)
+
 end
 
 function stopScrollingTerrain()
@@ -600,7 +601,153 @@ function testLevelCompleteScreen()
 	end)
 end
 
-startThisMug()
+local function testDialogue()
+	local dia = DialogueView:new()
+	dia:setText("Hello World!")
+
+	local other = DialogueView:new(true)
+	other:setText("Yet some more text that eats cheese.")
+	other.y = 200
+end
+
+local function testMoviePlayer()
+	require "com.jessewarden.planeshooter.vo.DialogueVO"
+	require "com.jessewarden.planeshooter.vo.MovieVO"
+	local player = MoviePlayerView:new()
+	local movie = MovieVO:new()
+	local getDia = function(name, message)
+		local dia = DialogueVO:new()
+		dia.characterName = name
+		dia.message = message
+		return dia
+	end
+	table.insert(movie.dialogues, getDia("Sydney", "Hello!"))
+	table.insert(movie.dialogues, getDia("Dad", "Wazzzzuuup!"))
+	table.insert(movie.dialogues, getDia("Sydney", "How are you?"))
+	table.insert(movie.dialogues, getDia("Dad", "I'm great, thanks for asking."))
+
+	player:startMovie(movie)
+end
+
+local function testScrollingTerrain()
+	local loop = GameLoop:new()
+	loop:start()
+
+	local terrain = ScrollingTerrain:new("debug_terrain_2.jpg")
+	--terrain.alpha = 0.7
+
+	loop:addLoop(terrain)
+end
+
+local function testPlayerMovement()
+	require "com.jessewarden.planeshooter.sprites.player.Player"
+	require "com.jessewarden.planeshooter.controllers.PlayerMovementController"
+	local loop = GameLoop:new()
+	loop:start()
+	local player = Player:new()
+	loop:addLoop(player)
+	local controller = PlayerMovementController:new(player)
+	controller:start()
+end
+
+local function testEnemySmallShip()
+	local ship = EnemySmallShip:new(40, 0, display.getCurrentStage().height)
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(ship)
+end
+
+local function testEnemyBulletSingle()
+	local bullet = EnemyBulletSingle:new(40, 0, {x=60, y=200})
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(bullet)
+end
+
+local function testEnemyJet()
+	local jet = EnemyMissileJet:new(40, 0, display.getCurrentStage().height)
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(jet)
+end
+
+local function testEnemyMissile()
+	local player = {x=200, y=display.getCurrentStage().height}
+	local missile = EnemyMissile:new(40, 0, player)
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(missile)
+
+	local t = {}
+	function t:timer()
+		player.x = player.x + 1
+		player.y = player.y - 20
+	end
+	timer.performWithDelay(50, t, 0)
+end
+
+local function testGenericGunTurret()
+	local player = display.newGroup()
+	player.x = 200
+	player.y = 300
+
+	require "com.jessewarden.planeshooter.sprites.enemies.GenericGunTurret"
+	local turret = GenericGunTurret:new(player)
+	turret.x = 40
+	turret.y = 40
+
+	local touched = function(e)
+		player.x = e.x
+		player.y = e.y
+	end
+	Runtime:addEventListener("touch", touched)
+
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(turret)
+end
+
+local function testFlak()
+	require "com.jessewarden.planeshooter.sprites.enemies.Flak"
+	local flak = Flak:new()
+	flak.x = 60
+	flak.y = 60
+end
+
+local function bunchOfFlak()
+	require "com.jessewarden.planeshooter.sprites.enemies.Flak"
+
+	local stage = display.getCurrentStage()
+	local t = {}
+	function t:timer(event)
+		print("test")
+		local flak = Flak:new()
+		flak.x = math.random() * stage.width
+		flak.y = math.random() * stage.height
+	end
+	timer.performWithDelay(200, t, 0)
+
+	
+end
+
+local function testBoss()
+	local player = display.newGroup()
+	player.x = 200
+	player.y = 300
+
+	local boss = BossBigPlane:new(player)
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(boss)
+end
+
+
+local stage = display.getCurrentStage()
+local rect = display.newRect(0, 0, stage.width, stage.height)
+rect:setFillColor(255, 255, 255)
+
+
+--startThisMug()
 
 --testAchievementConstants()
 --testMockOpenFeint()	
@@ -622,3 +769,17 @@ startThisMug()
 --testNewContinueLevelsScreen()
 --testStageIntroScreen()
 --testLevelCompleteScreen()
+
+--testDialogue()
+--testMoviePlayer()
+--testFlightPath()
+--testScrollingTerrain()
+--testPlayerMovement()
+--testEnemySmallShip()
+--testEnemyBulletSingle()
+--testEnemyJet()
+--testEnemyMissile()
+--testGenericGunTurret()
+--testFlak()
+--bunchOfFlak()
+testBoss()

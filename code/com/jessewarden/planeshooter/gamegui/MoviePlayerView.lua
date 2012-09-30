@@ -21,7 +21,7 @@ function MoviePlayerView:new()
 
 	function group:startMovie(movie)
 		assert(movie ~= nil, "Movie cannot be nil.")
-		assert(movie.classType == "movie", "Movie has an unrecognized classType.")
+		--assert(movie.classType == "movie", "Movie has an unrecognized classType.")
 		self.movie = movie
 		self.currentDialogue =  0
 		self.firstTime = true

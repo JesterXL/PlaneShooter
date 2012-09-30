@@ -30,12 +30,13 @@ function EnemySmallShip:new(startX, startY, bottom)
 	
 	img:setY(startY)
 	
-	
+	--[[
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
+]]--
 	
 	function onHit(self, event)
 		-- TODO/FIXME: string names? Really? That's great man..........
@@ -56,6 +57,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 		self:dispatchEvent({name="enemyDead", target=self})
 		self:removeEventListener("collision", img)
 		self:removeSelf()
+		img.tick = function() end
 	end
 	
 	img.collision = onHit
@@ -63,7 +65,6 @@ function EnemySmallShip:new(startX, startY, bottom)
 	
 	function img:tick(millisecondsPassed)
 		if(self.y == nil) then
-			error("wtf")
 			return
 		end
 		
@@ -72,7 +73,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 			if(self.fireTime <= 0) then
 				self.fired = true
 				-- TODO: make sure this works
-				self:dispatchEvent({name="createEnemyBullet", target=self})
+				self:dispatchEvent({name="onCreateEnemyBullet", target=self})
 				--createEnemyBullet(self.x, self.y, plane)
 			end
 		end

@@ -28,6 +28,7 @@ function BossBigPlane:new(player)
 	bossSpriteSheet:prepare("bossSheetSet1")
 	bossSpriteSheet:play()
 	-- TODO: maybe require sprite; not sure
+	local stage = display.getCurrentStage()
 	local middle = (stage.width / 2) - (boss.width / 2)
 	boss.x = middle
 	boss.y = -boss.height
@@ -64,19 +65,22 @@ function BossBigPlane:new(player)
 	boss.player = player
 	boss.rot = math.atan2(boss.y -  boss.player.x,  boss.x - boss.player.y) / math.pi * 180 -90;
 	boss.angle = (boss.rot -90) * math.pi / 180;
+	boss.hoveringDirection = "right"
 	
 	
 	local halfWidth = boss.width / 2
 	local halfHeight = boss.height / 2
 	local bossShape = {82-halfWidth,48-halfHeight, 98-halfWidth,94-halfHeight, 45-halfWidth,94-halfHeight, 62-halfWidth,48-halfHeight, 0-halfWidth,30-halfHeight, 0-halfWidth,0-halfHeight, 143-halfWidth,0-halfHeight, 143-halfWidth,30-halfHeight} 
 	
+	--[[
 	physics.addBody( boss, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = false, isSensor = true, isFixedRotation = false,
 								shape=bossShape,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
-							
+							]]--
+
 	function boss:destroy()
 		-- TODO: remove from game loop and handle death dispatch
 		self:dispatchEvent({name="enemyDead", target=self})
@@ -128,6 +132,8 @@ function BossBigPlane:new(player)
 		gunPoint2Img.rotation = boss:getRotation(gunPoint2Img )
 		gunPoint3Img.rotation = boss:getRotation(gunPoint3Img )
 		
+		self:hover(millisecondsPassed)
+
 		if(self.lastTick >= self.fireSpeed) then
 			if(boss.fireCount + 1 <= boss.fireCountMax) then
 				boss.fireCount = boss.fireCount + 1
@@ -158,12 +164,44 @@ function BossBigPlane:new(player)
 			elseif(boss.fireCount == 1) then points = {{x=self.rightGunPoint.x + self.x, y=self.rightGunPoint.y + self.y}}
 			end
 			--]]
+
+			
 			
 			self:dispatchEvent({name="fireShots", target=self, points=points})
 			self.lastTick = 0
 		else
 			self.lastTick = self.lastTick + millisecondsPassed
 		end
+	end
+
+	function boss:hover(millisecondsPassed)
+		local targetX
+		local stage = display.getCurrentStage()
+		if self.hoveringDirection == "right" then
+			targetX = stage.width - (self.width / 2)
+		else
+			targetX = self.width / 2
+		end
+
+		local deltaX = self.x - targetX
+		local deltaY = 0
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+
+		local moveX = (self.speed / 4) * (deltaX / dist) * millisecondsPassed
+
+		
+		--print("moveX: ", moveX, ", dist: ", dist)
+		if math.abs(moveX) > dist then
+			self.x = targetX
+			if self.hoveringDirection == "right" then
+				self.hoveringDirection = "left"
+			else
+				self.hoveringDirection = "right"
+			end
+		else
+			self.x = self.x - moveX
+		end
+		
 	end
 	
 	boss.tick = moveToFiringPosition
