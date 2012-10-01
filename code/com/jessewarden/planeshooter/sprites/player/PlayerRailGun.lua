@@ -19,29 +19,39 @@ function PlayerRailGun:new(startX, startY)
 		local spriteSheet = sprite.newSpriteSheet("player_rail_gun_anime_1_sheet.png", 300, 700)
 		local spriteSet = sprite.newSpriteSet(spriteSheet, 1, 7)
 		sprite.add(spriteSet, "railGun1", 1, 7, 400, 1)
-		BossBigPlane.spriteSheet = spriteSheet
-		BossBigPlane.spriteSet = spriteSet
-		BossBigPlane.fireSound = audio.loadSound("player_railgun.wav")
+		PlayerRailGun.spriteSheet = spriteSheet
+		PlayerRailGun.spriteSet = spriteSet
+		PlayerRailGun.fireSound = audio.loadSound("player_railgun.wav")
 	end
 	
-	local img = sprite.newSprite(BossBigPlane.spriteSet)
+	local img = sprite.newSprite(PlayerRailGun.spriteSet)
 	img:setReferencePoint(display.BottomCenterReferencePoint)
 	img:prepare("railGun1")
 	img:play()
 	img.name = "BulletRail"
 	img.x = startX - 12
 	img.y = startY
-	--[[
 	
-	function onSpriteAnimation(event)
+	
+	function img:sprite(event)
 		--print("event.phase: ", event.phase)
-		if(event.phase == "loop") then
-			img:destroy()
+		if(event.phase == "end") then
+			img:destroyInABit()
 		end
 	end
-	
-	img:addEventListener("sprite", onSpriteAnimation)
-	--]]
+
+	function img:destroyInABit()
+		if img.timerHandle ~= nil then
+			timer.cancel(img.timerHandle)
+		end
+		img.timerHandle = timer.performWithDelay(100, img)
+	end
+
+	function img:timer(event)
+		self:destroy()
+	end
+
+	img:addEventListener("sprite", img)
 	
 	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
@@ -56,8 +66,8 @@ function PlayerRailGun:new(startX, startY)
 		bullets = bullets - 1
 		removeLoop(self)
 		--]]
-		audio.stop(BossBigPlane.fireSoundChannel)
-		audio.rewind(BossBigPlane.fireSoundChannel)
+		--audio.stop(PlayerRailGun.fireSoundChannel)
+		--audio.rewind(PlayerRailGun.fireSoundChannel)
 		--self:removeEventListener("sprite", onSpriteAnimation)
 		self:dispatchEvent({name="animeFinished", target=self})
 		--self:dispatchEvent({name="removeFromGameLoop", target=self})
@@ -78,19 +88,14 @@ function PlayerRailGun:new(startX, startY)
 	
 	--]]
 	
-	if(BossBigPlane.fireSoundChannel == nil) then
-		BossBigPlane.fireSoundChannel = audio.play(BossBigPlane.fireSound)
-	else
-		
-		audio.play(BossBigPlane.fireSound, {channel=BossBigPlane.fireSoundChannel})
-	end
+	audio.play(PlayerRailGun.fireSound)
 	
 	function onReady()
 		timer.cancel(img.timerHandle)
 		img:destroy()
 	end
 	
-	img.timerHandle = timer.performWithDelay(1000, onReady)
+	--img.timerHandle = timer.performWithDelay(1000, onReady)
 	
 	return img
 end

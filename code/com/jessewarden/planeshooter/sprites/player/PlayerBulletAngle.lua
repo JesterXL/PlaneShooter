@@ -1,9 +1,9 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "org.robotlegs.globals"
 
-PlayerBulletSingle = {}
+PlayerBulletAngle = {}
 
-function PlayerBulletSingle:new(startX, startY)
+function PlayerBulletAngle:new(startX, startY, targetX, targetY)
 	assert(startX ~= nil, "Must pass in a startX value")
 	assert(startY ~= nil, "Must pass in a startY value")
 
@@ -14,6 +14,10 @@ function PlayerBulletSingle:new(startX, startY)
 	--img.id = globals:getID()
 	img.x = startX
 	img.y = startY
+	img.targetX = targetX
+	img.targetY = targetY
+	img.rot = math.atan2(img.y -  img.targetY,  img.x - img.targetX) / math.pi * 180 -90;
+	img.angle = (img.rot -90) * math.pi / 180;
 	
 	function img:destroy()
 		gameLoop:removeLoop(self)
@@ -29,8 +33,6 @@ function PlayerBulletSingle:new(startX, startY)
 		end
 	end
 	
-	
-	
 	function img:init()
 		img:addEventListener("collision", img)
 		
@@ -42,27 +44,12 @@ function PlayerBulletSingle:new(startX, startY)
 	end
 	
 	function img:tick(millisecondsPassed)
-		if(self.y < 0) then
-			self:destroy()
-			return
-		else
-			local deltaX = 0
-			local deltaY = self.y - 0
-			local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+		self.x = self.x + math.cos(self.angle) * self.speed * millisecondsPassed
+	   	self.y = self.y + math.sin(self.angle) * self.speed * millisecondsPassed
 
-			local moveX = self.speed * (deltaX / dist) * millisecondsPassed
-			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
-			
-			if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-				self:destroy()
-			else
-				self.y = self.y - moveY
-			end
-
-			--if self.x < stage.x or self.y < stage.y or stage.x > stage.width or stage.y + stage.height then
-			--	self:destroy()
-			--end
-		end
+	   	--if self.x < stage.x or self.y < stage.y or stage.x > stage.width or stage.y + stage.height then
+		--	self:destroy()
+		--end
 	end
 	
 	img:init()
@@ -70,4 +57,4 @@ function PlayerBulletSingle:new(startX, startY)
 	return img
 end
 
-return PlayerBulletSingle
+return PlayerBulletAngle

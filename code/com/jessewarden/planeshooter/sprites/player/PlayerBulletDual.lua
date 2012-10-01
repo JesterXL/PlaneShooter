@@ -5,6 +5,7 @@ PlayerBulletDual = {}
 function PlayerBulletDual:new(startX, startY)
 
 	local img = display.newImage("player_bullet_2.png")
+	img.classType = "PlayerBulletAngle"
 	img.name = "Bullet"
 	img.speed = constants.PLAYER_BULLET_SPEED
 	img.x = startX
@@ -17,18 +18,18 @@ function PlayerBulletDual:new(startX, startY)
 							} )
 
 	function img:destroy()
-		self:dispatchEvent({name="removeFromGameLoop", target=self})
+		gameLoop:removeLoop(self)
+		self:removeEventListener("collision", self)
 		self:removeSelf()
 	end
 	
-	function onHit(self, event)
+	function img:collision(event)
 		if(event.other.name == "Bullet") then
 			self:destroy()
 			event.other:destroy()
 		end
 	end
 	
-	img.collision = onHit
 	img:addEventListener("collision", img)
 	
 	function img:tick(millisecondsPassed)

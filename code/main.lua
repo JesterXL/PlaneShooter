@@ -8,7 +8,6 @@ require "com.jessewarden.planeshooter.gamegui.controls.ScrollingTerrain"
 require "com.jessewarden.planeshooter.core.GameLoop"
 require "com.jessewarden.planeshooter.core.LevelDirector"
 
-require "com.jessewarden.planeshooter.sprites.player.PlayerWeapons"
 require "com.jessewarden.planeshooter.sprites.player.Player"
 require "com.jessewarden.planeshooter.sprites.player.PlayerBulletSingle"
 require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
@@ -39,6 +38,14 @@ require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
 require "com.jessewarden.planeshooter.rl.MainContext"
 require "com.jessewarden.planeshooter.rl.mediators.PlayerMediator"
 
+local function setupGlobals()
+	_G.gameLoop = GameLoop:new()
+	gameLoop:start()
+
+	_G.mainGroup = display.newGroup()
+
+	_G.stage = display.getCurrentStage()
+end
 
 
 local function initSounds()
@@ -340,7 +347,7 @@ end
 
 function startPhysics()
 	physics.start()
-	physics.setDrawMode( "hybrid" )
+	physics.setDrawMode( "normal" )
 	physics.setGravity( 0, 0 )
 end
 
@@ -741,12 +748,57 @@ local function testBoss()
 	loop:addLoop(boss)
 end
 
+local function testPlayerWeapons()
+	require "com.jessewarden.planeshooter.sprites.player.Player"
+	require "com.jessewarden.planeshooter.controllers.PlayerMovementController"
+	require "com.jessewarden.planeshooter.controllers.PlayerWeaponsController"
+
+	startPhysics()
+
+	local player = Player:new()
+	gameLoop:addLoop(player)
+	local controller = PlayerMovementController:new(player)
+	controller:start()
+	local weapons = PlayerWeaponsController:new(player)
+	weapons:start()
+	weapons:setPowerLevel(1)
+
+	local t = {}
+	function t:timer(e)
+		--[[
+		if weapons.powerLevel == 1 then
+			weapons:setPowerLevel(2)
+		elseif weapons.powerLevel == 2 then
+			weapons:setPowerLevel(3)
+		elseif weapons.powerLevel == 3 then
+			weapons:setPowerLevel(4)
+		elseif weapons.powerLevel == 4 then
+			weapons:setPowerLevel(1)
+		end
+		]]--
+
+		--if weapons.fireSpeed > 0 then
+		--	weapons.fireSpeed = weapons.fireSpeed - 25
+		--end
+		--print("weapons.fireSpeed: ", weapons.fireSpeed)
+	end
+
+	timer.performWithDelay(2000, t, 0)
+end
+
+local function testRailGun()
+	require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
+	local gun = PlayerRailGun:new(200, 200)
+end
 
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
 rect:setFillColor(255, 255, 255)
 
 
+
+
+setupGlobals()
 --startThisMug()
 
 --testAchievementConstants()
@@ -782,4 +834,8 @@ rect:setFillColor(255, 255, 255)
 --testGenericGunTurret()
 --testFlak()
 --bunchOfFlak()
-testBoss()
+--testBoss()
+testPlayerWeapons()
+--testRailGun()
+
+--require "testsmain"

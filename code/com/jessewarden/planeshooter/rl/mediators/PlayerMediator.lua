@@ -1,6 +1,6 @@
 require "org.robotlegs.Mediator"
 
-require "com.jessewarden.planeshooter.rl.models.PlayerModel"
+require "com.jessewarden.planeshooter.models.PlayerModel"
 
 PlayerMediator = {}
 PlayerMediator.classType = "PlayerMediator"
