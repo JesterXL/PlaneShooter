@@ -3,9 +3,12 @@ Gun30CaliberVO = {}
 
 function Gun30CaliberVO:new()
 
-	local gun = WeaponVO:new()
+	local gun     = WeaponVO:new()
+	gun.classType = "Gun30CaliberVO"
 	gun.fireSpeed = 300
-	gun.damage = 1
+	gun.damage    = 1
+	gun.type      = WeaponVO.TYPE_GUN
+	gun.weight    = 1
 	return gun
 end
 

@@ -791,6 +791,27 @@ local function testRailGun()
 	local gun = PlayerRailGun:new(200, 200)
 end
 
+local function testTypeOf()
+	function typeof(var)
+	    local _type = type(var);
+	    if(_type ~= "table" and _type ~= "userdata") then
+	        return _type;
+	    end
+	    local _meta = getmetatable(var);
+	    if(_meta ~= nil and _meta._NAME ~= nil) then
+	        return _meta._NAME;
+	    else
+	        return _type;
+    	end
+	end
+
+	require "com.jessewarden.planeshooter.vo.weapons.guns.GunRailVO"
+	local gun = GunRailVO:new()
+	print("type: ", type(gun))
+	print("typeof: ", typeof(gun))
+
+end
+
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
 rect:setFillColor(255, 255, 255)
@@ -835,7 +856,8 @@ setupGlobals()
 --testFlak()
 --bunchOfFlak()
 --testBoss()
-testPlayerWeapons()
+--testPlayerWeapons()
 --testRailGun()
+--testTypeOf()
 
---require "testsmain"
+require "testsmain"
