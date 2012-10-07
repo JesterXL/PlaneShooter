@@ -77,3 +77,13 @@ function test_gunAndEngineWeight()
 	model:equipEngine(engine)
 	assert_equal(startWeight, model.weight, 0, "Model weight does not equal adjusted weight.")
 end
+
+function test_equipOnlyOneGun()
+	require "com.jessewarden.planeshooter.vo.weapons.guns.Gun30CaliberVO"
+	require "com.jessewarden.planeshooter.vo.weapons.guns.Gun50CaliberVO"
+	local gun = Gun30CaliberVO:new()
+	local gun2 = Gun50CaliberVO:new()
+	model:equipGun(gun)
+	model:equipGun(gun2)
+	assert_true(gun2 == model.gun, "The setting of gun2 didn't work.")
+end

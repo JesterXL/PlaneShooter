@@ -809,7 +809,22 @@ local function testTypeOf()
 	local gun = GunRailVO:new()
 	print("type: ", type(gun))
 	print("typeof: ", typeof(gun))
+end
 
+local function testEquipScreen()
+	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreen"
+	local screen = EquipScreen:new()
+	screen:init()
+end
+
+local function testProgressBar()
+	require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
+	local bar = ProgressBar:new(0, 0, 0, 255, 242, 0, 200, 40)
+	bar.x = 30
+	bar.y = 30
+	bar:setProgress(5, 10)
+	bar:showProgressAdjusted(5, 4, 10)
+	bar:showProgressAdjusted(5, 7, 10)
 end
 
 local stage = display.getCurrentStage()
@@ -860,4 +875,8 @@ setupGlobals()
 --testRailGun()
 --testTypeOf()
 
-require "testsmain"
+testEquipScreen()
+--testProgressBar()
+
+
+--require "testsmain"
