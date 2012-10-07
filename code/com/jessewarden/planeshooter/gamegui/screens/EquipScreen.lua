@@ -6,6 +6,7 @@ function EquipScreen:new()
 	local screen = display.newGroup()
 	screen.tileHeight = nil
 	screen.tileRight = nil
+	screen.isFocus = false
 
 	function screen:init()
 		local startX = 0
@@ -16,7 +17,7 @@ function EquipScreen:new()
 		screen.titleGuns = titleGuns
 		screen:insert(titleGuns)
 		startY = startY + titleGuns.height + 4
-		self:buildRow(startX, startY)
+		self:buildRow(startX, startY, "gunTile")
 		startY = startY + self.tileHeight + 4
 
 		local titleCanons = display.newImage("equip_cannons.png")
@@ -25,7 +26,7 @@ function EquipScreen:new()
 		screen:insert(titleCanons)
 		titleCanons.y = startY
 		startY = startY + titleCanons.height + 4
-		self:buildRow(startX, startY)
+		self:buildRow(startX, startY, "cannonTile")
 		startY = startY + self.tileHeight + 4
 
 		local titleMissiles = display.newImage("equip_missiles.png")
@@ -34,7 +35,7 @@ function EquipScreen:new()
 		screen:insert(titleMissiles)
 		titleMissiles.y = startY
 		startY = startY + titleMissiles.height + 4
-		self:buildRow(startX, startY)
+		self:buildRow(startX, startY, "missileTile")
 		startY = startY + self.tileHeight + 4
 
 		local titleEngines = display.newImage("equip_engines.png")
@@ -157,6 +158,36 @@ function EquipScreen:new()
 		self.tileBody = tileBody
 		tileBody.x = 235
 		tileBody.y = 800
+
+		-- Example drag and drop; works great
+		--[[
+		local temp = display.newImage("__temp.png")
+		temp:setReferencePoint(display.TopLeftReferencePoint)
+		temp.x = 2
+		temp.y = 42
+
+		function temp:touch(event)
+			local phase = event.phase
+			if phase == "began" then
+				display.getCurrentStage():setFocus(self)
+				self:toFront()
+				screen.isFocus = true
+				screen.x0 = event.x - self.x
+				screen.y0 = event.y - self.y
+			elseif screen.isFocus == true then
+				if phase == "moved" then
+					self.x = event.x - screen.x0
+					self.y = event.y - screen.y0
+				elseif phase == "ended" or phase == "cancelled" then
+					display.getCurrentStage():setFocus(nil)
+					screen.isFocus = false
+				end
+			end
+			return true
+		end
+		]]--
+
+		temp:addEventListener("touch", temp)
 
 	end
 
