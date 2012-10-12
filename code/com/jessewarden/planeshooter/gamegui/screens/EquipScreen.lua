@@ -1,4 +1,5 @@
 require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
+require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.EquipTile"
 EquipScreen = {}
 
 function EquipScreen:new()
@@ -185,9 +186,10 @@ function EquipScreen:new()
 			end
 			return true
 		end
-		]]--
+		
 
 		temp:addEventListener("touch", temp)
+		]]--
 
 	end
 
@@ -207,7 +209,7 @@ function EquipScreen:new()
 
 	function screen:getTile(addTouchListener)
 		if addTouchListener == nil then addTouchListener = true end
-		local tile = display.newImage("equip_tile.png")
+		local tile = EquipTile:new()
 		if self.tileHeight == nil then self.tileHeight = tile.height end
 		tile:setReferencePoint(display.TopLeftReferencePoint)
 		self:insert(tile)
