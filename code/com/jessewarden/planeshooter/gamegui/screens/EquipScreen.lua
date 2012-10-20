@@ -6,8 +6,97 @@ function EquipScreen:new()
 
 	local screen = display.newGroup()
 	screen.tileHeight = nil
-	screen.tileRight = nil
-	screen.isFocus = false
+	screen.tileRight  = nil
+	screen.isFocus    = false
+
+	screen.guns       = nil
+	screen.cannons    = nil
+	screen.rockets    = nil
+	screen.bodies     = nil
+	screen.engines    = nil
+
+	screen.tileGroup 		= display.newGroup()
+	screen:insert(screen.tileGroup)
+	screen.inventoryGroup  = display.newGroup()
+	screen:insert(screen.inventoryGroup)
+
+	function screen:setCollection(current, collection)
+		local target = current
+		if target ~= nil then
+			target:removeEventListener("onChange", self)
+		end
+		target = collection
+		if collection ~= nil then
+			collection:addEventListener("onChange", self)
+		end
+	end
+
+	function screen:setGuns(collection)
+		self:setCollection(self.guns, collection)
+	end
+
+	function screen:setCannons(collection)
+		self:setCollection(self.cannons, collection)
+	end
+
+	function screen:setRockets(collection)
+		self:setCollection(self.rockets, collection)
+	end
+
+	function screen:setBodies(collection)
+		self:setCollection(self.bodies, collection)
+	end
+
+	function screen:setEngines(collection)
+		self:setCollection(self.engines, collection)
+	end
+
+	function screen:Collection_change(event)
+		local collection = event.target
+		if collection == self.guns then
+			self:redrawGuns()
+		elseif collection == self.cannons then
+			self:redrawCannons()
+		elseif collection == self.rockets then
+			self:redrawRockets()
+		elseif collection == self.bodies then
+			self:redrawBodies()
+		elseif collection == self.engines then
+			self:redrawEngines()
+		end
+	end
+
+	function screen:redrawGuns()
+
+		local group = self.inventoryGroup
+		local len = group.numChildren
+		while len > 0 do
+			local object = group[len]
+			if object.classType == "gun" then
+				object:removeSelf()
+			end
+			len = len - 1
+		end
+
+		local allGuns = self.guns
+		print("guns length: ", #allGuns)
+		local i = 1
+		local max = 4
+		while i <= max do
+			local gunVO = self.guns[i]
+			print("gunVO: ", gunVO)
+			if gunVO ~= nil then
+				local temp = display.newImage("__temp.png")
+				temp.classType = "gun"
+				temp:setReferencePoint(display.TopLeftReferencePoint)
+				self.inventoryGroup:insert(temp)
+				local tile = self["gunTile_" .. i]
+				temp.x = tile.x
+				temp.y = tile.y
+			end
+			i = i + 1
+		end
+	end
 
 	function screen:init()
 		local startX = 0
@@ -45,7 +134,7 @@ function EquipScreen:new()
 		screen:insert(titleEngines)
 		titleEngines.y = startY
 		startY = startY + titleEngines.height + 4
-		self:buildRow(startX, startY)
+		self:buildRow(startX, startY, "enginesTile")
 		startY = startY + self.tileHeight + 4
 
 		local titleBodies = display.newImage("equip_bodies.png")
@@ -54,7 +143,7 @@ function EquipScreen:new()
 		screen:insert(titleBodies)
 		titleBodies.y = startY
 		startY = startY + titleBodies.height + 4
-		self:buildRow(startX, startY)
+		self:buildRow(startX, startY, "bodiesTile")
 		startY = startY + self.tileHeight + 4
 
 		local titleInformation = display.newImage("equip_information.png")
@@ -193,13 +282,15 @@ function EquipScreen:new()
 
 	end
 
-	function screen:buildRow(startX, startY)
+	function screen:buildRow(startX, startY, namePrefix)
 		local i = 1
 		local tile
 		while i < 5 do
 			tile = screen:getTile()
 			tile.x = startX
 			tile.y = startY
+			tile.name = namePrefix .. "_" .. i
+			self[tile.name] = tile
 
 			startX = startX + tile.width + 8
 			i = i + 1
@@ -212,7 +303,7 @@ function EquipScreen:new()
 		local tile = EquipTile:new()
 		if self.tileHeight == nil then self.tileHeight = tile.height end
 		tile:setReferencePoint(display.TopLeftReferencePoint)
-		self:insert(tile)
+		self.tileGroup:insert(tile)
 		if addTouchListener == true then
 			tile:addEventListener("touch", function(e)self:onTileTouched(e)end)
 		end

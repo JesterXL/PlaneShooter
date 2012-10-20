@@ -817,6 +817,27 @@ local function testEquipScreen()
 	screen:init()
 end
 
+local function testEquipScreenAndController()
+	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreen"
+	local screen = EquipScreen:new()
+	screen:init()
+
+	require "com.jessewarden.planeshooter.models.EquipModel"
+	local model = EquipModel:new()
+	model:init()
+
+	require "com.jessewarden.planeshooter.vo.weapons.guns.Gun30CaliberVO"
+	local gunVO = Gun30CaliberVO:new()
+	model.guns:add(gunVO)
+	local allGuns = model.guns
+	print("allGuns: ", #allGuns)
+
+	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreenController"
+	local controller = EquipScreenController:new()
+	controller:initialize(model, screen)
+
+end
+
 local function testProgressBar()
 	require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
 	local bar = ProgressBar:new(0, 0, 0, 255, 242, 0, 200, 40)
@@ -825,6 +846,32 @@ local function testProgressBar()
 	bar:setProgress(5, 10)
 	bar:showProgressAdjusted(5, 4, 10)
 	bar:showProgressAdjusted(5, 7, 10)
+end
+
+local function testColonEvents()
+	local cow = {}
+	function cow:Sup_man()
+		print("whoa it worked")
+	end
+	Runtime:addEventListener("Sup_man", cow)
+	Runtime:dispatchEvent({name="Sup_man", target=nil})
+end
+
+local function testCollection()
+	require "com.jessewarden.planeshooter.utils.Collection"
+	local collection = Collection:new()
+	print("before: ", #collection)
+	collection:add("cow")
+	print("after: ", #collection)
+end
+
+local function testILoop()
+	local i = 1
+	local max = 4
+	while i <= max do
+		print(i)
+		i = i + 1
+	end
 end
 
 local stage = display.getCurrentStage()
@@ -875,8 +922,11 @@ setupGlobals()
 --testRailGun()
 --testTypeOf()
 
-testEquipScreen()
+--testEquipScreen()
+testEquipScreenAndController()
 --testProgressBar()
-
+--testColonEvents() --lol
+--testILoop()
+--testCollection()
 
 --require "testsmain"
