@@ -5,13 +5,14 @@ function Collection:new()
 	local collection = display.newGroup()
 	collection.items = collection
 
-	function collection:add(item)
+	function collection:addItem(item)
 		table.insert(self.items, item)
 		self:dispatchEvent({name="onChange", target=self, kind="add"})
 	end
 
-	function collection:remove(item)
-		table.remove(self.items, item)
+	function collection:removeItem(item)
+		local index = table.indexOf(item)
+		table.remove(self.items, index)
 		self:dispatchEvent({name="onChange", target=self, kind="remove"})
 	end
 

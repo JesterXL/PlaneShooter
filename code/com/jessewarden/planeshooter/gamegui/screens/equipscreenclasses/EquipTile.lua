@@ -3,9 +3,11 @@ EquipTile = {}
 function EquipTile:new()
 
 	local tile = display.newGroup()
+	
 	local tileImage = display.newImage("equip_tile.png")
 	tile.image = tileImage
 	tile:insert(tileImage)
+	
 	local tileRect = display.newRect(tile, 0, 0, tileImage.width, tileImage.height)
 	tile:insert(tileRect)
 	tileRect:setStrokeColor(255, 255, 0)
@@ -14,7 +16,16 @@ function EquipTile:new()
 	tileRect:setFillColor(255, 255, 255)
 	tile.rect = tileRect
 
+	local tileFlash = display.newRect(tile, 0, 0, tileImage.width, tileImage.height)
+	tile:insert(tileFlash)
+	tileFlash:setStrokeColor(0, 255, 0)
+	tileFlash.strokeWidth = 6
+	tileFlash.alpha = 0
+	tileFlash:setFillColor(0, 0, 0, 0)
+	tile.flash = tileFlash
+
 	tile.showingBorder = false
+	tile.showingFlash = false
 
 	function tile:touch(event)
 		local p = event.phase
@@ -46,11 +57,36 @@ function EquipTile:new()
 		if show == true then
 			--self.tween = transition.to(self.rect, {time = 300, alpha = 1})
 			tile.rect.alpha = 1
+			tile.flash.strokeWidth = 12
+			tileFlash:setFillColor(0, 255, 0, 50)
 		else
 			--self.tween = transition.to(self.rect, {time = 300, alpha = 0})
 			tile.rect.alpha = 0
+			tile.flash.strokeWidth = 6
+			tileFlash:setFillColor(0, 0, 0, 0)
 		end
 	end
+
+	function tile:killFlashTween()
+		if self.flashTween ~= nil then
+			transition.cancel(self.flashTween)
+		end
+	end
+
+	function tile:drawFlash(show)
+		if show == self.showingFlash then return true end
+		self.showingFlash = show
+
+		self:killFlashTween()
+
+		if show == true then
+			tile.flash.alpha = 1
+			--self.flashTween = transition.to(tile.flash, {time=500, alpha=1, onComplete = function})
+		else
+			tile.flash.alpha = 0
+		end
+	end
+
 
 	Runtime:addEventListener("touch", tile)
 

@@ -20,7 +20,7 @@ function EquipModel:new()
 
 	function model:getCollection()
 		local collection = Collection:new()
-		collection:addEventListener("onChange", function(e)self:onCollectionChanged(e)end)
+		--collection:addEventListener("onChange", function(e)self:onCollectionChanged(e)end)
 		return collection
 	end
 
@@ -40,7 +40,7 @@ function EquipModel:new()
 	end
 
 	function model:sendChange(name, collection, kind)
-		Runtime:dispatchEvent({name=name, collection=collection, kind=kind})
+		--Runtime:dispatchEvent({name=name, collection=collection, kind=kind})
 	end
 
 	return model

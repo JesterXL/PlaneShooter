@@ -22,7 +22,7 @@ function PlayerModel:new()
 		value = math.max(value, 0)
 		if value > self.maxHitPoints then value = self.maxHitPoints end
 		self.hitPoints = value
-		Runtime:dispatchEvent({target=self, name="PlayerModel:hitPointsChanged"})
+		Runtime:dispatchEvent({target=self, name="PlayerModel_hitPointsChanged"})
 	end
 
 	function model:getHitpointsPercentage()
@@ -70,8 +70,19 @@ function PlayerModel:new()
 		local old = self.gun
 		self.gun = gun
 		self:recalculateSpecs()
-		local evt = {name="PlayerModel:gunChanged", target=self, old=old, value=self.gun}
+		local evt = {name="PlayerModel_gunChanged", target=self, old=old, value=self.gun}
 		Runtime:dispatchEvent(evt)
+	end
+
+	function model:removeGun()
+		if self.gun ~= nil then
+			local old = self.gun
+			self.gun = nil
+			self:recalculateSpecs()
+			local evt = {name="PlayerModel_gunChanged", target=self, old=old}
+			Runtime:dispatchEvent(evt)
+			return old
+		end
 	end
 
 	function model:equipCannon(cannon)

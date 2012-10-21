@@ -1,5 +1,6 @@
 require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
 require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.EquipTile"
+require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.DraggableTile"
 EquipScreen = {}
 
 function EquipScreen:new()
@@ -14,6 +15,8 @@ function EquipScreen:new()
 	screen.rockets    = nil
 	screen.bodies     = nil
 	screen.engines    = nil
+
+	screen.equippedGun = nil
 
 	screen.tileGroup 		= display.newGroup()
 	screen:insert(screen.tileGroup)
@@ -32,7 +35,19 @@ function EquipScreen:new()
 	end
 
 	function screen:setGuns(collection)
-		self:setCollection(self.guns, collection)
+		if self.guns ~= nil then self.guns:removeEventListener("onChange", self) end
+		self.guns = collection
+		if self.guns ~= nil then self.guns:addEventListener("onChange", self) end
+		self:redrawGuns()
+	end
+
+	function screen:onChange(event)
+		self:redrawGuns()
+	end
+
+	function screen:setEquippedGun(gunVO)
+		self.equippedGun = gunVO
+		self:redrawEquippedGun()
 	end
 
 	function screen:setCannons(collection)
@@ -51,49 +66,98 @@ function EquipScreen:new()
 		self:setCollection(self.engines, collection)
 	end
 
-	function screen:Collection_change(event)
-		local collection = event.target
-		if collection == self.guns then
-			self:redrawGuns()
-		elseif collection == self.cannons then
-			self:redrawCannons()
-		elseif collection == self.rockets then
-			self:redrawRockets()
-		elseif collection == self.bodies then
-			self:redrawBodies()
-		elseif collection == self.engines then
-			self:redrawEngines()
-		end
-	end
-
 	function screen:redrawGuns()
-
 		local group = self.inventoryGroup
 		local len = group.numChildren
+		print("numChildren: ", len)
 		while len > 0 do
 			local object = group[len]
-			if object.classType == "gun" then
-				object:removeSelf()
+			if object and object.dragSource == "gun" then
+				object:destroy()
 			end
 			len = len - 1
 		end
 
-		local allGuns = self.guns
-		print("guns length: ", #allGuns)
 		local i = 1
 		local max = 4
+		local allGuns = self.guns
+		print("allGuns len: ", #allGuns)
 		while i <= max do
 			local gunVO = self.guns[i]
-			print("gunVO: ", gunVO)
 			if gunVO ~= nil then
-				local temp = display.newImage("__temp.png")
-				temp.classType = "gun"
-				temp:setReferencePoint(display.TopLeftReferencePoint)
+				local temp = DraggableTile:new()
+				temp.dragSource = "gun"
+				temp.vo = gunVO
 				self.inventoryGroup:insert(temp)
+				temp:addEventListener("onStartDragging", self)
+				temp:addEventListener("onStopDragging", self)
+
 				local tile = self["gunTile_" .. i]
 				temp.x = tile.x
 				temp.y = tile.y
 			end
+			i = i + 1
+		end
+	end
+
+	function screen:redrawEquippedGun()
+		if self.equippedGunView ~= nil then
+			self.equippedGunView:destroy()
+			self.equippedGunView = nil
+		end
+
+		if self.equippedGun ~= nil then
+			local temp = DraggableTile:new()
+			temp.dragSource = "equippedGun"
+			temp.vo = self.equippedGun
+			self.inventoryGroup:insert(temp)
+			temp:addEventListener("onStartDragging", self)
+			temp:addEventListener("onStopDragging", function(e)self:onStopDraggingEquippedGun(e)end)
+
+			self.equippedGunView = temp
+			temp.x = self.tileGun.x
+			temp.y = self.tileGun.y
+			temp:toFront()
+		end
+	end
+
+	function screen:onStartDragging(event)
+		local classType = event.target.classType
+		local dragSource = event.target.dragSource
+		if dragSource == "gun" then
+			self.tileGun:drawFlash(true)
+		elseif dragSource == "equippedGun" then
+			self:drawGunTilesFlash(true)
+		else
+			self.tileGun:drawFlash(false)
+			self:drawGunTilesFlash(false)
+		end
+	end
+
+	function screen:onStopDragging(event)
+		local hitGun = self.tileGun.showingBorder
+		self.tileGun:drawFlash(false)
+		self:drawGunTilesFlash(false)
+		local draggingVO = event.target.vo
+		if hitGun == true then
+			print("equip me!")
+			self:dispatchEvent({name="onEquipGun", target=self, vo=draggingVO})
+			return true
+		end
+	end
+
+	function screen:onStopDraggingEquippedGun(event)
+		self:drawGunTilesFlash(false)
+		if self.tileGun.showingBorder == false then
+			self:dispatchEvent({name="onRemoveGun", target=self, vo=self.equippedGun})
+		end
+	end
+
+	function screen:drawGunTilesFlash(show)
+		local i = 1
+		while i <= 4 do
+			local gunTile = self["gunTile_" .. i]
+			gunTile:drawFlash(show)
 			i = i + 1
 		end
 	end
@@ -161,6 +225,8 @@ function EquipScreen:new()
 		infoTextBox.y = titleInformation.y + titleInformation.height
 
 		self:buildStats(infoTextBox.x, infoTextBox.y + infoTextBox.height + 8)
+	
+		self.inventoryGroup:toFront()
 	end
 
 	function screen:getTitle(text, x, y)
