@@ -12,7 +12,7 @@ require "lunatest"
 
 
 lunatest.suite("tests.com.jessewarden.planeshooter.models.PlayerModelSuite")
-
+lunatest.suite("tests.com.jessewarden.planeshooter.utils.CollectionSuite")
 
 print("-------------------------------")
 lunatest.run()

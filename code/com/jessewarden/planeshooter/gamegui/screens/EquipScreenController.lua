@@ -11,16 +11,22 @@ function EquipScreenController:new()
 		self.equipModel  = equipModel
 		self.playerModel = playerModel
 		self.equipScreen = equipScreen
-		self.equipScreen:addEventListener("onEquipGun", self)
-		self.equipScreen:addEventListener("onRemoveGun", self)
 
-		self.equipScreen:setGuns(self.equipModel.guns)
-		self.equipScreen:setEquippedGun(self.playerModel.gun)
+		equipScreen:addEventListener("onEquipGun", self)
+		equipScreen:addEventListener("onRemoveGun", self)
+		equipScreen:addEventListener("onEquipEngine", self)
+		equipScreen:addEventListener("onRemoveEngine", self)
+
+		equipScreen:setGuns(equipModel.guns)
+		equipScreen:setEngines(equipModel.engines)
+		equipScreen:setEquippedGun(playerModel.gun)
 
 		Runtime:addEventListener("PlayerModel_specsChanged", self)
 		Runtime:addEventListener("PlayerModel_gunChanged", self)
+		Runtime:addEventListener("PlayerModel_engineChanged", self)
 
 		self:PlayerModel_specsChanged()
+
 	end
 	
 	function controller:destroy()
@@ -31,6 +37,28 @@ function EquipScreenController:new()
 		self.equipScreen:setEquippedGun(self.playerModel.gun)
 	end
 
+	function controller:PlayerModel_engineChanged(evnet)
+		self.equipScreen:setEquippedEngine(self.playerModel.engine)
+	end
+
+	function controller:onEquipEngine(event)
+		print("EquipScreenController::onEquipEngine")
+		local equippedEngine = self.playerModel:removeEngine()
+		print("equippedEngine after removed: ", equippedEngine)
+		if equippedEngine ~= nil then
+			self.equipModel.engines:addItem(equippedEngine)
+		end
+		print("event.vo: ", event.vo.classType)
+		self.equipModel.engines:removeItem(event.vo)
+		self.playerModel:equipEngine(event.vo)
+	end
+
+	function controller:onRemoveEngine(event)
+		self.equipScreen:setEquippedEngine(nil)
+		local oldEngine = self.playerModel:removeEngine()
+		self.equipModel.engines:addItem(oldEngine)
+	end
+
 	function controller:onEquipGun(event)
 		-- already have a gun equipped? If so, move it back
 		local equippedGun = self.playerModel:removeGun()
@@ -38,13 +66,8 @@ function EquipScreenController:new()
 		if equippedGun ~= nil then
 			self.equipModel.guns:addItem(equippedGun)
 		end
-		-- take new gun and remove it from equipModel
-		local gs = self.equipModel.guns
-		local gLen = #gs
-		print("equipModel.guns before: " .. gLen)
+
 		self.equipModel.guns:removeItem(event.vo)
-		gLen = #gs
-		print("equipModel.guns after: " .. gLen)
 
 		-- take new gun and equip it to the player
 		print("event.vo: ", event.vo)

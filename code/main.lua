@@ -842,6 +842,14 @@ local function testEquipScreenAndController()
 	local gunRail = GunRailVO:new()
 	model.guns:addItem(gunRail)
 
+	require "com.jessewarden.planeshooter.vo.engines.EngineDualAllisonsVO"
+	local allison = EngineDualAllisonsVO:new()
+	model.engines:addItem(allison)
+
+	require "com.jessewarden.planeshooter.vo.engines.EngineJetVO"
+	local jet = EngineJetVO:new()
+	model.engines:addItem(jet)
+
 	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreenController"
 	local controller = EquipScreenController:new()
 	controller:initialize(model, playerModel, screen)

@@ -120,8 +120,19 @@ function PlayerModel:new()
 		local old = self.engine
 		self.engine = engine
 		self:recalculateSpecs()
-		local evt = {name="PlayerModel:engineChanged", target=self, old=old, value=self.engine}
+		local evt = {name="PlayerModel_engineChanged", target=self, old=old, value=self.engine}
 		Runtime:dispatchEvent(evt)
+	end
+
+	function model:removeEngine()
+		if self.engine ~= nil then
+			local old = self.engine
+			self.engine = nil
+			self:recalculateSpecs()
+			local evt = {name="PlayerModel_engineChanged", target=self, old=old}
+			Runtime:dispatchEvent(evt)
+			return old
+		end
 	end
 
 

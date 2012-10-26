@@ -11,9 +11,14 @@ function Collection:new()
 	end
 
 	function collection:removeItem(item)
-		local index = table.indexOf(item)
-		table.remove(self.items, index)
-		self:dispatchEvent({name="onChange", target=self, kind="remove"})
+		local index = table.indexOf(self, item)
+		if index ~= nil then
+			table.remove(self.items, index)
+			self:dispatchEvent({name="onChange", target=self, kind="remove"})
+			return true
+		else
+			return false
+		end
 	end
 
 	function collection:set(items)
