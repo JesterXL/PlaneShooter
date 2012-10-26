@@ -10,7 +10,10 @@ function PlayerModel:new()
 	model.maxWeight    = 10
 	
 	model.defense      = 0
+	model.maxDefense   = 10
+
 	model.power        = 0
+	model.maxPower 	   = 10
 	
 	model.gun          = nil
 	model.cannon       = nil
@@ -59,7 +62,7 @@ function PlayerModel:new()
 		self.weight  = weight
 		self.defense = defense
 		self.power   = power
-		Runtime:dispatchEvent({name="PlayerModel:weightChanged", target=self})
+		Runtime:dispatchEvent({name="PlayerModel_specsChanged", target=self})
 	end
 
 

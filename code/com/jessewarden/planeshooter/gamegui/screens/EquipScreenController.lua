@@ -17,7 +17,10 @@ function EquipScreenController:new()
 		self.equipScreen:setGuns(self.equipModel.guns)
 		self.equipScreen:setEquippedGun(self.playerModel.gun)
 
+		Runtime:addEventListener("PlayerModel_specsChanged", self)
 		Runtime:addEventListener("PlayerModel_gunChanged", self)
+
+		self:PlayerModel_specsChanged()
 	end
 	
 	function controller:destroy()
@@ -54,6 +57,15 @@ function EquipScreenController:new()
 		local oldGun = self.playerModel:removeGun()
 		-- put back in our inventory
 		self.equipModel.guns:addItem(oldGun)
+	end
+
+	function controller:PlayerModel_specsChanged(event)
+		--local field = self.equipScreen.infoTextBox
+		local model = self.playerModel
+		local view = self.equipScreen
+		view.progressWeight:setProgress(model.weight, model.maxWeight)
+		view.progressPower:setProgress(model.power, model.maxPower)
+		view.progressDefense:setProgress(model.defense, model.maxDefense)
 	end
 	
 	return controller

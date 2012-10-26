@@ -252,29 +252,21 @@ function EquipScreen:new()
 		local startX = textX
 		local startY = textBottom
 
-		local titleFireSpeed = self:getTitle("Fire Speed", startX, startY)
-		self.titleFireSpeed = titleFireSpeed
-		startY = startY + titleFireSpeed.height + 4
+		local titleWeight = self:getTitle("Weight", startX, startY)
+		self.titleWeight = titleWeight
+		startY = startY + titleWeight.height + 4
 
-		local progressFireSpeed = self:getProgress(startX, startY)
-		self.progressFireSpeed = progressFireSpeed
-		startY = startY + progressFireSpeed.height + 4
+		local progressWeight = self:getProgress(startX, startY)
+		self.progressWeight = progressWeight
+		startY = startY + progressWeight.height + 4
 
-		local titleFirepower = self:getTitle("Firepower", startX, startY)
-		self.titleFirepower = titleFirepower
-		startY = startY + titleFirepower.height + 4
+		local titlePower = self:getTitle("Power", startX, startY)
+		self.titlePower = titlePower
+		startY = startY + titlePower.height + 4
 
-		local progressFirepower = self:getProgress(startX, startY)
-		self.progressFirepower = progressFirepower
-		startY = startY + progressFirepower.height + 4
-
-		local titleSpeed = self:getTitle("Speed", startX, startY)
-		self.titleSpeed = titleSpeed
-		startY = startY + titleSpeed.height + 4
-
-		local progressSpeed = self:getProgress(startX, startY)
-		self.progressSpeed = progressSpeed
-		startY = startY + progressSpeed.height + 4
+		local progressPower = self:getProgress(startX, startY)
+		self.progressPower = progressPower
+		startY = startY + progressPower.height + 4
 
 		local titleDefense = self:getTitle("Defense", startX, startY)
 		self.titleDefense = titleDefense

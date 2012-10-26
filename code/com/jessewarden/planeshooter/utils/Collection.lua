@@ -31,6 +31,15 @@ function Collection:new()
 		self:dispatchEvent({name="onChange", target=self, kind="set"})
 	end
 
+	function collection:sort(sortFunction)
+		if sortFunction ~= nil then
+			table.sort(self, sortFunction)
+		else
+			table.sort(self)
+		end
+		self:dispatchEvent({name="onChange", target=self, kind="sort"})
+	end
+
 	return collection
 end
 

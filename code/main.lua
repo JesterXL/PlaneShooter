@@ -834,6 +834,14 @@ local function testEquipScreenAndController()
 	model.guns:addItem(gunVO)
 	local allGuns = model.guns
 
+	require "com.jessewarden.planeshooter.vo.weapons.guns.Gun50CaliberVO"
+	local gun50 = Gun50CaliberVO:new()
+	model.guns:addItem(gun50)
+
+	require "com.jessewarden.planeshooter.vo.weapons.guns.GunRailVO"
+	local gunRail = GunRailVO:new()
+	model.guns:addItem(gunRail)
+
 	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreenController"
 	local controller = EquipScreenController:new()
 	controller:initialize(model, playerModel, screen)
