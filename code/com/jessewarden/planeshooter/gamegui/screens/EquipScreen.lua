@@ -42,12 +42,22 @@ function EquipScreen:new()
 		self:redrawGuns()
 	end
 
+	function screen:setBodies(collection)
+		print("setBodies")
+		if self.bodies ~= nil then self.bodies:removeEventListener("onChange", self) end
+		self.bodies = collection
+		if self.bodies ~= nil then self.bodies:addEventListener("onChange", self) end
+		self:redrawBodies()
+	end
+
 	function screen:onChange(event)
 		local t = event.target
 		if t == self.guns then
 			self:redrawGuns()
 		elseif t == self.engines then
 			self:redrawEngines()
+		elseif t == self.bodies then
+			self:redrawBodies()
 		end
 	end
 
@@ -61,16 +71,17 @@ function EquipScreen:new()
 		self:redrawEquippedEngine()
 	end
 
+	function screen:setEquippedBody(bodyVO)
+		self.equippedBody = bodyVO
+		self:redrawEquippedBody()
+	end
+
 	function screen:setCannons(collection)
 		self:setCollection(self.cannons, collection)
 	end
 
 	function screen:setRockets(collection)
 		self:setCollection(self.rockets, collection)
-	end
-
-	function screen:setBodies(collection)
-		self:setCollection(self.bodies, collection)
 	end
 
 	function screen:setEngines(collection)
@@ -138,6 +149,51 @@ function EquipScreen:new()
 		end
 	end
 
+	function screen:redrawBodies()
+		print("redrawBodies")
+		self:removeInventoryItems("body")
+
+		local i = 1
+		local max = 4
+		while i <= max do
+			local bodyVO = self.bodies[i]
+			if bodyVO ~= nil then
+				local temp = DraggableTile:new()
+				temp.dragSource = "body"
+				temp.vo = bodyVO
+				self.inventoryGroup:insert(temp)
+				temp:addEventListener("onStartDragging", self)
+				temp:addEventListener("onStopDragging", self)
+
+				local tile = self["bodyTile_" .. i]
+				temp.x = tile.x
+				temp.y = tile.y
+			end
+			i = i + 1
+		end
+	end
+
+	function screen:redrawEquippedBody()
+		if self.equippedBodyView ~= nil then
+			self.equippedBodyView:destroy()
+			self.equippedBodyView = nil
+		end
+
+		if self.equippedBody ~= nil then
+			local temp = DraggableTile:new()
+			temp.dragSource = "equippedBody"
+			temp.vo = self.equippedBody
+			self.inventoryGroup:insert(temp)
+			temp:addEventListener("onStartDragging", self)
+			temp:addEventListener("onStopDragging", function(e)self:onStopDraggingEquippedBody(e)end)
+
+			self.equippedBodyView = temp
+			temp.x = self.tileBody.x
+			temp.y = self.tileBody.y
+			temp:toFront()
+		end 
+	end
+
 	function screen:redrawEquippedEngine()
 		if self.equippedEngineView ~= nil then
 			self.equippedEngineView:destroy()
@@ -189,20 +245,33 @@ function EquipScreen:new()
 			self:drawTilesFlash("gunTile_", true)
 		elseif dragSource == "engine" then
 			self.tileEngine:drawFlash(true)
+		elseif dragSource == "equippedEngine" then
+			self:drawTilesFlash("engineTile_", true)
+		elseif dragSource == "body" then
+			self.tileBody:drawFlash(true)
+		elseif dragSource == "equippedBody" then
+			self:drawTilesFlash("bodyTile_", true)
 		else
 			self.tileGun:drawFlash(false)
 			self.tileEngine:drawFlash(false)
+			self.tileBody:drawFlash(false)
 			self:drawTilesFlash("gunTile_", false)
+			self:drawTilesFlash("engineTile_", false)
+			self:drawTilesFlash("bodyTile_", false)
 		end
 	end
 
 	function screen:onStopDragging(event)
 		local hitGun = self.tileGun.showingBorder
 		local hitEngine = self.tileEngine.showingBorder
+		local hitBody = self.tileBody.showingBorder
 
 		self.tileGun:drawFlash(false)
 		self.tileEngine:drawFlash(false)
+		self.tileBody:drawFlash(false)
 		self:drawTilesFlash("gunTile_", false)
+		self:drawTilesFlash("engineTile_", false)
+		self:drawTilesFlash("bodyTile_", false)
 		
 		local draggingVO = event.target.vo
 		if hitGun == true then
@@ -212,6 +281,10 @@ function EquipScreen:new()
 		elseif hitEngine == true then
 			print("wants to equip engine")
 			self:dispatchEvent({name="onEquipEngine", target=self, vo=draggingVO})
+			return true
+		elseif hitBody == true then
+			print("wants to equip body")
+			self:dispatchEvent({name="onEquipBody", target=self, vo=draggingVO})
 			return true
 		end
 	end
@@ -227,6 +300,13 @@ function EquipScreen:new()
 		self:drawTilesFlash("engineTile_", false)
 		if self.tileGun.showingBorder == false then
 			self:dispatchEvent({name="onRemoveEngine", target=self, vo=self.equippedEngine})
+		end
+	end
+
+	function screen:onStopDraggingEquippedBody(event)
+		self:drawTilesFlash("bodyTile_", false)
+		if self.tileBody.showingBorder == false then
+			self:dispatchEvent({name="onRemoveBody", target=self, vo=self.equippedBody})
 		end
 	end
 

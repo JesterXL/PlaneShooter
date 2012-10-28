@@ -135,7 +135,25 @@ function PlayerModel:new()
 		end
 	end
 
+	function model:equipBody(bodyVO)
+		assert(bodyVO ~= nil, "You cannot pass a nil bodyVO.")
+		local old = self.body
+		self.body = bodyVO
+		self:recalculateSpecs()
+		local evt = {name="PlayerModel_bodyChanged", target=self, old=old, value=self.body}
+		Runtime:dispatchEvent(evt)
+	end
 
+	function model:removeBody()
+		if self.body ~= nil then
+			local old = self.body
+			self.body = nil
+			self:recalculateSpecs()
+			local evt = {name="PlayerModel_bodyChanged", target=self, old=old}
+			Runtime:dispatchEvent(evt)
+			return old
+		end
+	end
 
 	--[[
 	function model:setScore(value)

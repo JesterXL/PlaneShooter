@@ -14,7 +14,7 @@ function EquipModel:new()
 		self.guns    = self:getCollection()
 		self.cannons = self:getCollection()
 		self.rockets = self:getCollection()
-		self.bodys   = self:getCollection()
+		self.bodies   = self:getCollection()
 		self.engines = self:getCollection()
 	end
 

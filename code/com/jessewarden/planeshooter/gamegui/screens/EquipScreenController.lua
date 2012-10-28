@@ -16,14 +16,21 @@ function EquipScreenController:new()
 		equipScreen:addEventListener("onRemoveGun", self)
 		equipScreen:addEventListener("onEquipEngine", self)
 		equipScreen:addEventListener("onRemoveEngine", self)
+		equipScreen:addEventListener("onEquipBody", self)
+		equipScreen:addEventListener("onRemoveBody", self)
 
 		equipScreen:setGuns(equipModel.guns)
 		equipScreen:setEngines(equipModel.engines)
+		equipScreen:setBodies(equipModel.bodies)
+
 		equipScreen:setEquippedGun(playerModel.gun)
+		equipScreen:setEquippedEngine(playerModel.engine)
+		equipScreen:setEquippedBody(playerModel.body)
 
 		Runtime:addEventListener("PlayerModel_specsChanged", self)
 		Runtime:addEventListener("PlayerModel_gunChanged", self)
 		Runtime:addEventListener("PlayerModel_engineChanged", self)
+		Runtime:addEventListener("PlayerModel_bodyChanged", self)
 
 		self:PlayerModel_specsChanged()
 
@@ -39,6 +46,10 @@ function EquipScreenController:new()
 
 	function controller:PlayerModel_engineChanged(evnet)
 		self.equipScreen:setEquippedEngine(self.playerModel.engine)
+	end
+
+	function controller:PlayerModel_bodyChanged(event)
+		self.equipScreen:setEquippedBody(self.playerModel.body)
 	end
 
 	function controller:onEquipEngine(event)
@@ -80,6 +91,29 @@ function EquipScreenController:new()
 		local oldGun = self.playerModel:removeGun()
 		-- put back in our inventory
 		self.equipModel.guns:addItem(oldGun)
+	end
+
+	function controller:onEquipBody(event)
+		-- already have a body equipped? If so, move it back
+		local equippedBody = self.playerModel:removeBody()
+		print("equippedBody: ", equippedBody)
+		if equippedBody ~= nil then
+			self.equipModel.bodies:addItem(equippedBody)
+		end
+
+		self.equipModel.bodies:removeItem(event.vo)
+
+		-- take new gun and equip it to the player
+		print("event.vo: ", event.vo)
+		self.playerModel:equipBody(event.vo)
+	end
+
+	function controller:onRemoveBody(event)
+		self.equipScreen:setEquippedBody(nil)
+		-- unequip our gun
+		local oldBody = self.playerModel:removeBody()
+		-- put back in our inventory
+		self.equipModel.bodies:addItem(oldBody)
 	end
 
 	function controller:PlayerModel_specsChanged(event)

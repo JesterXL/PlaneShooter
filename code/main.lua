@@ -850,6 +850,18 @@ local function testEquipScreenAndController()
 	local jet = EngineJetVO:new()
 	model.engines:addItem(jet)
 
+	require "com.jessewarden.planeshooter.vo.bodies.BodyWoodVO"
+	require "com.jessewarden.planeshooter.vo.bodies.BodySteelVO"
+	require "com.jessewarden.planeshooter.vo.bodies.BodyAlumniumVO"
+
+	local wood = BodyWoodVO:new()
+	local steel = BodySteelVO:new()
+	local alum = BodyAlumniumVO:new()
+
+	model.bodies:addItem(wood)
+	model.bodies:addItem(steel)
+	model.bodies:addItem(alum)
+
 	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreenController"
 	local controller = EquipScreenController:new()
 	controller:initialize(model, playerModel, screen)
