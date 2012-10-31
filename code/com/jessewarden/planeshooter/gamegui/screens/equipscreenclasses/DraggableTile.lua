@@ -2,17 +2,40 @@ DraggableTile = {}
 
 function DraggableTile:new()
 
-	local tile = display.newImage("__temp.png")
+	local tile = display.newGroup()
 	tile.classType = "DraggableTile"
-	tile:setReferencePoint(display.TopLeftReferencePoint)
+	--tile:setReferencePoint(display.TopLeftReferencePoint)
 	tile.vo = nil
 	tile.dragSource = nil
+	tile.iconImage = nil
 
 	function tile:destroy()
 		self:killTween()
 		self.vo = nil
 		self:removeEventListener("touch", self)
 		self:removeSelf()
+	end
+
+	function tile:setVO(vo)
+		self.vo = vo
+		self:redrawIcon()
+	end
+
+	function tile:redrawIcon()
+		local img
+		local vo = self.vo
+		if vo ~= nil and vo.icon ~= nil then
+			img = display.newImage(vo.icon)
+		else
+			img = display.newImage("__temp.png")
+		end
+		img:setReferencePoint(display.TopLeftReferencePoint)
+
+		if tile.iconImage ~= nil then
+			tile.iconImage:removeSelf()
+		end
+		self.iconImage = img
+		self:insert(img)
 	end
 
 	function tile:killTween()

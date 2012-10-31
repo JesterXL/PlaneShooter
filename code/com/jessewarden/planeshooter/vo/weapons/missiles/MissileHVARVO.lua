@@ -1,17 +1,17 @@
 require "com.jessewarden.planeshooter.vo.weapons.WeaponVO"
-RocketHVARVO = {}
+MissileHVARVO = {}
 
-function RocketHVARVO:new()
+function MissileHVARVO:new()
 
 	local gun     = WeaponVO:new()
-	gun.classType = "RocketHVARVO"
+	gun.classType = "MissileHVARVO"
 	gun.fireSpeed = 2000
 	gun.damage    = 6
-	gun.type      = WeaponVO.TYPE_ROCKET
+	gun.weaponType      = WeaponVO.TYPE_MISSILE
 	gun.weight    = 4
 
 	return gun
 end
 
 
-return RocketHVARVO
+return MissileHVARVO

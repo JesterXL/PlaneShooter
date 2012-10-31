@@ -6,14 +6,14 @@ function EquipModel:new()
 	
 	model.guns    = nil
 	model.cannons = nil
-	model.rockets = nil
+	model.missiles = nil
 	model.bodies  = nil
 	model.engines = nil
 
 	function model:init()
 		self.guns    = self:getCollection()
 		self.cannons = self:getCollection()
-		self.rockets = self:getCollection()
+		self.missiles = self:getCollection()
 		self.bodies   = self:getCollection()
 		self.engines = self:getCollection()
 	end
@@ -30,8 +30,8 @@ function EquipModel:new()
 			self:sendChange("EquipModel_gunsChanged", collection, event.kind)
 		elseif collection == self.cannons then
 			self:sendChange("EquipModel_cannonsChanged", collection, event.kind)
-		elseif collection == self.rockets then
-			self:sendChange("EquipModel_rocketsChanged", collection, event.kind)
+		elseif collection == self.missiles then
+			self:sendChange("EquipModel_missilesChanged", collection, event.kind)
 		elseif collection == self.bodies then
 			self:sendChange("EquipModel_bodiesChanged", collection, event.kind)
 		elseif collection == self.engines then

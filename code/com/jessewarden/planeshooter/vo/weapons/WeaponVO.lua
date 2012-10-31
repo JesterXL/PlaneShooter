@@ -2,7 +2,7 @@
 WeaponVO 				= {}
 WeaponVO.TYPE_GUN 		= "gun"
 WeaponVO.TYPE_CANNON 	= "cannon"
-WeaponVO.TYPE_ROCKET 	= "rocket"
+WeaponVO.TYPE_MISSILE 	= "missile"
 
 function WeaponVO:new()
 
@@ -11,7 +11,7 @@ function WeaponVO:new()
 	gun.classType = "WeaponVO"
 	gun.fireSpeed = 300
 	gun.damage = 1
-	gun.type = WeaponVO.TYPE_GUN
+	gun.weaponType = WeaponVO.TYPE_GUN
 	gun.weight = 1
 
 	return gun

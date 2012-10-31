@@ -862,6 +862,23 @@ local function testEquipScreenAndController()
 	model.bodies:addItem(steel)
 	model.bodies:addItem(alum)
 
+	require "com.jessewarden.planeshooter.vo.weapons.cannons.Cannon9mmM1VO"
+	require "com.jessewarden.planeshooter.vo.weapons.cannons.CannonM1918VO"
+	local cannon9mm = Cannon9mmM1VO:new()
+	local cannonM1 = CannonM1918VO:new()
+
+	model.cannons:addItem(cannon9mm)
+	model.cannons:addItem(cannonM1)
+
+	require "com.jessewarden.planeshooter.vo.weapons.missiles.MissileHVARVO"
+	require "com.jessewarden.planeshooter.vo.weapons.missiles.MissileHeatSeekingVO"
+
+	local rocket1 = MissileHVARVO:new()
+	local rocket2 = MissileHeatSeekingVO:new()
+
+	model.missiles:addItem(rocket1)
+	model.missiles:addItem(rocket2)
+
 	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreenController"
 	local controller = EquipScreenController:new()
 	controller:initialize(model, playerModel, screen)
@@ -902,6 +919,24 @@ local function testILoop()
 		print(i)
 		i = i + 1
 	end
+end
+
+local function testFunWithScope()
+	local t = {}
+	function t:test(firstArg)
+		print("self: ", self)
+		local result = t == self
+		print("result: ", result)
+		print("firstArg: ", firstArg)
+	end
+	t:test()
+	t.test(t)
+end
+
+local function testUpperCaseFirstStringCharacter()
+	local s = "body"
+	s = s:sub(1,1):upper() .. s:sub(2)
+	print(s)
 end
 
 local stage = display.getCurrentStage()
@@ -954,9 +989,13 @@ setupGlobals()
 
 --testEquipScreen()
 testEquipScreenAndController()
+
 --testProgressBar()
 --testColonEvents() --lol
 --testILoop()
 --testCollection()
+
+--testFunWithScope()
+--testUpperCaseFirstStringCharacter()
 
 --require "testsmain"

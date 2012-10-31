@@ -7,7 +7,7 @@ function CannonM1918VO:new()
 	gun.classType = "CannonM1918VO"
 	gun.fireSpeed = 3000
 	gun.damage    = 4
-	gun.type      = WeaponVO.TYPE_CANNON
+	gun.weaponType      = WeaponVO.TYPE_CANNON
 	gun.weight    = 5
 	return gun
 end

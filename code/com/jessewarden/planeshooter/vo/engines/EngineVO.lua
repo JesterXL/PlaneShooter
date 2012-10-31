@@ -8,6 +8,7 @@ function EngineVO:new()
 	engine.classType 		= "EngineVO"
 	engine.power 			= 1
 	engine.weight 			= 1
+	engine.type 			= constants.ENGINE
 
 	return engine
 

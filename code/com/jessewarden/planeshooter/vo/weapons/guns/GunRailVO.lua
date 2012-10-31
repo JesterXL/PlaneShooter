@@ -7,7 +7,7 @@ function GunRailVO:new()
 	gun.classType = "GunRailVO"
 	gun.fireSpeed = 3000
 	gun.damage    = 15
-	gun.type      = WeaponVO.TYPE_GUN
+	gun.weaponType      = WeaponVO.TYPE_GUN
 	gun.weight    = 3
 	
 	return gun

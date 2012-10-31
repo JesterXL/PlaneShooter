@@ -17,7 +17,7 @@ function PlayerModel:new()
 	
 	model.gun          = nil
 	model.cannon       = nil
-	model.rocket       = nil
+	model.missile      = nil
 	model.body         = nil
 	model.engine       = nil
 
@@ -45,8 +45,8 @@ function PlayerModel:new()
 			weight = weight + self.cannon.weight
 		end
 
-		if self.rocket ~= nil then
-			weight = weight + self.rocket.weight
+		if self.missile ~= nil then
+			weight = weight + self.missile.weight
 		end
 
 		if self.body ~= nil then
@@ -93,26 +93,39 @@ function PlayerModel:new()
 		local old = self.cannon
 		self.cannon = cannon
 		self:recalculateSpecs()
-		local evt = {name="PlayerModel:cannonChanged", target=self, old=old, value=self.cannon}
+		local evt = {name="PlayerModel_cannonChanged", target=self, old=old, value=self.cannon}
 		Runtime:dispatchEvent(evt)
 	end
 
-	function model:equipRocket(rocket)
-		assert(rocket ~= nil, "You cannot pass a nil rocket.")
-		local old = self.rocket
-		self.rocket = rocket
+	function model:removeCannon()
+		if self.cannon ~= nil then
+			local old = self.cannon
+			self.cannon = nil
+			self:recalculateSpecs()
+			local evt = {name="PlayerModel_cannonChanged", target=self, old=old}
+			Runtime:dispatchEvent(evt)
+			return old
+		end
+	end
+
+	function model:equipMissile(missile)
+		assert(missile ~= nil, "You cannot pass a nil missile.")
+		local old = self.missile
+		self.missile = missile
 		self:recalculateSpecs()
-		local evt = {name="PlayerModel:rocketChanged", target=self, old=old, value=self.rocket}
+		local evt = {name="PlayerModel_missileChanged", target=self, old=old, value=self.missile}
 		Runtime:dispatchEvent(evt)
 	end
 
-	function model:equipBody(body)
-		assert(body ~= nil, "You cannot pass a nil body.")
-		local old = self.body
-		self.body = body
-		self:recalculateSpecs()
-		local evt = {name="PlayerModel:bodyChanged", target=self, old=old, value=self.body}
-		Runtime:dispatchEvent(evt)
+	function model:removeMissile()
+		if self.missile ~= nil then
+			local old = self.missile
+			self.missile = nil
+			self:recalculateSpecs()
+			local evt = {name="PlayerModel_missileChanged", target=self, old=old}
+			Runtime:dispatchEvent(evt)
+			return old
+		end
 	end
 
 	function model:equipEngine(engine)

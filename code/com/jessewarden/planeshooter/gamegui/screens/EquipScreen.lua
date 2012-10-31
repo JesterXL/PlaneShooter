@@ -1,53 +1,74 @@
 require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
 require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.EquipTile"
 require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.DraggableTile"
+require "com.jessewarden.planeshooter.core.constants"
+require "com.jessewarden.planeshooter.vo.weapons.WeaponVO"
 EquipScreen = {}
 
 function EquipScreen:new()
 
-	local screen = display.newGroup()
-	screen.tileHeight = nil
-	screen.tileRight  = nil
-	screen.isFocus    = false
-
-	screen.guns       = nil
-	screen.cannons    = nil
-	screen.rockets    = nil
-	screen.bodies     = nil
-	screen.engines    = nil
-
-	screen.equippedGun = nil
-	screen.equippedEngine = nil
-
-	screen.tileGroup 		= display.newGroup()
+	local screen               = display.newGroup()
+	screen.tileHeight          = nil
+	screen.tileRight           = nil
+	screen.isFocus             = false
+	
+	screen.guns                = nil
+	screen.cannons             = nil
+	screen.missiles            = nil
+	screen.bodies              = nil
+	screen.engines             = nil
+	
+	screen.equippedGun         = nil
+	screen.equippedEngine      = nil
+	screen.equippedBody        = nil
+	screen.equippedCannon      = nil
+	screen.equippedMissile     = nil
+	
+	screen.equippedGunView     = nil
+	screen.equippedEngineView  = nil
+	screen.equippedBodyView    = nil
+	screen.equippedCannonView  = nil
+	screen.equippedMissileView = nil
+	
+	screen.tileGroup           = display.newGroup()
 	screen:insert(screen.tileGroup)
-	screen.inventoryGroup  = display.newGroup()
+	screen.inventoryGroup      = display.newGroup()
 	screen:insert(screen.inventoryGroup)
 
-	function screen:setCollection(current, collection)
-		local target = current
-		if target ~= nil then
-			target:removeEventListener("onChange", self)
+	function screen:setCollection(currentName, collection)
+		local current = self[currentName]
+		if current ~= nil then
+			current:removeEventListener("onChange", self)
 		end
-		target = collection
+		self[currentName] = collection
 		if collection ~= nil then
 			collection:addEventListener("onChange", self)
 		end
 	end
 
 	function screen:setGuns(collection)
-		if self.guns ~= nil then self.guns:removeEventListener("onChange", self) end
-		self.guns = collection
-		if self.guns ~= nil then self.guns:addEventListener("onChange", self) end
+		self:setCollection("guns", collection)
 		self:redrawGuns()
 	end
 
 	function screen:setBodies(collection)
-		print("setBodies")
-		if self.bodies ~= nil then self.bodies:removeEventListener("onChange", self) end
-		self.bodies = collection
-		if self.bodies ~= nil then self.bodies:addEventListener("onChange", self) end
+		self:setCollection("bodies", collection)
 		self:redrawBodies()
+	end
+
+	function screen:setEngines(collection)
+		self:setCollection("engines", collection)
+		self:redrawEngines()
+	end
+
+	function screen:setCannons(collection)
+		self:setCollection("cannons", collection)
+		self:redrawCannons()
+	end
+
+	function screen:setMissiles(collection)
+		self:setCollection("missiles", collection)
+		self:redrawMissiles()
 	end
 
 	function screen:onChange(event)
@@ -58,6 +79,10 @@ function EquipScreen:new()
 			self:redrawEngines()
 		elseif t == self.bodies then
 			self:redrawBodies()
+		elseif t == self.cannons then
+			self:redrawCannons()
+		elseif t == self.missiles then
+			self:redrawMissiles()
 		end
 	end
 
@@ -76,19 +101,14 @@ function EquipScreen:new()
 		self:redrawEquippedBody()
 	end
 
-	function screen:setCannons(collection)
-		self:setCollection(self.cannons, collection)
+	function screen:setEquippedCannon(cannonVO)
+		self.equippedCannon = cannonVO
+		self:redrawEquippedCannon()
 	end
 
-	function screen:setRockets(collection)
-		self:setCollection(self.rockets, collection)
-	end
-
-	function screen:setEngines(collection)
-		if self.engines ~= nil then self.engines:removeEventListener("onChange", self) end
-		self.engines = collection
-		if self.engines ~= nil then self.engines:addEventListener("onChange", self) end
-		self:redrawEngines()
+	function screen:setEquippedMissile(missileVO)
+		self.equippedMissile = missileVO
+		self:redrawEquippedMissile()
 	end
 
 	function screen:removeInventoryItems(dragSourceType)
@@ -103,137 +123,116 @@ function EquipScreen:new()
 		end
 	end
 
-	function screen:redrawEngines()
-		self:removeInventoryItems("engine")
+	function screen:redraw(targetName)
+		self:removeInventoryItems(targetName)
+		local targetCollection
+		if targetName == "engine" then
+			targetCollection = self.engines
+		elseif targetName == "gun" then
+			targetCollection = self.guns
+		elseif targetName == "body" then
+			targetCollection = self.bodies
+		elseif targetName == "missile" then
+			targetCollection = self.missiles
+		elseif targetName == "cannon" then
+			targetCollection = self.cannons
+		else
+			error("Unknown targetName: ", targetName)
+		end
 
 		local i = 1
 		local max = 4
 		while i <= max do
-			local engineVO = self.engines[i]
-			if engineVO ~= nil then
+			local vo = targetCollection[i]
+			if vo ~= nil then
 				local temp = DraggableTile:new()
-				temp.dragSource = "engine"
-				temp.vo = engineVO
+				temp.dragSource = targetName
+				temp:setVO(vo)
 				self.inventoryGroup:insert(temp)
 				temp:addEventListener("onStartDragging", self)
 				temp:addEventListener("onStopDragging", self)
 
-				local tile = self["engineTile_" .. i]
+				local tile = self[targetName .. "Tile_" .. i]
 				temp.x = tile.x
 				temp.y = tile.y
 			end
 			i = i + 1
 		end
+	end
+
+	function screen:redrawEngines()
+		self:redraw("engine")
 	end
 
 	function screen:redrawGuns()
-		self:removeInventoryItems("gun")
-
-		local i = 1
-		local max = 4
-		while i <= max do
-			local gunVO = self.guns[i]
-			if gunVO ~= nil then
-				local temp = DraggableTile:new()
-				temp.dragSource = "gun"
-				temp.vo = gunVO
-				self.inventoryGroup:insert(temp)
-				temp:addEventListener("onStartDragging", self)
-				temp:addEventListener("onStopDragging", self)
-
-				local tile = self["gunTile_" .. i]
-				temp.x = tile.x
-				temp.y = tile.y
-			end
-			i = i + 1
-		end
+		self:redraw("gun")
 	end
 
 	function screen:redrawBodies()
-		print("redrawBodies")
-		self:removeInventoryItems("body")
+		self:redraw("body")
+	end
 
-		local i = 1
-		local max = 4
-		while i <= max do
-			local bodyVO = self.bodies[i]
-			if bodyVO ~= nil then
-				local temp = DraggableTile:new()
-				temp.dragSource = "body"
-				temp.vo = bodyVO
-				self.inventoryGroup:insert(temp)
-				temp:addEventListener("onStartDragging", self)
-				temp:addEventListener("onStopDragging", self)
+	function screen:redrawCannons()
+		self:redraw("cannon")
+	end
 
-				local tile = self["bodyTile_" .. i]
-				temp.x = tile.x
-				temp.y = tile.y
-			end
-			i = i + 1
+	function screen:redrawMissiles()
+		self:redraw("missile")
+	end
+
+	-- [jwarden 10.28.2012] TODO: change targetName to a constant,
+	-- it's used in 'redraw' method as well.
+	function screen:redrawEquipped(targetName)
+		local viewMiddle = targetName:sub(1,1):upper() .. targetName:sub(2)
+		local voName = "equipped" .. viewMiddle
+		local targetVO = self[voName]
+		local viewName = voName .. "View"
+		local targetView = self[viewName]
+		if targetView ~= nil then
+			targetView:destroy()
+			self[viewName] = nil
+		end
+
+		local stopDragHandlerName = "onStopDraggingEquipped" .. viewMiddle
+		local stopDraggingHandler = function(e)
+			self[stopDragHandlerName](self)
+		end
+
+		local targetTile = self["tile" .. viewMiddle]
+		print("targetTile: ", targetTile, ", viewMiddle: ", viewMiddle)
+		if targetVO ~= nil then
+			local temp = DraggableTile:new()
+			temp.dragSource = voName
+			temp:setVO(targetVO)
+			self.inventoryGroup:insert(temp)
+			temp:addEventListener("onStartDragging", self)
+			temp:addEventListener("onStopDragging", stopDraggingHandler)
+
+			self[viewName] = temp
+			temp.x = targetTile.x
+			temp.y = targetTile.y
+			temp:toFront()
 		end
 	end
 
 	function screen:redrawEquippedBody()
-		if self.equippedBodyView ~= nil then
-			self.equippedBodyView:destroy()
-			self.equippedBodyView = nil
-		end
-
-		if self.equippedBody ~= nil then
-			local temp = DraggableTile:new()
-			temp.dragSource = "equippedBody"
-			temp.vo = self.equippedBody
-			self.inventoryGroup:insert(temp)
-			temp:addEventListener("onStartDragging", self)
-			temp:addEventListener("onStopDragging", function(e)self:onStopDraggingEquippedBody(e)end)
-
-			self.equippedBodyView = temp
-			temp.x = self.tileBody.x
-			temp.y = self.tileBody.y
-			temp:toFront()
-		end 
+		self:redrawEquipped("body")
 	end
 
 	function screen:redrawEquippedEngine()
-		if self.equippedEngineView ~= nil then
-			self.equippedEngineView:destroy()
-			self.equippedEngineView = nil
-		end
-
-		if self.equippedEngine ~= nil then
-			local temp = DraggableTile:new()
-			temp.dragSource = "equippedEngine"
-			temp.vo = self.equippedEngine
-			self.inventoryGroup:insert(temp)
-			temp:addEventListener("onStartDragging", self)
-			temp:addEventListener("onStopDragging", function(e)self:onStopDraggingEquippedEngine(e)end)
-
-			self.equippedEngineView = temp
-			temp.x = self.tileEngine.x
-			temp.y = self.tileEngine.y
-			temp:toFront()
-		end 
+		self:redrawEquipped("engine")
 	end
 
 	function screen:redrawEquippedGun()
-		if self.equippedGunView ~= nil then
-			self.equippedGunView:destroy()
-			self.equippedGunView = nil
-		end
+		self:redrawEquipped("gun")
+	end
 
-		if self.equippedGun ~= nil then
-			local temp = DraggableTile:new()
-			temp.dragSource = "equippedGun"
-			temp.vo = self.equippedGun
-			self.inventoryGroup:insert(temp)
-			temp:addEventListener("onStartDragging", self)
-			temp:addEventListener("onStopDragging", function(e)self:onStopDraggingEquippedGun(e)end)
+	function screen:redrawEquippedCannon()
+		self:redrawEquipped("cannon")
+	end
 
-			self.equippedGunView = temp
-			temp.x = self.tileGun.x
-			temp.y = self.tileGun.y
-			temp:toFront()
-		end
+	function screen:redrawEquippedMissile()
+		self:redrawEquipped("missile")
 	end
 
 	function screen:onStartDragging(event)
@@ -251,13 +250,25 @@ function EquipScreen:new()
 			self.tileBody:drawFlash(true)
 		elseif dragSource == "equippedBody" then
 			self:drawTilesFlash("bodyTile_", true)
+		elseif dragSource == "cannon" then
+			self.tileCannon:drawFlash(true)
+		elseif dragSource == "equippedCannon" then
+			self:drawTilesFlash("cannonTile_", true)
+		elseif dragSource == "missile" then
+			self.tileMissile:drawFlash(true)
+		elseif dragSource == "equippedMissile" then
+			self:drawTilesFlash("missileTile_", true)
 		else
 			self.tileGun:drawFlash(false)
 			self.tileEngine:drawFlash(false)
 			self.tileBody:drawFlash(false)
+			self.tileCannon:drawFlash(false)
+			self.tileMissile:drawFlash(false)
 			self:drawTilesFlash("gunTile_", false)
 			self:drawTilesFlash("engineTile_", false)
 			self:drawTilesFlash("bodyTile_", false)
+			self:drawTilesFlash("cannonTile_", false)
+			self:drawTilesFlash("missileTile_", false)
 		end
 	end
 
@@ -265,26 +276,43 @@ function EquipScreen:new()
 		local hitGun = self.tileGun.showingBorder
 		local hitEngine = self.tileEngine.showingBorder
 		local hitBody = self.tileBody.showingBorder
+		local hitMissile = self.tileMissile.showingBorder
+		local hitCannon = self.tileCannon.showingBorder
 
 		self.tileGun:drawFlash(false)
 		self.tileEngine:drawFlash(false)
 		self.tileBody:drawFlash(false)
+		self.tileCannon:drawFlash(false)
+		self.tileMissile:drawFlash(false)
+
 		self:drawTilesFlash("gunTile_", false)
 		self:drawTilesFlash("engineTile_", false)
 		self:drawTilesFlash("bodyTile_", false)
+		self:drawTilesFlash("missileTile_", false)
+		self:drawTilesFlash("cannonTile_", false)
+
+		print("hitMissile: ", hitMissile, ", type: ", event.target.vo.weaponType)
 		
 		local draggingVO = event.target.vo
-		if hitGun == true then
+		if hitGun == true and draggingVO.weaponType == WeaponVO.TYPE_GUN then
 			print("wants to equip gun")
 			self:dispatchEvent({name="onEquipGun", target=self, vo=draggingVO})
 			return true
-		elseif hitEngine == true then
+		elseif hitEngine == true and draggingVO.type == constants.ENGINE then
 			print("wants to equip engine")
 			self:dispatchEvent({name="onEquipEngine", target=self, vo=draggingVO})
 			return true
-		elseif hitBody == true then
+		elseif hitBody == true and draggingVO.type == constants.BODY then
 			print("wants to equip body")
 			self:dispatchEvent({name="onEquipBody", target=self, vo=draggingVO})
+			return true
+		elseif hitCannon == true and draggingVO.weaponType == WeaponVO.TYPE_CANNON then
+			print("wants to equip cannon")
+			self:dispatchEvent({name="onEquipCannon", target=self, vo=draggingVO})
+			return true
+		elseif hitMissile == true and draggingVO.weaponType == WeaponVO.TYPE_MISSILE then
+			print("wants to equip missile")
+			self:dispatchEvent({name="onEquipMissile", target=self, vo=draggingVO})
 			return true
 		end
 	end
@@ -307,6 +335,20 @@ function EquipScreen:new()
 		self:drawTilesFlash("bodyTile_", false)
 		if self.tileBody.showingBorder == false then
 			self:dispatchEvent({name="onRemoveBody", target=self, vo=self.equippedBody})
+		end
+	end
+
+	function screen:onStopDraggingEquippedCannon(event)
+		self:drawTilesFlash("cannonTile_", false)
+		if self.tileCannon.showingBorder == false then
+			self:dispatchEvent({name="onRemoveCannon", target=self, vo=self.equippedCannon})
+		end
+	end
+
+	function screen:onStopDraggingEquippedMissile(event)
+		self:drawTilesFlash("missileTile_", false)
+		if self.tileMissile.showingBorder == false then
+			self:dispatchEvent({name="onRemoveMissile", target=self, vo=self.equippedMissile})
 		end
 	end
 
@@ -449,10 +491,10 @@ function EquipScreen:new()
 		tileCannon.x = 235
 		tileCannon.y = 550
 
-		local tileRocket = self:getTile(false)
-		self.tileRocket = tileRocket
-		tileRocket.x = 400
-		tileRocket.y = 770
+		local tileMissile = self:getTile(false)
+		self.tileMissile = tileMissile
+		tileMissile.x = 400
+		tileMissile.y = 770
 
 		local tileEngine = self:getTile(false)
 		self.tileEngine = tileEngine
@@ -463,37 +505,6 @@ function EquipScreen:new()
 		self.tileBody = tileBody
 		tileBody.x = 235
 		tileBody.y = 800
-
-		-- Example drag and drop; works great
-		--[[
-		local temp = display.newImage("__temp.png")
-		temp:setReferencePoint(display.TopLeftReferencePoint)
-		temp.x = 2
-		temp.y = 42
-
-		function temp:touch(event)
-			local phase = event.phase
-			if phase == "began" then
-				display.getCurrentStage():setFocus(self)
-				self:toFront()
-				screen.isFocus = true
-				screen.x0 = event.x - self.x
-				screen.y0 = event.y - self.y
-			elseif screen.isFocus == true then
-				if phase == "moved" then
-					self.x = event.x - screen.x0
-					self.y = event.y - screen.y0
-				elseif phase == "ended" or phase == "cancelled" then
-					display.getCurrentStage():setFocus(nil)
-					screen.isFocus = false
-				end
-			end
-			return true
-		end
-		
-
-		temp:addEventListener("touch", temp)
-		]]--
 
 	end
 

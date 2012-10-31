@@ -7,7 +7,7 @@ function Gun50CaliberVO:new()
 	gun.classType = "Gun50CaliberVO"
 	gun.fireSpeed = 300
 	gun.damage    = 2
-	gun.type      = WeaponVO.TYPE_GUN
+	gun.weaponType      = WeaponVO.TYPE_GUN
 	gun.weight    = 2
 	return gun
 end

@@ -8,6 +8,7 @@ function BodyVO:new()
 	engine.classType 		= "BodyVO"
 	engine.weight 			= 1
 	engine.defense 			= 1
+	engine.type 			= constants.BODY
 
 	return engine
 

@@ -18,19 +18,29 @@ function EquipScreenController:new()
 		equipScreen:addEventListener("onRemoveEngine", self)
 		equipScreen:addEventListener("onEquipBody", self)
 		equipScreen:addEventListener("onRemoveBody", self)
+		equipScreen:addEventListener("onEquipCannon", self)
+		equipScreen:addEventListener("onRemoveCannon", self)
+		equipScreen:addEventListener("onEquipMissile", self)
+		equipScreen:addEventListener("onRemoveMissile", self)
 
 		equipScreen:setGuns(equipModel.guns)
 		equipScreen:setEngines(equipModel.engines)
 		equipScreen:setBodies(equipModel.bodies)
+		equipScreen:setCannons(equipModel.cannons)
+		equipScreen:setMissiles(equipModel.missiles)
 
 		equipScreen:setEquippedGun(playerModel.gun)
 		equipScreen:setEquippedEngine(playerModel.engine)
 		equipScreen:setEquippedBody(playerModel.body)
+		equipScreen:setEquippedCannon(playerModel.cannon)
+		equipScreen:setEquippedMissile(playerModel.missile)
 
 		Runtime:addEventListener("PlayerModel_specsChanged", self)
 		Runtime:addEventListener("PlayerModel_gunChanged", self)
 		Runtime:addEventListener("PlayerModel_engineChanged", self)
 		Runtime:addEventListener("PlayerModel_bodyChanged", self)
+		Runtime:addEventListener("PlayerModel_cannonChanged", self)
+		Runtime:addEventListener("PlayerModel_missileChanged", self)
 
 		self:PlayerModel_specsChanged()
 
@@ -50,6 +60,14 @@ function EquipScreenController:new()
 
 	function controller:PlayerModel_bodyChanged(event)
 		self.equipScreen:setEquippedBody(self.playerModel.body)
+	end
+
+	function controller:PlayerModel_cannonChanged(event)
+		self.equipScreen:setEquippedCannon(self.playerModel.cannon)
+	end
+
+	function controller:PlayerModel_missileChanged(event)
+		self.equipScreen:setEquippedMissile(self.playerModel.missile)
 	end
 
 	function controller:onEquipEngine(event)
@@ -114,6 +132,36 @@ function EquipScreenController:new()
 		local oldBody = self.playerModel:removeBody()
 		-- put back in our inventory
 		self.equipModel.bodies:addItem(oldBody)
+	end
+
+	function controller:onEquipCannon(event)
+		local equippedCannon = self.playerModel:removeCannon()
+		if equippedCannon ~= nil then
+			self.equipModel.cannons:addItem(equippedCannon)
+		end
+		self.equipModel.cannons:removeItem(event.vo)
+		self.playerModel:equipCannon(event.vo)
+	end
+
+	function controller:onRemoveCannon(event)
+		self.equipScreen:setEquippedCannon(nil)
+		local oldCannon = self.playerModel:removeCannon()
+		self.equipModel.cannons:addItem(oldCannon)
+	end
+
+	function controller:onEquipMissile(event)
+		local equippedMissile = self.playerModel:removeMissile()
+		if equippedMissile ~= nil then
+			self.equipModel.missiles:addItem(equippedMissile)
+		end
+		self.equipModel.missiles:removeItem(event.vo)
+		self.playerModel:equipMissile(event.vo)
+	end
+
+	function controller:onRemoveMissile(event)
+		self.equipScreen:setEquippedMissile(nil)
+		local oldMissile = self.playerModel:removeMissile()
+		self.equipModel.missiles:addItem(oldMissile)
 	end
 
 	function controller:PlayerModel_specsChanged(event)
