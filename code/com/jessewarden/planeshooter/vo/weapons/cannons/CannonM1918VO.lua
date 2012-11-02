@@ -3,12 +3,12 @@ CannonM1918VO = {}
 
 function CannonM1918VO:new()
 
-	local gun     = WeaponVO:new()
-	gun.classType = "CannonM1918VO"
-	gun.fireSpeed = 3000
-	gun.damage    = 4
-	gun.weaponType      = WeaponVO.TYPE_CANNON
-	gun.weight    = 5
+	local gun      = WeaponVO:new()
+	gun.classType  = "CannonM1918VO"
+	gun.fireSpeed  = 3000
+	gun.damage     = 4
+	gun.weaponType = WeaponVO.TYPE_CANNON
+	gun.weight     = 5
 	return gun
 end
 

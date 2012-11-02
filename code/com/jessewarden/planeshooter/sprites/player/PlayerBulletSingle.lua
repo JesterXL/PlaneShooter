@@ -39,6 +39,7 @@ function PlayerBulletSingle:new(startX, startY)
 									isBullet = true, isSensor = true, isFixedRotation = true,
 									filter = { categoryBits = 2, maskBits = 4 }
 								} )
+		gameLoop:addLoop(self)
 	end
 	
 	function img:tick(millisecondsPassed)

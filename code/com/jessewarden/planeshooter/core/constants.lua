@@ -13,6 +13,8 @@ constants.ENEMY_BOSS_BIG_PLANE           = .1
 constants.MAX_BULLET_COUNT               = 6
 constants.PLAYER_MOVE_SPEED              = .15
 constants.PLAYER_BULLET_SPEED            = .3
+constants.PLAYER_MISSILE_HVAR_SPEED      = .5
+constants.PLAYER_MISSILE_HEAT_SEEKING_SPEED      = .4
 constants.TERRAIN_SCROLL_SPEED           = 1
 
 constants.POWER_UP_LIFETIME              = 5000 -- milliseconds

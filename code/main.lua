@@ -939,12 +939,37 @@ local function testUpperCaseFirstStringCharacter()
 	print(s)
 end
 
+local function testAllWeapons()
+	require "com.jessewarden.planeshooter.sprites.player.PlayerBulletSingle"
+	require "com.jessewarden.planeshooter.sprites.player.PlayerBulletDual"
+	require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
+
+	require "com.jessewarden.planeshooter.sprites.player.PlayerCannon9mmM1"
+	require "com.jessewarden.planeshooter.sprites.player.PlayerCannonM1918"
+
+	require "com.jessewarden.planeshooter.sprites.player.PlayerMissileHVAR"
+	require "com.jessewarden.planeshooter.sprites.player.PlayerMissileHeatSeeking"
+
+	startPhysics()
+	
+	local bottom      = 400
+	
+	local bullet1     = PlayerBulletSingle:new(100, bottom)
+	local bullet2     = PlayerBulletDual:new(150, bottom)
+	local rail        = PlayerRailGun:new(170, bottom)
+	
+	local cannon1     = PlayerCannon9mmM1:new(200, bottom)
+	local cannon2     = PlayerCannonM1918:new(220, bottom)
+	
+	local hvar        = PlayerMissileHVAR:new(240, bottom, 20, 0)
+	local heatMissile = PlayerMissileHeatSeeking:new(260, bottom, 40, 40)
+
+	--gameLoop:pause()
+end
+
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
-rect:setFillColor(255, 255, 255)
-
-
-
+rect:setFillColor(0, 0, 0)
 
 setupGlobals()
 --startThisMug()
@@ -988,7 +1013,7 @@ setupGlobals()
 --testTypeOf()
 
 --testEquipScreen()
-testEquipScreenAndController()
+--testEquipScreenAndController()
 
 --testProgressBar()
 --testColonEvents() --lol
@@ -997,5 +1022,7 @@ testEquipScreenAndController()
 
 --testFunWithScope()
 --testUpperCaseFirstStringCharacter()
+
+testAllWeapons()
 
 --require "testsmain"

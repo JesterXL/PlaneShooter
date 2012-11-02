@@ -25,6 +25,7 @@ function PlayerRailGun:new(startX, startY)
 	end
 	
 	local img = sprite.newSprite(PlayerRailGun.spriteSet)
+	img.classType = "PlayerRailGun"
 	img:setReferencePoint(display.BottomCenterReferencePoint)
 	img:prepare("railGun1")
 	img:play()
@@ -51,14 +52,7 @@ function PlayerRailGun:new(startX, startY)
 		self:destroy()
 	end
 
-	img:addEventListener("sprite", img)
 	
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								shape={ 0,0, 26,0, 26,700, 0,700 },
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )
 	
 	function img:destroy()
 		-- TODO: remove from game loop and ensure bullet count is lowered
@@ -69,6 +63,10 @@ function PlayerRailGun:new(startX, startY)
 		--audio.stop(PlayerRailGun.fireSoundChannel)
 		--audio.rewind(PlayerRailGun.fireSoundChannel)
 		--self:removeEventListener("sprite", onSpriteAnimation)
+
+		if img.timerHandle ~= nil then
+			timer.cancel(img.timerHandle)
+		end
 		self:dispatchEvent({name="animeFinished", target=self})
 		--self:dispatchEvent({name="removeFromGameLoop", target=self})
 		--self:removeEventListener("collision", img)
@@ -88,14 +86,30 @@ function PlayerRailGun:new(startX, startY)
 	
 	--]]
 	
-	audio.play(PlayerRailGun.fireSound)
+	
+
 	
 	function onReady()
 		timer.cancel(img.timerHandle)
 		img:destroy()
 	end
+
+
+	function img:init()
+		img:addEventListener("sprite", img)
+		
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+									bodyType = "kinematic", 
+									isBullet = true, isSensor = true, isFixedRotation = true,
+									shape={ 0,0, 26,0, 26,700, 0,700 },
+									filter = { categoryBits = 2, maskBits = 4 }
+								} )
+		--audio.play(PlayerRailGun.fireSound)
+	end
 	
 	--img.timerHandle = timer.performWithDelay(1000, onReady)
+
+	img:init()
 	
 	return img
 end

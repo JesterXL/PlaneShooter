@@ -2,12 +2,12 @@ application =
 {
         content =
         {
-                width = 640,
-                height = 960,
+                width = 320,
+                height = 480,
                 scale = "letterbox",
 				xAlign = "left",
 				yAlign = "top",
-				fps = 60,
+				fps = 30,
 				antialias = false,
         },
 }

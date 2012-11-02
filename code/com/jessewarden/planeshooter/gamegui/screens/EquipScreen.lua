@@ -199,7 +199,6 @@ function EquipScreen:new()
 		end
 
 		local targetTile = self["tile" .. viewMiddle]
-		print("targetTile: ", targetTile, ", viewMiddle: ", viewMiddle)
 		if targetVO ~= nil then
 			local temp = DraggableTile:new()
 			temp.dragSource = voName

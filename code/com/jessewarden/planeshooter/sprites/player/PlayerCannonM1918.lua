@@ -1,31 +1,22 @@
 require "com.jessewarden.planeshooter.core.constants"
 
-PlayerBulletDual = {}
+PlayerCannonM1918 = {}
 
-function PlayerBulletDual:new(startX, startY)
+function PlayerCannonM1918:new(startX, startY)
+	assert(startX ~= nil, "Must pass in a startX value")
+	assert(startY ~= nil, "Must pass in a startY value")
 
-	local img = display.newImage("player_bullet_2.png")
-	img.classType = "PlayerBulletDual"
+	local img = display.newImage("bullet_cannon_M1918.png")
+	img.classType = "PlayerCannonM1918"
 	img.name = "Bullet"
+	-- TODO: change to cannon speed
 	img.speed = constants.PLAYER_BULLET_SPEED
 	img.x = startX
 	img.y = startY
-
-	function img:init()
-		self:addEventListener("collision", self)
-		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 2, maskBits = 4 }
-							} )
-		gameLoop:addLoop(self)
-	end
 	
-	
-
 	function img:destroy()
 		gameLoop:removeLoop(self)
-		self:removeEventListener("collision", self)
+		self:removeEventListener("collision", img)
 		self:removeSelf()
 	end
 	
@@ -33,7 +24,19 @@ function PlayerBulletDual:new(startX, startY)
 		if(event.other.name == "Bullet") then
 			self:destroy()
 			event.other:destroy()
+			return true
 		end
+	end
+	
+	function img:init()
+		img:addEventListener("collision", img)
+		
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+									bodyType = "kinematic", 
+									isBullet = true, isSensor = true, isFixedRotation = true,
+									filter = { categoryBits = 2, maskBits = 4 }
+								} )
+		gameLoop:addLoop(self)
 	end
 	
 	function img:tick(millisecondsPassed)
@@ -55,10 +58,10 @@ function PlayerBulletDual:new(startX, startY)
 			end
 		end
 	end
-
+	
 	img:init()
 	
 	return img
 end
 
-return PlayerBulletDual
+return PlayerCannonM1918
