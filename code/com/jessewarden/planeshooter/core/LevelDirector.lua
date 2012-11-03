@@ -84,6 +84,8 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		local seconds = self.milliseconds / 1000
 		--print("index: ", index, ", index2: ", index2)
 		
+		-- [jwarden 11.1.2012] TODO: we may skip events here if things move too quickly.
+		-- ensure this happens at the end, not here.
 		if seconds >= self.level.totalTime and index == 0 then
 			print("DONE")
 			self:pause()
