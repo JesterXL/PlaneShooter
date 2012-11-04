@@ -13,14 +13,17 @@ function EnemyBulletSingle:new(startX, startY, targetPoint)
 	-- TODO: use math.deg vs. manual conversion
 	img.rot = math.atan2(img.y -  img.targetY,  img.x - img.targetX) / math.pi * 180 -90;
 	img.angle = (img.rot -90) * math.pi / 180;
-	
-	--[[
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+
+	function img:init()
+		gameLoop:addLoop(self)
+		img.collision = onHit
+		img:addEventListener("collision", img)
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 8, maskBits = 1 }
 							} )
-		]]--						
+	end
 	
 	function onHit(self, event)
 		if(event.other.name == "Player") then
@@ -30,10 +33,10 @@ function EnemyBulletSingle:new(startX, startY, targetPoint)
 		end
 	end
 
-	img.collision = onHit
-	img:addEventListener("collision", img)
+	
 	
 	function img:destroy()
+		gameLoop:removeLoop(self)
 		self:dispatchEvent({name="removeFromGameLoop", target=self})
 		self:removeSelf()
 	end
@@ -42,6 +45,8 @@ function EnemyBulletSingle:new(startX, startY, targetPoint)
 		self.x = self.x + math.cos(self.angle) * self.speed * millisecondsPassed
 	   	self.y = self.y + math.sin(self.angle) * self.speed * millisecondsPassed
 	end
+
+	img:init()
 	
 	return img
 end

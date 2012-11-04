@@ -22,21 +22,26 @@ function EnemySmallShip:new(startX, startY, bottom)
 	img.bottom = bottom
 	img.fireTime = constants.SMALL_SHIP_FIRE_INTERVAL -- milliseconds
 	img.fired = false
+
+	function img:init()
+		img.collision = onHit
+		img:addEventListener("collision", img)
+		img:setY(startY)
+		gameLoop:addLoop(self)
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+								bodyType = "kinematic", 
+								isBullet = true, isSensor = true, isFixedRotation = true,
+								filter = { categoryBits = 4, maskBits = 3 }
+							} )
+	end
 	
 	function img:setY(value)
 		assert(value ~= nil, "Setting Y to nil, are we?")
 		self.y = value
 	end
 	
-	img:setY(startY)
 	
-	--[[
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 4, maskBits = 3 }
-							} )
-]]--
+	
 	
 	function onHit(self, event)
 		-- TODO/FIXME: string names? Really? That's great man..........
@@ -54,14 +59,11 @@ function EnemySmallShip:new(startX, startY, bottom)
 	end
 	
 	function img:destroy()
+		gameLoop:removeLoop(self)
 		self:dispatchEvent({name="enemyDead", target=self})
 		self:removeEventListener("collision", img)
 		self:removeSelf()
-		img.tick = function() end
 	end
-	
-	img.collision = onHit
-	img:addEventListener("collision", img)
 	
 	function img:tick(millisecondsPassed)
 		if(self.y == nil) then
@@ -72,9 +74,8 @@ function EnemySmallShip:new(startX, startY, bottom)
 			self.fireTime = self.fireTime - millisecondsPassed
 			if(self.fireTime <= 0) then
 				self.fired = true
-				-- TODO: make sure this works
-				self:dispatchEvent({name="onCreateEnemyBullet", target=self})
-				--createEnemyBullet(self.x, self.y, plane)
+				local bullet = EnemyBulletSingle:new(self.x, self.y, playerView)
+				self.parent:insert(bullet)
 			end
 		end
 		
@@ -99,7 +100,11 @@ function EnemySmallShip:new(startX, startY, bottom)
 		end
 			
 	end
+
+	img:init()
 	
+
+
 	return img	
 end
 

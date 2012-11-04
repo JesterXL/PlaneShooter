@@ -165,6 +165,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		self.gameLoop:addLoop(enemy)
 	end
 	
+	-- TODO: move to boss controller
 	function onFireBossShots(event)
 		local self = director
 		local i = 1
@@ -179,6 +180,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		end
 	end
 
+	-- TODO: move to Boss Controller
 	function director:enemyDead(event)
 		-- TODO: use a Command/Controller you bad developer you
 		PlayerModel.instance:addToScore(100)
@@ -219,6 +221,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		self.gameLoop:removeLoop(event.target)
 	end
 
+	-- TODO: Move to Enemy's Controller
 	function director:onCreateEnemyBullet(event)
 		local bullet = EnemyBulletSingle:new(event.target.x, event.target.y, self.player)
 		self.mainGroup:insert(bullet)
@@ -226,6 +229,7 @@ function LevelDirector:new(level, player, mainGroup, gameLoop)
 		self.gameLoop:addLoop(bullet)
 	end
 
+	-- TODO: Move to Enemy's Controller
 	function director:fireZeeMissile(event)
 		local missile = EnemyMissile:new(event.target.x, event.target.y, self.player)
 		self.mainGroup:insert(missile)

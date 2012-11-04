@@ -27,13 +27,17 @@ function EnemyMissileJet:new(startX, startY, bottom)
 	img.fireTime = constants.ENEMY_MISSLE_JET_FIRE_INTERVAL -- milliseconds
 	img.fired = false
 
---[[
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2,
+	function img:init()
+		gameLoop:addLoop(img)
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2,
 								bodyType = "kinematic",
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
-]]--
+		img.collision = onHit
+		img:addEventListener("collision", img)
+	end
+
 	function onHit(self, event)
 		-- TODO/FIXME: string names? Really? That's great man..........
 	  -- TODO/FIXME: seriously man, you need to re-factor this out or into a base class or
@@ -55,14 +59,11 @@ function EnemyMissileJet:new(startX, startY, bottom)
 	end
 
 	function img:destroy()
+		gameLoop:removeLoop(self)
 		self:dispatchEvent({name="enemyDead", target=self})
 		self:removeEventListener("collision", img)
 		self:removeSelf()
-		self.tick = function()end
 	end
-
-	img.collision = onHit
-	img:addEventListener("collision", img)
 
 	function img:tick(millisecondsPassed)
 
@@ -70,7 +71,8 @@ function EnemyMissileJet:new(startX, startY, bottom)
 			self.fireTime = self.fireTime - millisecondsPassed
 			if(self.fireTime <= 0) then
 				self.fired = true
-				self:dispatchEvent({name="fireZeeMissile", target=self})
+				local missile = EnemyMissile:new(self.x, self.y, playerView)
+				mainGroup:insert(missile)
 			end
 		end
 
@@ -91,6 +93,8 @@ function EnemyMissileJet:new(startX, startY, bottom)
 	end
 	
 	--audio.play(EnemyMissileJet.jetSound)
+
+	img:init()
 
 	return img
 end

@@ -1,11 +1,9 @@
 require "com.jessewarden.planeshooter.core.constants"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
 
 BossBigPlane = {}
 
-function BossBigPlane:new(player)
-	
-	assert(player ~= nil, "You must pass a non-nil player to BossBigPlane.")
-	
+function BossBigPlane:new()
 	if(BossBigPlane.bossSheet == nil) then
 		local bossSheet = sprite.newSpriteSheet("boss_big_plane_sheet.png", 142, 98)
 		local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
@@ -62,8 +60,7 @@ function BossBigPlane:new(player)
 	boss.fireCountMax = 5
 	boss.lastTick = 0
 	boss.hitPoints = 20
-	boss.player = player
-	boss.rot = math.atan2(boss.y -  boss.player.x,  boss.x - boss.player.y) / math.pi * 180 -90;
+	boss.rot = math.atan2(boss.y -  playerView.x,  boss.x - playerView.y) / math.pi * 180 -90;
 	boss.angle = (boss.rot -90) * math.pi / 180;
 	boss.hoveringDirection = "right"
 	
@@ -71,17 +68,22 @@ function BossBigPlane:new(player)
 	local halfWidth = boss.width / 2
 	local halfHeight = boss.height / 2
 	local bossShape = {82-halfWidth,48-halfHeight, 98-halfWidth,94-halfHeight, 45-halfWidth,94-halfHeight, 62-halfWidth,48-halfHeight, 0-halfWidth,30-halfHeight, 0-halfWidth,0-halfHeight, 143-halfWidth,0-halfHeight, 143-halfWidth,30-halfHeight} 
-	
-	--[[
-	physics.addBody( boss, { density = 1.0, friction = 0.3, bounce = 0.2, 
+
+	function boss:init()
+		gameLoop:addLoop(boss)
+		boss.tick = moveToFiringPosition
+		boss.collision = onHit
+		boss:addEventListener("collision", boss)
+		physics.addBody( boss, { density = 1.0, friction = 0.3, bounce = 0.2, 
 								bodyType = "kinematic", 
 								isBullet = false, isSensor = true, isFixedRotation = false,
 								shape=bossShape,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
-							]]--
+	end
 
 	function boss:destroy()
+		gameLoop:removeLoop(self)
 		-- TODO: remove from game loop and handle death dispatch
 		self:dispatchEvent({name="enemyDead", target=self})
 		
@@ -111,7 +113,7 @@ function BossBigPlane:new(player)
 	
 	function boss:getRotation(target)
 		local targetX, targetY = target:localToContent(target.x, target.y)
-		local rot = math.atan2(boss.player.y - targetY, boss.player.x - targetX) / math.pi * 180 - 90
+		local rot = math.atan2(playerView.y - targetY, playerView.x - targetX) / math.pi * 180 - 90
 		return rot
 	end
 	
@@ -154,20 +156,14 @@ function BossBigPlane:new(player)
 				{x=rightGunPoint.x + self.x, y=rightGunPoint.y + self.y}
 			}
 			
-			--[[
-			
-			local points
-			if(boss.fireCount == 1) then points = {{x=self.gunPoint1.x + self.x, y=self.gunPoint1.y + self.y}}
-			elseif(boss.fireCount == 1) then points = {{x=self.gunPoint2.x + self.x, y=self.gunPoint2.y + self.y}}
-			elseif(boss.fireCount == 1) then points = {{x=self.gunPoint3.x + self.x, y=self.gunPoint3.y + self.y}}
-			elseif(boss.fireCount == 1) then points = {{x=self.leftGunPoint.x + self.x, y=self.leftGunPoint.y + self.y}}
-			elseif(boss.fireCount == 1) then points = {{x=self.rightGunPoint.x + self.x, y=self.rightGunPoint.y + self.y}}
+			local i = 1
+			while points[i] do
+				local point = points[i]
+				local bullet = EnemyBulletSingle:new(point.x, point.y, playerView)
+				mainGroup:insert(bullet)
+				i = i + 1
 			end
-			--]]
 
-			
-			
-			self:dispatchEvent({name="fireShots", target=self, points=points})
 			self.lastTick = 0
 		else
 			self.lastTick = self.lastTick + millisecondsPassed
@@ -203,8 +199,6 @@ function BossBigPlane:new(player)
 		end
 		
 	end
-	
-	boss.tick = moveToFiringPosition
 	
 	function onHit(self, event)
 		-- TODO: ensure bullet name is same
@@ -251,8 +245,7 @@ function BossBigPlane:new(player)
 		end
 	end
 	
-	boss.collision = onHit
-	boss:addEventListener("collision", boss)
+	boss:init()
 	
 	return boss
 end

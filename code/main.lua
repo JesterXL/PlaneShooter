@@ -43,7 +43,9 @@ local function setupGlobals()
 	gameLoop:start()
 
 	_G.mainGroup = display.newGroup()
-
+	mainGroup.name = "mainGroup"
+	mainGroup.classType = "mainGroup"
+	_G.playerView = {x = 100, y = 400}
 	_G.stage = display.getCurrentStage()
 end
 
@@ -967,11 +969,43 @@ local function testAllWeapons()
 	--gameLoop:pause()
 end
 
+local function testLevelModel()
+	require "com.jessewarden.planeshooter.services.LoadLevelService"
+	level = LoadLevelService:new("level2.json")
+	require "com.jessewarden.planeshooter.models.LevelModel"
+	local model = LevelModel:new()
+	model:init(level)
+	model:start()
+	local t = {}
+	function t:LevelModel_onMovieEvent(e)
+		model:start()
+	end
+	Runtime:addEventListener("LevelModel_onMovieEvent", t)
+end
+
+local function testLevelViewAndController()
+
+	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.controllers.LevelViewController"
+	local view = LevelView:new()
+	local controller = LevelViewController:new(view)
+	controller:start()
+	local t = {}
+	function t:timer(e)
+		Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", type="UFO"})
+	end
+	timer.performWithDelay(500, t, 1)
+
+end
+
+--[[
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
 rect:setFillColor(0, 0, 0)
+]]--
 
 setupGlobals()
+startPhysics()
 --startThisMug()
 
 --testAchievementConstants()
@@ -1023,6 +1057,9 @@ setupGlobals()
 --testFunWithScope()
 --testUpperCaseFirstStringCharacter()
 
-testAllWeapons()
+--testAllWeapons()
+
+--testLevelModel()
+testLevelViewAndController()
 
 --require "testsmain"

@@ -7,6 +7,7 @@ function LevelModel:new()
 	model.level = nil
 	model.oldEvents = nil
 	model.totalMilliseconds = nil
+	model.paused = true
 
 	function model:init(level)
 		self.level = level
@@ -28,21 +29,28 @@ function LevelModel:new()
 	end
 
 	function model:start()
-		gameLoop:addLoop(self)
+		if self.paused == true then
+			self.paused = false
+			gameLoop:addLoop(self)
+		end
 	end
 
 	function model:stop()
-		gameLoop:removeLoop(self)
+		if self.paused == false then
+			self.paused = true
+			gameLoop:removeLoop(self)
+		end
 	end
 
 	function model:tick(milliseconds)
-		self.totalMilliseconds = self.totalMilliseconds + millisecondsPassed
+		self.totalMilliseconds = self.totalMilliseconds + milliseconds
 		local progress = self.totalMilliseconds / (self.level.totalTime * 1000)
 		local level = self.level
 		local events = level.events
-		local seconds = self.milliseconds / 1000
-		local oldEvents = self.oldEvents
 		local totalMilliseconds = self.totalMilliseconds
+		local seconds = totalMilliseconds / 1000
+		local oldEvents = self.oldEvents
+		
 		local i = 1
 		while events[i] do
 			local event = events[i]
@@ -50,16 +58,25 @@ function LevelModel:new()
 				table.remove(events, i)
 				table.insert(oldEvents, event)
 				if event.pause == true then
-					self:pause()
+					self:stop()
 				end
-				Runtime:dispatchEvent({name="LevelModel_eventReady", target=self, event=event})
+				
+				if event.classType == "enemy" then
+					--print("LevelModel_onEnemyEvent")
+					Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", target=self, event=event})
+				elseif event.classType == "movie" then
+					--print("LevelModel_onMovieEvent")
+					Runtime:dispatchEvent({name="LevelModel_onMovieEvent", target=self, event=event})
+					return true
+				end
 			end
 			i = i + 1
 		end
 
 		local index = #events
 		if seconds >= level.totalTime and index == 0 then
-			self:pause()
+			--print("LevelModel_levelComplete")
+			self:stop()
 			Runtime:dispatchEvent({name="LevelModel_levelComplete", target=self})
 			return true
 		end
