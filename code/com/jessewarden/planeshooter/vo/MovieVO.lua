@@ -7,7 +7,8 @@ function MovieVO:new()
 	vo.when = 0
 	vo.pause = false
 	vo.name = "Default Movie"
-	vo.dialogues = {}
+	vo.dialogues = {} -- DialogueVO
+	vo.autoPlay = false
 
 
 	return vo

@@ -16,6 +16,7 @@ function MoviePlayerView:new()
 	group.tweenIn = nil
 	group.tweenOut = nil
 	group.firstTime = false
+	group.totalTimePassed = nil
 	group:addEventListener("touch", function() return true end)
 	group:addEventListener("tap", function() return true end)
 
@@ -28,6 +29,7 @@ function MoviePlayerView:new()
 		self.currentView = 1
 		self.lastDialogueView = nil
 		group:nextDialogue()
+		gameLoop:addLoop(self)
 	end
 
 	function group:getDialogueView(right)
@@ -79,6 +81,7 @@ function MoviePlayerView:new()
 		local movie = self.movie
 		local currentIndex = self.currentDialogue
 		local dialogue = movie.dialogues[currentIndex]
+		self.currentDialogueVO = dialogue
 		if dialogue ~= nil then
 			if self.firstTime == true then
 				self.dialogueView1 = self:getDialogueView(false)
@@ -127,20 +130,71 @@ function MoviePlayerView:new()
 				self:showDialogue(viewToShow)
 			end
 			
-			
+			if self.movie.autoPlay == true and dialogue.autoPlay == true then
+				if dialogue.dialogueTime ~= nil then
+					self.totalTimePassed = 0
+				else
+					self.totalTimePassed = nil
+				end
+			else
+				self.totalTimePassed = nil
+			end
+
+			self:destroyAudioFile()
+			if dialogue.audioFile ~= nil then
+				self:playAudio(dialogue)
+			end
 		else
 			-- end of conversation
 			self:hideDialogue(self.lastDialogueView)
-			print("MoviePlayerView::dispatching movieEnded")
+			gameLoop:removeLoop(self)
+			self:destroyAudioFile()
 			self:dispatchEvent({name="movieEnded", target=self})
 		end
 
+	end
+
+	function group:playAudio(dialogueVO)
+		self:destroyAudioFile()
+		self.audioFile = audio.loadSound(dialogueVO.audioFile)
+		local callback = function(e)
+			group:onComplete(e)
+		end
+		audio.play(self.audioFile, {onComplete=callback})
+	end
+
+	function group:destroyAudioFile()
+		if self.audioFile ~= nil then
+			audio.stop(self.audioFile)
+			audio.dispose(self.audioFile)
+			self.audioFile = nil
+		end
+	end
+
+	function group:onComplete(event)
+		print("onComplete, completed: ", event.completed)
+		if event.completed == true and self.currentDialogueVO.autoPlayOnAudioEnd == true then
+			self:destroyAudioFile()
+			self:nextDialogue()
+		end
 	end
 	
 	function group:touch(event)
 		if event.phase == "ended" then
 			self:nextDialogue()
 			return true
+		end
+	end
+
+	function group:tick(milliseconds)
+		if self.movie == nil then return true end
+		if self.movie.autoPlay == false then return true end
+		if self.totalTimePassed == nil then return true end
+
+		self.totalTimePassed = self.totalTimePassed + milliseconds
+		if self.totalTimePassed >= self.currentDialogueVO.dialogueTime then
+			self.totalTimePassed = nil
+			self:nextDialogue()
 		end
 	end
 

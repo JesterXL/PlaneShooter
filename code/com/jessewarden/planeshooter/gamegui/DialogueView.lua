@@ -50,16 +50,16 @@ function DialogueView:new(right)
 
 	local platform = system.getInfo("platformName")
 	local text
-	local fontSize = 21
+	local fontSize = 11
 	if platform == "Android" or platform == "iPhone OS" then
 		text = native.newTextBox( 0, 0, 278, 68 )
 		text.hasBackground = false
 		text.isEditable = false
 		text.align = "left"
 	else
-		text = display.newText("", 0, 0, native.systemFont, fontSize)
+		text = display.newText("", 0, 0, 278, 68, native.systemFont, fontSize)
 	end
-	text:setReferencePoint(display.TopLeftReferencePoint)
+	--text:setReferencePoint(display.TopLeftReferencePoint)
 	text:setTextColor(255, 255, 255)
 	text.size = fontSize
 	text.font = native.newFont( native.systemFont, fontSize )

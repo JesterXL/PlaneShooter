@@ -638,6 +638,55 @@ local function testMoviePlayer()
 	player:startMovie(movie)
 end
 
+local function testMoviePlayerAutoPlay()
+	require "com.jessewarden.planeshooter.vo.DialogueVO"
+	require "com.jessewarden.planeshooter.vo.MovieVO"
+	require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
+	local player = MoviePlayerView:new()
+	local movie = MovieVO:new()
+	movie.autoPlay = true
+	local getDia = function(name, message)
+		local dia = DialogueVO:new()
+		dia.characterName = name
+		dia.message = message
+		dia.autoPlay = true
+		dia.dialogueTime = 3 * 1000
+		return dia
+	end
+	table.insert(movie.dialogues, getDia("Sydney", "Hello!"))
+	table.insert(movie.dialogues, getDia("Dad", "Wazzzzuuup!"))
+	table.insert(movie.dialogues, getDia("Sydney", "How are you?"))
+	table.insert(movie.dialogues, getDia("Dad", "I'm great, thanks for asking."))
+
+	player:startMovie(movie)
+end
+
+local function testMoviePlayerAutoPlayAudio()
+	require "com.jessewarden.planeshooter.vo.DialogueVO"
+	require "com.jessewarden.planeshooter.vo.MovieVO"
+	require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
+	local player = MoviePlayerView:new()
+	local movie = MovieVO:new()
+	movie.autoPlay = true
+	local getDia = function(name, message, audioFile)
+		local dia = DialogueVO:new()
+		dia.characterName = name
+		dia.message = message
+		dia.autoPlay = true
+		dia.audioFile = audioFile
+		dia.autoPlayOnAudioEnd = true
+		return dia
+	end
+	table.insert(movie.dialogues, getDia("Sydney", "Hello!", "01.mp3"))
+	table.insert(movie.dialogues, getDia("Dad", "Wazzzzuuup!", "02.mp3"))
+	table.insert(movie.dialogues, getDia("Sydney", "How are you?", "03.mp3"))
+	local lastDia = getDia("Dad", "I'm great, thanks for asking.", "04.mp3")
+	lastDia.autoPlayOnAudioEnd = false
+	table.insert(movie.dialogues, lastDia)
+
+	player:startMovie(movie)
+end
+
 local function testScrollingTerrain()
 	local loop = GameLoop:new()
 	loop:start()
@@ -990,12 +1039,37 @@ local function testLevelViewAndController()
 	local view = LevelView:new()
 	local controller = LevelViewController:new(view)
 	controller:start()
+
+end
+
+local function testMonsterGeneration()
+	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.controllers.LevelViewController"
+	local view = LevelView:new()
+	local controller = LevelViewController:new(view)
+	controller:start()
+	
+	local fakeEvents = {}
+	local i = 1
+	local max = 100
+	local time = 0
+	--local types = {"Plane", "Missile", "Jet", "Bomber", "UFO"}
+	local types = {"Plane", "Missile"}
+	local typeIndex = nil
+	while i < max do
+		typeIndex = math.random(1, 2)
+		table.insert(fakeEvents, {type = types[typeIndex]})
+		i = i + 1
+	end
+
 	local t = {}
 	function t:timer(e)
-		Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", type="UFO"})
+		if #fakeEvents > 0 then
+			local item = table.remove(fakeEvents, 1)
+			Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", type=item.type})
+		end	
 	end
-	timer.performWithDelay(500, t, 1)
-
+	timer.performWithDelay(100, t, 0)
 end
 
 --[[
@@ -1031,6 +1105,8 @@ startPhysics()
 
 --testDialogue()
 --testMoviePlayer()
+--testMoviePlayerAutoPlay()
+testMoviePlayerAutoPlayAudio()
 --testFlightPath()
 --testScrollingTerrain()
 --testPlayerMovement()
@@ -1060,6 +1136,8 @@ startPhysics()
 --testAllWeapons()
 
 --testLevelModel()
-testLevelViewAndController()
+--testLevelViewAndController()
+--testMonsterGeneration()
+
 
 --require "testsmain"

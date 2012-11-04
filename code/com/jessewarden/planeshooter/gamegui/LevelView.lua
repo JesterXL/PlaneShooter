@@ -1,3 +1,4 @@
+require "com.jessewarden.planeshooter.gamegui."
 LevelView = {}
 
 function LevelView:new()

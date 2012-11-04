@@ -12,6 +12,7 @@ function LevelViewController:new(levelView)
 	controller.classType = "LevelViewController"
 	controller.eventReady = nil
 	controller.levelView = levelView
+	
 
 	function controller:start()
 		Runtime:addEventListener("LevelModel_onEnemyEvent", self)
@@ -44,7 +45,7 @@ function LevelViewController:new(levelView)
 		elseif enemyType == "Bomber" then
 			enemy = BossBigPlane:new()
 		elseif enemyType == "UFO" then
-			enemy = UFO:new(100, 100)
+			enemy = UFO:new(randomX, 100)
 		end
 
 		--self.levelView:insert(enemy)

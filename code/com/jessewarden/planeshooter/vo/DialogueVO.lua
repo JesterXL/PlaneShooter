@@ -8,9 +8,9 @@ function DialogueVO:new()
 	vo.audioName = nil
 	vo.audioFile = nil
 	vo.message = nil
-
-
-
+	vo.autoPlayOnAudioEnd = false
+	vo.dialogueTime = nil
+	vo.autoPlay = false
 	return vo
 
 end
