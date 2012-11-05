@@ -1098,9 +1098,9 @@ local function testMoviePlayerInLevelView()
 	table.insert(movie.dialogues, getDia("Dad", "Wazzzzuuup!", "02.mp3"))
 	table.insert(movie.dialogues, getDia("Sydney", "How are you?", "03.mp3"))
 	table.insert(movie.dialogues, getDia("Dad", "I'm great, thanks for asking.", "04.mp3"))
-	movie.time = 5
+	movie.when = 15
 
-	local time = 3
+	local time = 10
 	local getPlane = function()
 		local plane = EnemyVO:new()
 		plane.when = time

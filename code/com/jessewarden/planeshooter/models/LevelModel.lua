@@ -8,6 +8,7 @@ function LevelModel:new()
 	model.oldEvents = nil
 	model.totalMilliseconds = nil
 	model.paused = true
+	model.started = false
 
 	function model:init(level)
 		self.level = level
@@ -26,6 +27,7 @@ function LevelModel:new()
 
 		self.oldEvents = {}
 		self.totalMilliseconds = 0
+		self.started = false
 	end
 
 	function model:start()
@@ -50,6 +52,10 @@ function LevelModel:new()
 		local totalMilliseconds = self.totalMilliseconds
 		local seconds = totalMilliseconds / 1000
 		local oldEvents = self.oldEvents
+		if self.started == false then
+			self.started = true
+			Runtime:dispatchEvent({name="LevelModel_levelStart", target=self})
+		end
 		
 		local i = 1
 		--print(">>>>>>>>>>")

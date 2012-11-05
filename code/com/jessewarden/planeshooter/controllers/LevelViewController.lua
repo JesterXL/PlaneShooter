@@ -17,11 +17,15 @@ function LevelViewController:new(levelView)
 	function controller:init()
 		Runtime:addEventListener("LevelModel_onEnemyEvent", self)
 		Runtime:addEventListener("LevelModel_onMovieEvent", self)
+		Runtime:addEventListener("LevelModel_levelStart", self)
+		Runtime:addEventListener("LevelModel_levelComplete", self)
 	end
 
 	function controller:destroy()
 		Runtime:removeEventListener("LevelModel_onEnemyEvent", self)
 		Runtime:removeEventListener("LevelModel_onMovieEvent", self)
+		Runtime:removeEventListener("LevelModel_levelStart", self)
+		Runtime:removeEventListener("LevelModel_levelComplete", self)
 	end
 
 	function controller:LevelModel_onEnemyEvent(event)
@@ -58,6 +62,14 @@ function LevelViewController:new(levelView)
 	function controller:LevelModel_onMovieEvent(event)
 		local movieVO = event.event
 		self.levelView:onMovie(movieVO)
+	end
+
+	function controller:LevelModel_levelStart(event)
+		self.levelView:onLevelStart()
+	end
+	
+	function controller:LevelModel_levelComplete(event)
+		self.levelView:onLevelEnd()
 	end
 
 	controller:init()
