@@ -14,16 +14,19 @@ function LevelViewController:new(levelView)
 	controller.levelView = levelView
 	
 
-	function controller:start()
+	function controller:init()
 		Runtime:addEventListener("LevelModel_onEnemyEvent", self)
+		Runtime:addEventListener("LevelModel_onMovieEvent", self)
 	end
 
-	function controller:stop()
+	function controller:destroy()
 		Runtime:removeEventListener("LevelModel_onEnemyEvent", self)
+		Runtime:removeEventListener("LevelModel_onMovieEvent", self)
 	end
 
 	function controller:LevelModel_onEnemyEvent(event)
-		print("LevelViewController::LevelModel_onEnemyEvent,  event.type: " ..  event.type)
+		print("LevelViewController::LevelModel_onEnemyEvent")
+		local enemyVO = event.event
 		local stage = display.getCurrentStage()
 
 		local randomX = stage.width * math.random()
@@ -35,7 +38,7 @@ function LevelViewController:new(levelView)
 			randomX = stage.width - 20
 		end
 
-		local enemyType = event.type
+		local enemyType = enemyVO.type
 		if enemyType == "Plane" then
 			enemy = EnemySmallShip:new(randomX, -10, stage.height)
 		elseif enemyType == "Missile" then
@@ -48,9 +51,16 @@ function LevelViewController:new(levelView)
 			enemy = UFO:new(randomX, 100)
 		end
 
-		--self.levelView:insert(enemy)
-		mainGroup:insert(enemy)
+		self.levelView:insert(enemy)
+		--mainGroup:insert(enemy)
 	end
+
+	function controller:LevelModel_onMovieEvent(event)
+		local movieVO = event.event
+		self.levelView:onMovie(movieVO)
+	end
+
+	controller:init()
 
 	return controller
 

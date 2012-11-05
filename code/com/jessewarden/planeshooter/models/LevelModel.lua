@@ -52,8 +52,10 @@ function LevelModel:new()
 		local oldEvents = self.oldEvents
 		
 		local i = 1
+		--print(">>>>>>>>>>")
 		while events[i] do
 			local event = events[i]
+			--print("when: ", event.when, ", seconds: ", seconds, ", type: ", event.classType)
 			if event.when <= seconds then
 				table.remove(events, i)
 				table.insert(oldEvents, event)
@@ -61,10 +63,11 @@ function LevelModel:new()
 					self:stop()
 				end
 				
-				if event.classType == "enemy" then
+				-- TODO: use proper classType's in level editor
+				if event.classType == "EnemyVO" or event.classType == "enemy" then
 					--print("LevelModel_onEnemyEvent")
 					Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", target=self, event=event})
-				elseif event.classType == "movie" then
+				elseif event.classType == "MovieVO" or event.classType == "movie" then
 					--print("LevelModel_onMovieEvent")
 					Runtime:dispatchEvent({name="LevelModel_onMovieEvent", target=self, event=event})
 					return true
