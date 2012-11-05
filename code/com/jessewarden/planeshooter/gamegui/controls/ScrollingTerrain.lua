@@ -20,6 +20,21 @@ function ScrollingTerrain:new(image)
 	terrain.onTerrain = terrain1
 	terrain.offTerrain = terrain2
 	terrain.targetY = terrain1.height
+	terrain.playing = false
+
+	function terrain:start()
+		if self.playing == false then
+			self.playing = true
+			gameLoop:addLoop(self)
+		end
+	end
+
+	function terrain:stop()
+		if self.playing == true then
+			self.playing = false
+			gameLoop:removeLoop(self)
+		end
+	end
 	
 	function terrain:tick(millisecondsPassed)
 		local deltaX = self.onTerrain.x
