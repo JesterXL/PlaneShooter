@@ -1,6 +1,7 @@
 module(..., package.seeall)
 
 function suite_setup()
+	require "com.jessewarden.planeshooter.core.constants"
 	require "com.jessewarden.planeshooter.models.PlayerModel"
 end
 

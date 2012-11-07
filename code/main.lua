@@ -2,41 +2,7 @@ require "sprite"
 require "physics"
 require "gameNetwork"
 
-require "com.jessewarden.planeshooter.core.constants"
-
-require "com.jessewarden.planeshooter.gamegui.controls.ScrollingTerrain"
 require "com.jessewarden.planeshooter.core.GameLoop"
-require "com.jessewarden.planeshooter.core.LevelDirector"
-
-require "com.jessewarden.planeshooter.sprites.player.Player"
-require "com.jessewarden.planeshooter.sprites.player.PlayerBulletSingle"
-require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
-
-require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShip"
-require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShipDeath"
-require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
-require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
-require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissileJet"
-require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
-
-require "com.jessewarden.planeshooter.gamegui.DamageHUD"
-
-require "com.jessewarden.planeshooter.gamegui.animations.HeadNormalAnime"
-require "com.jessewarden.planeshooter.gamegui.controls.PauseButton"
-require "com.jessewarden.planeshooter.gamegui.ScoreView"
-require "com.jessewarden.planeshooter.gamegui.DialogueView"
-require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
-require "com.jessewarden.planeshooter.gamegui.FlightPathCheckpoint"
-require "com.jessewarden.planeshooter.gamegui.FlightPath"
-require "com.jessewarden.planeshooter.gamegui.LevelCompleteOverlay"
-
-require "com.jessewarden.planeshooter.services.LoadLevelService"
-require "com.jessewarden.planeshooter.services.AchievementsProxy"
-
-require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
-
-require "com.jessewarden.planeshooter.rl.MainContext"
-require "com.jessewarden.planeshooter.rl.mediators.PlayerMediator"
 
 local function setupGlobals()
 	_G.gameLoop = GameLoop:new()
@@ -369,7 +335,7 @@ end
 display.setStatusBar( display.HiddenStatusBar )
 
 --startThisMug()
-AchievementsProxy.useMock = false
+--AchievementsProxy.useMock = false
 
 -----------------------------------------------------------------
 -- tests ---
@@ -1135,8 +1101,25 @@ local function testMoviePlayerInLevelViewWithDynamicLevel()
 	require "com.jessewarden.planeshooter.controllers.LevelViewController"
 	local view = LevelView:new()
 	local controller = LevelViewController:new(view, model)
+end
 
-	
+local function testScoreView()
+	require "com.jessewarden.planeshooter.gamegui.ScoreView"
+	local view = ScoreView:new()
+	view.x = 100
+	view.y = 100
+	view:setScore(1000)
+	view:setScore(1234)
+
+	local t = {}
+	t.score = 0
+	t.increment = 1
+	function t:timer(e)
+		self.score = self.score + self.increment
+		view:setScore(self.score)
+		self.increment = self.increment + 1
+	end
+	--timer.performWithDelay(10, t, 0)
 end
 
 --[[
@@ -1206,7 +1189,8 @@ startPhysics()
 --testLevelViewAndController()
 --testMonsterGeneration()
 --testMoviePlayerInLevelView()
-testMoviePlayerInLevelViewWithDynamicLevel()
+--testMoviePlayerInLevelViewWithDynamicLevel()
 
+testScoreView()
 
 --require "testsmain"

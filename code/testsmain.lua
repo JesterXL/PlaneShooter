@@ -13,6 +13,8 @@ require "lunatest"
 
 lunatest.suite("tests.com.jessewarden.planeshooter.models.PlayerModelSuite")
 lunatest.suite("tests.com.jessewarden.planeshooter.utils.CollectionSuite")
+lunatest.suite("tests.com.jessewarden.planeshooter.models.ScoreModelSuite")
+lunatest.suite("tests.StringFormattingTests")
 
 print("-------------------------------")
 lunatest.run()

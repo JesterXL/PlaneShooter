@@ -1,5 +1,4 @@
 ScoreView = {}
-ScoreView.classType = "ScoreView"
 
 function ScoreView:new()
 	local view = display.newGroup()
@@ -7,9 +6,11 @@ function ScoreView:new()
 
 	local img = display.newImage("gamegui_score_text.png")
 	view:insert(img)
-	img.x = 15
+	img:setReferencePoint(display.TopLeftReferencePoint)
+	--img.x = 15
 
 	local text = display.newText("0", 0, 0, native.systemFont, 14)
+	--text:setReferencePoint(display.TopLeftReferencePoint)
 	text:setTextColor(255, 255, 0)
 	view:insert(text)
 	text.y = 20
@@ -18,9 +19,24 @@ function ScoreView:new()
 	view.newScore = 0
 	view.scoreTween = nil
 
+	function view:comma_value(n) -- credit http://richard.warburton.it
+		local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
+		return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
+	end
+	
 	function view:setScore(value)
-		text.text = value
-		-- TODO: figure out how to tween this like you do in Flash; I forget how to do getter/setters in Lua
+		assert(value, "you must pass a valid value.")
+		local oldValue = self.value
+		local str
+		if type(value) == "number" then
+			str = tostring(value)
+		else
+			str = value
+		end
+		text.text = self:comma_value(str)
+		text.x = text.width / 2 + 4 -- <-- gee, that doesn't look like Flash...
+		-- TODO: figure out how to tween this like you do in Flash; 
+		-- I forget how to do getter/setters in Lua
 		--[[
 		self.newScore = value
 		if(view.scoreTween ~= nil) then
