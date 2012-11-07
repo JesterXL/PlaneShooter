@@ -11,6 +11,9 @@ package com.jxl.planeshooter.vo
 		public var audioName:String;
 		public var audioFile:String;
 		public var message:String				= "Hello!";
+		public var advanceOnAudioEnd:Boolean 	= false;
+		public var dialogueTime:int 			= NaN;
+		public var autoPlay:Boolean				= false;
 		
 		public function DialogueVO()
 		{
@@ -24,6 +27,9 @@ package com.jxl.planeshooter.vo
 			obj.audioName						= audioName;
 			obj.audioFile						= audioFile;
 			obj.message							= message;
+			obj.advanceOnAudioEnd				= advanceOnAudioEnd;
+			obj.autoPlay 						= autoPlay;
+			obj.dialogueTime					= dialogueTime;
 			return obj;
 		}
 		
@@ -34,6 +40,9 @@ package com.jxl.planeshooter.vo
 			audioName				= obj.audioName;
 			audioFile				= obj.audioFile;
 			message					= obj.message;
+			advanceOnAudioEnd		= obj.advanceOnAudioEnd;
+			autoPlay 				= obj.autoPlay;
+			dialogueTime			= obj.dialogueTime;
 		}
 	}
 }

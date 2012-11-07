@@ -19,10 +19,15 @@ function LevelView:new()
 
 		self.moviePlayer = MoviePlayerView:new()
 		self:insert(self.moviePlayer)
+		self.moviePlayer:addEventListener("onMovieEnded", self)
 	end
 
 	function view:onMovie(movieVO)
 		self.moviePlayer:startMovie(movieVO)
+	end
+
+	function view:onMovieEnded(event)
+		self:dispatchEvent({name="onMovieEnded", target=self})
 	end
 
 	function view:onLevelStart()

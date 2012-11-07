@@ -97,6 +97,12 @@ function UFO:new(startX, startY)
 		gameLoop:addLoop(self)
 	end
 
+	-- TODO: finish adding clean up code
+	function ufo:destroy()
+		self:dispatchEvent({name="onDestroy", target=self})
+		self:removeSelf()
+	end
+
 	function ufo:tick(milliseconds)
 		local turret = self.ufoMissleTurret
 		turret.rotation = math.atan2(playerView.y - turret.y, playerView.x - turret.x) / math.pi * 180 - 90

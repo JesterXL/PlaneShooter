@@ -130,7 +130,7 @@ function MoviePlayerView:new()
 				self:showDialogue(viewToShow)
 			end
 			
-			if self.movie.autoPlay == true and dialogue.autoPlay == true then
+			if dialogue.autoPlay == true and dialogue.advanceOnAudioEnd == false then
 				if dialogue.dialogueTime ~= nil then
 					self.totalTimePassed = 0
 				else
@@ -149,12 +149,13 @@ function MoviePlayerView:new()
 			self:hideDialogue(self.lastDialogueView)
 			gameLoop:removeLoop(self)
 			self:destroyAudioFile()
-			self:dispatchEvent({name="movieEnded", target=self})
+			self:dispatchEvent({name="onMovieEnded", target=self})
 		end
 
 	end
 
 	function group:playAudio(dialogueVO)
+		print("playAudio, name: ", dialogueVO.audioFile)
 		self:destroyAudioFile()
 		self.audioFile = audio.loadSound(dialogueVO.audioFile)
 		local callback = function(e)
@@ -173,7 +174,8 @@ function MoviePlayerView:new()
 
 	function group:onComplete(event)
 		print("onComplete, completed: ", event.completed)
-		if event.completed == true and self.currentDialogueVO.autoPlayOnAudioEnd == true then
+		print("self.currentDialogueVO.advanceOnAudioEnd: ", self.currentDialogueVO.advanceOnAudioEnd)
+		if event.completed == true and self.currentDialogueVO.advanceOnAudioEnd == true then
 			self:destroyAudioFile()
 			self:nextDialogue()
 		end
@@ -187,11 +189,13 @@ function MoviePlayerView:new()
 	end
 
 	function group:tick(milliseconds)
+		--print("self.totalTimePassed: ", self.totalTimePassed)
 		if self.movie == nil then return true end
-		if self.movie.autoPlay == false then return true end
+		--if self.movie.autoPlay == false then return true end
 		if self.totalTimePassed == nil then return true end
 
 		self.totalTimePassed = self.totalTimePassed + milliseconds
+		print("self.currentDialogueVO.dialogueTime: ", self.currentDialogueVO.dialogueTime)
 		if self.totalTimePassed >= self.currentDialogueVO.dialogueTime then
 			self.totalTimePassed = nil
 			self:nextDialogue()

@@ -72,6 +72,10 @@ function LevelModel:new()
 				-- TODO: use proper classType's in level editor
 				if event.classType == "EnemyVO" or event.classType == "enemy" then
 					--print("LevelModel_onEnemyEvent")
+					event.unpauseCallback = function()
+						--print("unpauseCallback")
+						self:start()
+					end
 					Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", target=self, event=event})
 				elseif event.classType == "MovieVO" or event.classType == "movie" then
 					--print("LevelModel_onMovieEvent")
@@ -83,8 +87,8 @@ function LevelModel:new()
 		end
 
 		local index = #events
-		if seconds >= level.totalTime and index == 0 then
-			--print("LevelModel_levelComplete")
+		if seconds >= level.totalTime and index == 0 and self.paused == false then
+			print("LevelModel_levelComplete")
 			self:stop()
 			Runtime:dispatchEvent({name="LevelModel_levelComplete", target=self})
 			return true

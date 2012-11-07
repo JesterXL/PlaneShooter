@@ -1,6 +1,5 @@
 package com.jxl.planeshooter.services
 {
-	import com.adobe.serialization.json.JSON;
 	import com.jxl.planeshooter.events.OpenLevelServiceEvent;
 	import com.jxl.planeshooter.vo.LevelVO;
 	
@@ -63,7 +62,7 @@ package com.jxl.planeshooter.services
 			var jsonObject:Object;
 			try
 			{
-				jsonObject = JSON.decode(jsonString);
+				jsonObject = JSON.parse(jsonString);
 				if(jsonObject == null)
 				{
 					Debug.error("OpenLevelService::onFileSelected, error parsing JSON String, it was null after parsing, jsonString: " + jsonString);

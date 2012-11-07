@@ -90,6 +90,7 @@ function BossBigPlane:new()
 		-- TODO: fix sound
 		--local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound)
 		--audio.setVolume(1, {channel = enemyDeath1SoundChannel})
+		self:dispatchEvent({name="onDestroy", target=self})
 		self:removeSelf()
 	end
 	

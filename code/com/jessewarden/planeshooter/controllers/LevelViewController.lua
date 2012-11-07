@@ -4,7 +4,7 @@ require "com.jessewarden.planeshooter.sprites.enemies.UFO"
 
 LevelViewController = {}
 
-function LevelViewController:new(levelView)
+function LevelViewController:new(levelView, levelModel)
 
 	assert(levelView ~= nil, "You must pass a levelView to LevelViewController.")
 
@@ -12,6 +12,7 @@ function LevelViewController:new(levelView)
 	controller.classType = "LevelViewController"
 	controller.eventReady = nil
 	controller.levelView = levelView
+	controller.levelModel = levelModel
 	
 
 	function controller:init()
@@ -19,6 +20,8 @@ function LevelViewController:new(levelView)
 		Runtime:addEventListener("LevelModel_onMovieEvent", self)
 		Runtime:addEventListener("LevelModel_levelStart", self)
 		Runtime:addEventListener("LevelModel_levelComplete", self)
+
+		self.levelView:addEventListener("onMovieEnded", self)
 	end
 
 	function controller:destroy()
@@ -55,6 +58,10 @@ function LevelViewController:new(levelView)
 			enemy = UFO:new(randomX, 100)
 		end
 
+		if enemyVO.unpauseCallback ~= nil then
+			enemy.vo = enemyVO
+			enemy:addEventListener("onDestroy", self)
+		end
 		self.levelView:insert(enemy)
 		--mainGroup:insert(enemy)
 	end
@@ -70,6 +77,18 @@ function LevelViewController:new(levelView)
 	
 	function controller:LevelModel_levelComplete(event)
 		self.levelView:onLevelEnd()
+	end
+
+	function controller:onMovieEnded(event)
+		self.levelModel:start()
+	end
+
+	function controller:onDestroy(event)
+		local target = event.target
+		target:removeEventListener("onDestroy", self)
+		local enemyVO = target.vo
+		target.vo = nil
+		enemyVO.unpauseCallback()
 	end
 
 	controller:init()

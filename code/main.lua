@@ -677,14 +677,14 @@ local function testMoviePlayerAutoPlayAudio()
 		dia.message = message
 		dia.autoPlay = true
 		dia.audioFile = audioFile
-		dia.autoPlayOnAudioEnd = true
+		dia.advanceOnAudioEnd = true
 		return dia
 	end
 	table.insert(movie.dialogues, getDia("Sydney", "Hello!", "01.mp3"))
 	table.insert(movie.dialogues, getDia("Dad", "Wazzzzuuup!", "02.mp3"))
 	table.insert(movie.dialogues, getDia("Sydney", "How are you?", "03.mp3"))
 	local lastDia = getDia("Dad", "I'm great, thanks for asking.", "04.mp3")
-	lastDia.autoPlayOnAudioEnd = false
+	lastDia.advanceOnAudioEnd = false
 	table.insert(movie.dialogues, lastDia)
 
 	player:startMovie(movie)
@@ -1091,7 +1091,7 @@ local function testMoviePlayerInLevelView()
 		dia.message = message
 		dia.autoPlay = true
 		dia.audioFile = audioFile
-		dia.autoPlayOnAudioEnd = true
+		dia.advanceOnAudioEnd = true
 		return dia
 	end
 	table.insert(movie.dialogues, getDia("Sydney", "Hello!", "01.mp3"))
@@ -1120,6 +1120,23 @@ local function testMoviePlayerInLevelView()
 	model:init(level)
 	model:start()
 
+end
+
+local function testMoviePlayerInLevelViewWithDynamicLevel()
+	require "com.jessewarden.planeshooter.services.LoadLevelService"
+	local level = LoadLevelService:new("level3.json")
+	
+	require "com.jessewarden.planeshooter.models.LevelModel"
+	local model = LevelModel:new()
+	model:init(level)
+	model:start()
+
+	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.controllers.LevelViewController"
+	local view = LevelView:new()
+	local controller = LevelViewController:new(view, model)
+
+	
 end
 
 --[[
@@ -1188,7 +1205,8 @@ startPhysics()
 --testLevelModel()
 --testLevelViewAndController()
 --testMonsterGeneration()
-testMoviePlayerInLevelView()
+--testMoviePlayerInLevelView()
+testMoviePlayerInLevelViewWithDynamicLevel()
 
 
 --require "testsmain"

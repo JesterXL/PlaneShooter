@@ -108,6 +108,12 @@
 			{
 				data.pause = pauseCheckBox.selected;
 			}
+			
+			private function onToggleMoviePause():void
+			{
+				movie.pause = moviePauseCheckBox.selected;
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -140,7 +146,8 @@
 		<s:Label id="timeLabel" />
 		<s:Label text="Enemy:"  includeIn="enemy" />
 		<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" includeIn="enemy" />
-		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="false" includeIn="enemy" click="onPause()" />
+		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="{enemy.pause}" includeIn="enemy" click="onPause()" />
+		<s:CheckBox id="moviePauseCheckBox" label="Pause" selectAll="{movie.pause}" includeIn="movie" click="onToggleMoviePause()" />
 		<s:Image width="22" height="22" id="enemyIconImage" source="{enemyIcon}" includeIn="enemy" />
 		<mx:LinkButton label="Edit" click="onEditMovie()" includeIn="movie" />
 		<s:Button label="X" width="40" click="onDelete()" />

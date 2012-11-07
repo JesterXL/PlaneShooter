@@ -9,6 +9,9 @@ function EnemyVO:new()
     enemy.type = "Plane"
     enemy.configurations = {}
 
+    -- Transient, set via LevelModel
+    enemy.unpauseCallback = nil
+
 	return enemy
 end
 

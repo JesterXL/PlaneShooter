@@ -60,8 +60,8 @@ function EnemyMissileJet:new(startX, startY, bottom)
 
 	function img:destroy()
 		gameLoop:removeLoop(self)
-		self:dispatchEvent({name="enemyDead", target=self})
 		self:removeEventListener("collision", img)
+		self:dispatchEvent({name="onDestroy", target=self})
 		self:removeSelf()
 	end
 

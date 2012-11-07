@@ -1,6 +1,5 @@
 package com.jxl.planeshooter.services
 {
-	import com.adobe.serialization.json.JSON;
 	import com.jxl.planeshooter.events.SaveLevelServiceEvent;
 	import com.jxl.planeshooter.vo.LevelVO;
 	
@@ -41,7 +40,7 @@ package com.jxl.planeshooter.services
 			
 			try
 			{
-				str = JSON.encode(obj);
+				str = JSON.stringify(obj);
 			}
 			catch(err:Error)
 			{

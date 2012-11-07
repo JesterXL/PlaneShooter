@@ -23,6 +23,8 @@
 			[Bindable]
 			public var emotions:ArrayCollection;
 			
+			private var fileRef:File;
+			
 			private function init():void
 			{
 				characters = new ArrayCollection();
@@ -61,6 +63,35 @@
 				dialogue.characterName = characterComboBox.selectedItem;
 			}
 			
+			private function onBrowseForAudio():void
+			{
+				if(fileRef == null)
+				{
+					fileRef = new File();
+					fileRef.addEventListener(Event.SELECT, onAudioFileSelected);
+				}
+				fileRef.browseForOpen("Audio File", [new FileFilter("Wave", ".wave,.wav"), new FileFilter("mp3", ".mp3")]);
+			}
+			
+			private function onAudioFileSelected(event:Event):void
+			{
+				dialogue.audioFile = fileRef.name;
+			}
+			
+			private function onToggleAutoPlay():void
+			{
+				dialogue.autoPlay = autoPlayCheckBox.selected;
+			}
+			
+			private function onChangeDialogueTime():void
+			{
+				dialogue.dialogueTime = dialogueTimeNumericStepper.value;
+			}
+			
+			private function onChangeAdvanceOnAudioTime():void
+			{
+				dialogue.advanceOnAudioEnd = advanceOnAudioEndCheckBox.selected;
+			}
 			
 		]]>
 	</fx:Script>
@@ -81,7 +112,7 @@
 	
 	<s:Form>
 		<s:layout>
-			<s:FormLayout gap="-10" />
+			<s:FormLayout gap="-10" paddingBottom="1" paddingLeft="1" paddingRight="1" paddingTop="1" />
 		</s:layout>
 		
 		<s:FormItem label="Character:">
@@ -92,6 +123,20 @@
 		</s:FormItem>
 		<s:FormItem label="Message:">
 			<mx:TextArea id="messageTextArea" text="{dialogue.message}" change="dialogue.message = messageTextArea.text" />
+		</s:FormItem>
+		<s:FormItem label="Audio File:">
+			<s:TextInput id="audioFileTextInput" editable="false" text="{dialogue.audioFile}" />
+			<s:Button label="Browse" click="onBrowseForAudio()" />
+		</s:FormItem>
+		<s:FormItem label="Auto Play:">
+			<s:CheckBox id="autoPlayCheckBox" selected="{dialogue.autoPlay}" change="onToggleAutoPlay()" />
+		</s:FormItem>
+		<s:FormItem label="Dialogue Time:" enabled="{dialogue.advanceOnAudioEnd == false}">
+			<s:NumericStepper id="dialogueTimeNumericStepper" minimum="0" maximum="10000" value="{dialogue.dialogueTime}" change="onChangeDialogueTime()" />
+			<s:Label text="Seconds" />
+		</s:FormItem>
+		<s:FormItem label="Advance On Audio End:">
+			<s:CheckBox id="advanceOnAudioEndCheckBox" selected="{dialogue.advanceOnAudioEnd}" change="onChangeAdvanceOnAudioTime()" />
 		</s:FormItem>
 	</s:Form>
 	
