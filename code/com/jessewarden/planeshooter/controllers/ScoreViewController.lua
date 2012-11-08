@@ -10,10 +10,16 @@ function ScoreViewController:new(scoreView, scoreModel)
 		self.scoreView:setScore(self.scoreModel.score)
 
 		Runtime:addEventListener("ScoreModel_scoreChanged", self)
+
+		Runtime:addEventListener("onAddToScore", self)
 	end
 
 	function controller:ScoreModel_scoreChanged(event)
 		self.scoreView:setScore(self.scoreModel.score)
+	end
+
+	function controller:onAddToScore(event)
+		self.scoreModel:addToScore(event.value)
 	end
 
 	controller:init()

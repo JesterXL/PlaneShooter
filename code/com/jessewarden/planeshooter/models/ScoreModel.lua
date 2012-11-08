@@ -18,6 +18,14 @@ function ScoreModel:new()
 		self:setScore(self.score + value)
 	end
 
+	function model:getMemento()
+		return {score = self.score}
+	end
+
+	function model:setMemento(memento)
+		self:setScore(memento.score)
+	end
+
 	return model
 
 end

@@ -21,6 +21,54 @@ function PlayerModel:new()
 	model.body         = nil
 	model.engine       = nil
 
+	function model:getMemento()
+		local memento =  {hitPoints = self.hitPoints, 
+				maxHitPoints = self.maxHitPoints,
+				weight = self.weight,
+				maxWeight = self.maxWeight,
+				defense = self.defense,
+				maxDefense = self.maxDefense,
+				power = self.power,
+				maxPower = self.maxPower}
+
+		if self.gun ~= nil then
+			memento.gun = self.gun:getMemento()
+		end
+
+		if self.cannon ~= nil then
+			memento.cannon = self.cannon:getMemento()
+		end
+
+		if self.missile ~= nil then
+			memento.missile = self.missile:getMemento()
+		end
+
+		if self.body ~= nil then
+			memento.body = self.body:getMemento()
+		end
+
+		if self.engine ~= nil then
+			memento.engine = self.engine:getMemento()
+		end
+
+		return memento
+	end
+
+	function model:setMemento(memento)
+
+		{hitPoints = self.hitPoints, 
+				maxHitPoints = self.maxHitPoints,
+				weight = self.weight,
+				maxWeight = self.maxWeight,
+				defense = self.defense,
+				maxDefense = self.maxDefense,
+				power = self.power,
+				maxPower = self.maxPower}
+
+		self.maxHitPoints = memento
+
+	end
+
 	function model:setHitPoints(value)
 		value = math.max(value, 0)
 		if value > self.maxHitPoints then value = self.maxHitPoints end
