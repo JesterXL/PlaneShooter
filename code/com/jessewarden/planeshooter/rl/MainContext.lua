@@ -16,8 +16,8 @@ function MainContext:new()
 		
 		print("\tmapping mediators...")
 		self:mapMediator("com.jessewarden.planeshooter.sprites.player.Player", "com.jessewarden.planeshooter.rl.mediators.PlayerMediator")
-		self:mapMediator("com.jessewarden.planeshooter.gamegui.DamageHUD", "com.jessewarden.planeshooter.rl.mediators.DamageHUDMediator")
-		self:mapMediator("com.jessewarden.planeshooter.gamegui.ScoreView", "com.jessewarden.planeshooter.rl.mediators.ScoreViewMediator")
+		self:mapMediator("com.jessewarden.planeshooter.views.DamageHUD", "com.jessewarden.planeshooter.rl.mediators.DamageHUDMediator")
+		self:mapMediator("com.jessewarden.planeshooter.views.ScoreView", "com.jessewarden.planeshooter.rl.mediators.ScoreViewMediator")
 		
 		print("\tdone, dispatching start event...")
 		self:dispatch({name="startThisMug", target=self})

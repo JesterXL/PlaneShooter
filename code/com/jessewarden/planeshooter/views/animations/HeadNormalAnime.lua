@@ -13,7 +13,7 @@ function HeadNormalAnime:new(x, y)
 				digit = "0" .. digit
 			end
 		
-			table.insert(HeadNormalAnime.frames, "gamegui/animations/head_normal/head_normal_000" .. digit .. ".jpg")
+			table.insert(HeadNormalAnime.frames, "views/animations/head_normal/head_normal_000" .. digit .. ".jpg")
 		end
 	end
 	local anime = movieclip.newAnim(HeadNormalAnime.frames)

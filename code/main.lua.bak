@@ -3,7 +3,7 @@ require "physics"
 
 require "com.jessewarden.planeshooter.core.constants"
 
-require "com.jessewarden.planeshooter.gamegui.controls.ScrollingTerrain"
+require "com.jessewarden.planeshooter.views.controls.ScrollingTerrain"
 require "com.jessewarden.planeshooter.core.GameLoop"
 require "com.jessewarden.planeshooter.core.LevelDirector"
 
@@ -19,20 +19,20 @@ require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissileJet"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
 
-require "com.jessewarden.planeshooter.gamegui.DamageHUD"
+require "com.jessewarden.planeshooter.views.DamageHUD"
 
-require "com.jessewarden.planeshooter.gamegui.animations.HeadNormalAnime"
-require "com.jessewarden.planeshooter.gamegui.controls.PauseButton"
-require "com.jessewarden.planeshooter.gamegui.ScoreView"
-require "com.jessewarden.planeshooter.gamegui.DialogueView"
-require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
-require "com.jessewarden.planeshooter.gamegui.FlightPathCheckpoint"
-require "com.jessewarden.planeshooter.gamegui.FlightPath"
-require "com.jessewarden.planeshooter.gamegui.LevelCompleteOverlay"
+require "com.jessewarden.planeshooter.views.animations.HeadNormalAnime"
+require "com.jessewarden.planeshooter.views.controls.PauseButton"
+require "com.jessewarden.planeshooter.views.ScoreView"
+require "com.jessewarden.planeshooter.views.DialogueView"
+require "com.jessewarden.planeshooter.views.MoviePlayerView"
+require "com.jessewarden.planeshooter.views.FlightPathCheckpoint"
+require "com.jessewarden.planeshooter.views.FlightPath"
+require "com.jessewarden.planeshooter.views.LevelCompleteOverlay"
 
 require "com.jessewarden.planeshooter.services.LoadLevelService"
 
-require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
+require "com.jessewarden.planeshooter.views.screens.TitleScreen"
 
 require "com.jessewarden.planeshooter.rl.MainContext"
 require "com.jessewarden.planeshooter.rl.mediators.PlayerMediator"
@@ -512,9 +512,9 @@ group:insert(greenRect)
 
 require "gameNetwork"
 
-require "com.jessewarden.planeshooter.gamegui.StoreAndScoresView"
-require "com.jessewarden.planeshooter.gamegui.BuySellEquipView"
-require "com.jessewarden.planeshooter.gamegui.StoreInventory"
+require "com.jessewarden.planeshooter.views.StoreAndScoresView"
+require "com.jessewarden.planeshooter.views.BuySellEquipView"
+require "com.jessewarden.planeshooter.views.StoreInventory"
 
 
 function onHighscores()

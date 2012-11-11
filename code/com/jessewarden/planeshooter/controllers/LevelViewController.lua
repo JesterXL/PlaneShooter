@@ -4,31 +4,33 @@ require "com.jessewarden.planeshooter.sprites.enemies.UFO"
 
 LevelViewController = {}
 
-function LevelViewController:new(levelView, levelModel)
-
-	assert(levelView ~= nil, "You must pass a levelView to LevelViewController.")
+function LevelViewController:new()
 
 	local controller = {}
 	controller.classType = "LevelViewController"
-	controller.eventReady = nil
-	controller.levelView = levelView
-	controller.levelModel = levelModel
+	controller.view = nil
+	controller.levelModel = nil
 	
 
-	function controller:init()
+	function controller:onRegister()
+		print("LevelViewController::onRegister")
+		self.levelModel = self.context:getModel("levelModel")
 		Runtime:addEventListener("LevelModel_onEnemyEvent", self)
 		Runtime:addEventListener("LevelModel_onMovieEvent", self)
 		Runtime:addEventListener("LevelModel_levelStart", self)
 		Runtime:addEventListener("LevelModel_levelComplete", self)
 
-		self.levelView:addEventListener("onMovieEnded", self)
+		self.view:addEventListener("onMovieEnded", self)
 	end
 
-	function controller:destroy()
+	function controller:onRemove()
+		print("LevelViewController::onRemove")
 		Runtime:removeEventListener("LevelModel_onEnemyEvent", self)
 		Runtime:removeEventListener("LevelModel_onMovieEvent", self)
 		Runtime:removeEventListener("LevelModel_levelStart", self)
 		Runtime:removeEventListener("LevelModel_levelComplete", self)
+
+		self.view:removeEventListener("onMovieEnded", self)
 	end
 
 	function controller:LevelModel_onEnemyEvent(event)
@@ -62,21 +64,21 @@ function LevelViewController:new(levelView, levelModel)
 			enemy.vo = enemyVO
 			enemy:addEventListener("onDestroy", self)
 		end
-		self.levelView:insert(enemy)
+		self.view:insert(enemy)
 		--mainGroup:insert(enemy)
 	end
 
 	function controller:LevelModel_onMovieEvent(event)
 		local movieVO = event.event
-		self.levelView:onMovie(movieVO)
+		self.view:onMovie(movieVO)
 	end
 
 	function controller:LevelModel_levelStart(event)
-		self.levelView:onLevelStart()
+		self.view:onLevelStart()
 	end
 	
 	function controller:LevelModel_levelComplete(event)
-		self.levelView:onLevelEnd()
+		self.view:onLevelEnd()
 	end
 
 	function controller:onMovieEnded(event)
@@ -91,10 +93,8 @@ function LevelViewController:new(levelView, levelModel)
 		enemyVO.unpauseCallback()
 	end
 
-	controller:init()
-
 	return controller
 
 end
 
-return LevelViewController
+return viewController

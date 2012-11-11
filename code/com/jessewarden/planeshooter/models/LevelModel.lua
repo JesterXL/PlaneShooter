@@ -11,6 +11,7 @@ function LevelModel:new()
 	model.started = false
 
 	function model:init(level)
+		print("LevelModel::init, level: ", level)
 		self.level = level
 
 		local oldEvents = self.oldEvents
@@ -30,7 +31,28 @@ function LevelModel:new()
 		self.started = false
 	end
 
+	function model:getMemento()
+		local json = require "json"
+		return {
+			classType = self.classType,
+			totalMilliseconds = self.totalMilliseconds,
+			paused = self.paused,
+			started = self.started,
+			level = self.level,
+			oldEvents = self.oldEvents
+		}
+	end
+
+	function model:setMemento(memento)
+		self.level = mememto.level
+		self.oldEvents = mememto.oldEvents
+		self.totalMilliseconds = mememto.totalMilliseconds
+		self.paused = mememto.paused
+		self.started = mememto.started
+	end
+
 	function model:start()
+		print("LevelModel::start")
 		if self.paused == true then
 			self.paused = false
 			gameLoop:addLoop(self)
@@ -38,6 +60,7 @@ function LevelModel:new()
 	end
 
 	function model:stop()
+		print("LevelModel::stop")
 		if self.paused == false then
 			self.paused = true
 			gameLoop:removeLoop(self)

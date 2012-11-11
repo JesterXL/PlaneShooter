@@ -1,4 +1,4 @@
-require "com.jessewarden.planeshooter.gamegui.FlightPathCheckpoint"
+require "com.jessewarden.planeshooter.views.FlightPathCheckpoint"
 
 FlightPath = {}
 

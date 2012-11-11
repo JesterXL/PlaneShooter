@@ -20,6 +20,14 @@ function PlayerMovementController:new(player)
 		Runtime:removeEventListener("touch", self)
 	end
 
+	function controller:onRegister()
+		-- TODO
+	end
+
+	function controller:onRemove()
+		self:stop()
+	end
+
 	return controller
 
 end

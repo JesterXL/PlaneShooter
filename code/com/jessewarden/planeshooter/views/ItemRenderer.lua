@@ -1,5 +1,5 @@
 require "com.jessewarden.planeshooter.core.constants"
-require "com.jessewarden.planeshooter.gamegui.controls.Text"
+require "com.jessewarden.planeshooter.views.controls.Text"
 
 ItemRenderer = {}
 

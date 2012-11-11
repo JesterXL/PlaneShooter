@@ -1,8 +1,10 @@
 require "com.jessewarden.planeshooter.utils.Collection"
+require "com.jessewarden.planeshooter.factories.WeaponFactory"
 EquipModel = {}
 
 function EquipModel:new()
 	local model   = {}
+	model.classType = "EquipModel"
 	
 	model.guns    = nil
 	model.cannons = nil
@@ -16,6 +18,24 @@ function EquipModel:new()
 		self.missiles = self:getCollection()
 		self.bodies   = self:getCollection()
 		self.engines = self:getCollection()
+	end
+
+	function model:getMemento()
+		return {
+			guns = WeaponFactory.getMementoArrayFromWeaponCollection(self.guns),
+			cannons = WeaponFactory.getMementoArrayFromWeaponCollection(self.cannons),
+			missiles = WeaponFactory.getMementoArrayFromWeaponCollection(self.missiles),
+			bodies = WeaponFactory.getMementoArrayFromWeaponCollection(self.bodies),
+			engines = WeaponFactory.getMementoArrayFromWeaponCollection(self.engines)
+		}
+	end
+
+	function model:setMemento(memento)
+		self.guns = WeaponFactory.setCollectionFromMementoArray(memento.guns)
+		self.cannons = WeaponFactory.setCollectionFromMementoArray(memento.cannons)
+		self.missiles = WeaponFactory.setCollectionFromMementoArray(memento.missiles)
+		self.bodies = WeaponFactory.setCollectionFromMementoArray(memento.bodies)
+		self.engines = WeaponFactory.setCollectionFromMementoArray(memento.engines)
 	end
 
 	function model:getCollection()

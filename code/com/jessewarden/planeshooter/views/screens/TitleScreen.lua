@@ -4,14 +4,14 @@ require "com.jessewarden.planeshooter.utils.TweenUtils"
 
 TitleScreen = {}
 
-function TitleScreen:new(width, height)
+function TitleScreen:new()
 	local screen = display.newGroup()
 
 	local img = display.newImage("screen_title.png")
 	img:setReferencePoint(display.TopLeftReferencePoint)
 	screen:insert(img)
-	img.width = width
-	img.height = height
+	img.width = stage.contentWidth
+	img.height = stage.contentHeight
 
 	local startButton = display.newImage("button_start.png")
 	function startButton:touch(event)
@@ -26,7 +26,7 @@ function TitleScreen:new(width, height)
 	
 	startButton.y = display.getCurrentStage().height - (134 / 2)
 	
-	local cover = display.newRect(0, 0, width, height)
+	local cover = display.newRect(0, 0, stage.contentWidth, stage.contentHeight)
 	cover:setReferencePoint(display.TopLeftReferencePoint)
 	cover:setFillColor(0, 0, 0)
 	screen:insert(cover)
@@ -47,7 +47,7 @@ function TitleScreen:new(width, height)
 	end
 
 	function hideComplete()
-		screen:dispatchEvent({name="onHideComplete", target=screen})
+		screen:dispatchEvent({name="onTitleScreenHideComplete", target=screen})
 	end
 
 	function screen:show()

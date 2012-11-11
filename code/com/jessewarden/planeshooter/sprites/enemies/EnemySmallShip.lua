@@ -1,5 +1,6 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "org.robotlegs.globals"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
 
 EnemySmallShip = {}
 EnemySmallShip.soundsInited = false

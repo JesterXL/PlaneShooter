@@ -1,4 +1,4 @@
-require "com.jessewarden.planeshooter.gamegui.DialogueView"
+require "com.jessewarden.planeshooter.views.DialogueView"
 local gtween = require("gtween")
 
 MoviePlayerView = {}
@@ -174,7 +174,9 @@ function MoviePlayerView:new()
 
 	function group:onComplete(event)
 		print("onComplete, completed: ", event.completed)
-		print("self.currentDialogueVO.advanceOnAudioEnd: ", self.currentDialogueVO.advanceOnAudioEnd)
+		if self.currentDialogueVO ~= nil then
+			print("self.currentDialogueVO.advanceOnAudioEnd: ", self.currentDialogueVO.advanceOnAudioEnd)
+		end
 		if event.completed == true and self.currentDialogueVO.advanceOnAudioEnd == true then
 			self:destroyAudioFile()
 			self:nextDialogue()

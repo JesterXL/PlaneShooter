@@ -423,7 +423,7 @@ end
 
 
 local function testTitleScreen()
-	require "com.jessewarden.planeshooter.gamegui.screens.TitleScreen"
+	require "com.jessewarden.planeshooter.views.screens.TitleScreen"
 	stage = display.getCurrentStage()
 	local screen = TitleScreen:new(stage.width, stage.height)
 	screen:show()
@@ -434,7 +434,7 @@ local function testTitleScreen()
 end
 
 local function testNewContinueLevelsScreen()
-	require "com.jessewarden.planeshooter.gamegui.screens.NewContinueLevelsScreen"
+	require "com.jessewarden.planeshooter.views.screens.NewContinueLevelsScreen"
 	stage = display.getCurrentStage()
 	local screen = NewContinueLevelsScreen:new(stage.width, stage.height)
 	screen:show(true)
@@ -447,7 +447,7 @@ local function testNewContinueLevelsScreen()
 end
 
 function testStageIntroScreen()
-	require "com.jessewarden.planeshooter.gamegui.screens.StageIntroScreen"
+	require "com.jessewarden.planeshooter.views.screens.StageIntroScreen"
 	stage = display.getCurrentStage()
 	local screen = StageIntroScreen:new(1, "Delivery")
 	screen:show()
@@ -494,9 +494,9 @@ end
 function testHighScores()
 	require "gameNetwork"
 
-	require "com.jessewarden.planeshooter.gamegui.StoreAndScoresView"
-	require "com.jessewarden.planeshooter.gamegui.BuySellEquipView"
-	require "com.jessewarden.planeshooter.gamegui.StoreInventory"
+	require "com.jessewarden.planeshooter.views.StoreAndScoresView"
+	require "com.jessewarden.planeshooter.views.BuySellEquipView"
+	require "com.jessewarden.planeshooter.views.StoreInventory"
 
 
 	function onHighscores()
@@ -571,7 +571,7 @@ function testGtween()
 end
 
 function testLevelCompleteScreen()
-	require "com.jessewarden.planeshooter.gamegui.screens.LevelCompleteScreen"
+	require "com.jessewarden.planeshooter.views.screens.LevelCompleteScreen"
 	local screen = LevelCompleteScreen:new(1, 3000)
 	screen:show()
 	screen:addEventListener("onAnimationCompleted", function()
@@ -610,7 +610,7 @@ end
 local function testMoviePlayerAutoPlay()
 	require "com.jessewarden.planeshooter.vo.DialogueVO"
 	require "com.jessewarden.planeshooter.vo.MovieVO"
-	require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
+	require "com.jessewarden.planeshooter.views.MoviePlayerView"
 	local player = MoviePlayerView:new()
 	local movie = MovieVO:new()
 	movie.autoPlay = true
@@ -633,7 +633,7 @@ end
 local function testMoviePlayerAutoPlayAudio()
 	require "com.jessewarden.planeshooter.vo.DialogueVO"
 	require "com.jessewarden.planeshooter.vo.MovieVO"
-	require "com.jessewarden.planeshooter.gamegui.MoviePlayerView"
+	require "com.jessewarden.planeshooter.views.MoviePlayerView"
 	local player = MoviePlayerView:new()
 	local movie = MovieVO:new()
 	movie.autoPlay = true
@@ -832,13 +832,13 @@ local function testTypeOf()
 end
 
 local function testEquipScreen()
-	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreen"
+	require "com.jessewarden.planeshooter.views.screens.EquipScreen"
 	local screen = EquipScreen:new()
 	screen:init()
 end
 
 local function testEquipScreenAndController()
-	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreen"
+	require "com.jessewarden.planeshooter.views.screens.EquipScreen"
 	local screen = EquipScreen:new()
 	screen:init()
 
@@ -899,14 +899,14 @@ local function testEquipScreenAndController()
 	model.missiles:addItem(rocket1)
 	model.missiles:addItem(rocket2)
 
-	require "com.jessewarden.planeshooter.gamegui.screens.EquipScreenController"
+	require "com.jessewarden.planeshooter.views.screens.EquipScreenController"
 	local controller = EquipScreenController:new()
 	controller:initialize(model, playerModel, screen)
 
 end
 
 local function testProgressBar()
-	require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
+	require "com.jessewarden.planeshooter.views.controls.ProgressBar"
 	local bar = ProgressBar:new(0, 0, 0, 255, 242, 0, 200, 40)
 	bar.x = 30
 	bar.y = 30
@@ -1003,7 +1003,7 @@ end
 
 local function testLevelViewAndController()
 
-	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.views.LevelView"
 	require "com.jessewarden.planeshooter.controllers.LevelViewController"
 	local view = LevelView:new()
 	local controller = LevelViewController:new(view)
@@ -1011,7 +1011,7 @@ local function testLevelViewAndController()
 end
 
 local function testMonsterGeneration()
-	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.views.LevelView"
 	require "com.jessewarden.planeshooter.controllers.LevelViewController"
 	local view = LevelView:new()
 	local controller = LevelViewController:new(view)
@@ -1040,7 +1040,7 @@ local function testMonsterGeneration()
 end
 
 local function testMoviePlayerInLevelView()
-	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.views.LevelView"
 	require "com.jessewarden.planeshooter.controllers.LevelViewController"
 	local view = LevelView:new()
 	local controller = LevelViewController:new(view)
@@ -1097,14 +1097,14 @@ local function testMoviePlayerInLevelViewWithDynamicLevel()
 	model:init(level)
 	model:start()
 
-	require "com.jessewarden.planeshooter.gamegui.LevelView"
+	require "com.jessewarden.planeshooter.views.LevelView"
 	require "com.jessewarden.planeshooter.controllers.LevelViewController"
 	local view = LevelView:new()
 	local controller = LevelViewController:new(view, model)
 end
 
 local function testScoreView()
-	require "com.jessewarden.planeshooter.gamegui.ScoreView"
+	require "com.jessewarden.planeshooter.views.ScoreView"
 	local view = ScoreView:new()
 	view.x = 100
 	view.y = 100
@@ -1120,6 +1120,59 @@ local function testScoreView()
 		self.increment = self.increment + 1
 	end
 	--timer.performWithDelay(10, t, 0)
+end
+
+local function testMementoSet()
+	local t = {}
+	t.name = "cheese"
+	t.age = 21
+	local memento = {}
+	memento.name = "boo"
+	memento.age = 46
+	for key,value in pairs(t) do
+		print("before: ", key, value)
+		t[key] = memento[key]
+		print("after: ", key, t[key])
+	end
+end
+
+local function testPlaneShooter()
+	require "com.jessewarden.planeshooter.PlaneShooterContext"
+	require "com.jessewarden.planeshooter.views.PlaneShooterView"
+	local context = PlaneShooterContext:new()
+	context:mapSingletonModel("equipModel", "com.jessewarden.planeshooter.models.EquipModel")
+	context:mapSingletonModel("levelModel", "com.jessewarden.planeshooter.models.LevelModel")
+	context:mapSingletonModel("playerModel", "com.jessewarden.planeshooter.models.PlayerModel")
+	context:mapSingletonModel("scoreModel", "com.jessewarden.planeshooter.models.ScoreModel")
+
+
+	context:mapController("com.jessewarden.planeshooter.views.PlaneShooterView", 
+							"com.jessewarden.planeshooter.controllers.PlaneShooterController")
+
+	context:mapController("com.jessewarden.planeshooter.views.LevelView", 
+							"com.jessewarden.planeshooter.controllers.LevelViewController")
+
+	context:mapController("com.jessewarden.planeshooter.views.ScoreView", 
+							"com.jessewarden.planeshooter.controllers.ScoreViewController")
+
+	local game = PlaneShooterView:new()
+end
+
+local function testInsertOverrides()
+	local t = {}
+	function t:insert(item)
+		print("yo, self: ", self, ", item: ", item)
+		t.oldInsert(t, item)
+	end
+	local cow = display.newGroup()
+	--setmetatable(cow, t)
+	t.oldInsert = cow.insert
+	print("t.oldInsert: ", t.oldInsert)
+	cow.insert = t.insert
+	print("cow: ", cow, ", cow.insert: ", cow.insert)
+	local cheese = display.newGroup()
+	cow:insert(cheese)
+
 end
 
 --[[
@@ -1191,6 +1244,10 @@ startPhysics()
 --testMoviePlayerInLevelView()
 --testMoviePlayerInLevelViewWithDynamicLevel()
 
-testScoreView()
+--testScoreView()
+--testMementoSet()
+
+testPlaneShooter()
+--testInsertOverrides()
 
 --require "testsmain"

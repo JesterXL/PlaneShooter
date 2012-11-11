@@ -1,17 +1,22 @@
 ScoreViewController = {}
 
-function ScoreViewController:new(scoreView, scoreModel)
+function ScoreViewController:new()
 
 	local controller = {}
-	controller.scoreView = scoreView
-	controller.scoreModel = scoreModel
+	controller.view = nil
+	controller.scoreModel = nil
 
-	function controller:init()
+	function controller:onRegister()
+		self.scoreModel = self.context.getModel("scoreMode")
 		self.scoreView:setScore(self.scoreModel.score)
 
 		Runtime:addEventListener("ScoreModel_scoreChanged", self)
-
 		Runtime:addEventListener("onAddToScore", self)
+	end
+
+	function controller:onRemove()
+		Runtime:removeEventListener("ScoreModel_scoreChanged", self)
+		Runtime:removeEventListener("onAddToScore", self)
 	end
 
 	function controller:ScoreModel_scoreChanged(event)
@@ -21,8 +26,6 @@ function ScoreViewController:new(scoreView, scoreModel)
 	function controller:onAddToScore(event)
 		self.scoreModel:addToScore(event.value)
 	end
-
-	controller:init()
 
 	return controller
 end

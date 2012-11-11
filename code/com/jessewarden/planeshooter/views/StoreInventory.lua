@@ -1,4 +1,4 @@
-require "com.jessewarden.planeshooter.gamegui.InventoryList"
+require "com.jessewarden.planeshooter.views.InventoryList"
 
 StoreInventory = {}
 

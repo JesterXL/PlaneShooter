@@ -1,6 +1,6 @@
-require "com.jessewarden.planeshooter.gamegui.controls.ProgressBar"
-require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.EquipTile"
-require "com.jessewarden.planeshooter.gamegui.screens.equipscreenclasses.DraggableTile"
+require "com.jessewarden.planeshooter.views.controls.ProgressBar"
+require "com.jessewarden.planeshooter.views.screens.equipscreenclasses.EquipTile"
+require "com.jessewarden.planeshooter.views.screens.equipscreenclasses.DraggableTile"
 require "com.jessewarden.planeshooter.core.constants"
 require "com.jessewarden.planeshooter.vo.weapons.WeaponVO"
 EquipScreen = {}

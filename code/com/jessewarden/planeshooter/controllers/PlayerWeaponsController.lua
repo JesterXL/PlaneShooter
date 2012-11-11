@@ -33,6 +33,14 @@ function PlayerWeaponsController:new(player)
 		Runtime:removeEventListener("touch", self)
 	end
 
+	function regulator:onRegister()
+		-- TODO
+	end
+
+	function regulator:onRemove()
+		self:stop()
+	end
+
 	function regulator:touch(event)
 		--print("touch: ", event.phase)
 		if event.phase == "began" or event.phase == "moved" then

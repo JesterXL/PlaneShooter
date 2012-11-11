@@ -2,6 +2,7 @@ PlayerModel = {}
 
 function PlayerModel:new()
 	local model        = {}
+	model.classType = "PlayerModel"
 	
 	model.hitPoints    = 10
 	model.maxHitPoints = 10
@@ -22,6 +23,7 @@ function PlayerModel:new()
 	model.engine       = nil
 
 	function model:getMemento()
+		local json = require "json"
 		local memento =  {hitPoints = self.hitPoints, 
 				maxHitPoints = self.maxHitPoints,
 				weight = self.weight,
@@ -32,41 +34,54 @@ function PlayerModel:new()
 				maxPower = self.maxPower}
 
 		if self.gun ~= nil then
-			memento.gun = self.gun:getMemento()
+			memento.gun = WeaponFactory.getMementoFromWeapon(self.gun)
 		end
 
 		if self.cannon ~= nil then
-			memento.cannon = self.cannon:getMemento()
+			memento.cannon = WeaponFactory.getMementoFromWeapon(self.cannon)
 		end
 
 		if self.missile ~= nil then
-			memento.missile = self.missile:getMemento()
+			memento.missile = WeaponFactory.getMementoFromWeapon(self.missile)
 		end
 
 		if self.body ~= nil then
-			memento.body = self.body:getMemento()
+			memento.body = WeaponFactory.getMementoFromWeapon(self.body)
 		end
 
 		if self.engine ~= nil then
-			memento.engine = self.engine:getMemento()
+			memento.engine = WeaponFactory.getMementoFromWeapon(self.engine)
 		end
 
 		return memento
 	end
 
+	
+
 	function model:setMemento(memento)
+		self.maxHitPoints = memento.maxHitPoints
+		self.hitPoints = memento.hitPoints
+		self.weight = memento.weight
+		self.maxWeight = memento.maxWeight
+		self.defense = memento.defense
+		self.maxDefense = memento.maxDefense
+		self.power = memento.power
+		self.maxPower = memento.maxPower
 
-		{hitPoints = self.hitPoints, 
-				maxHitPoints = self.maxHitPoints,
-				weight = self.weight,
-				maxWeight = self.maxWeight,
-				defense = self.defense,
-				maxDefense = self.maxDefense,
-				power = self.power,
-				maxPower = self.maxPower}
+		local weapon
+		if memento.gun ~= nil then
+			self.gun = WeaponFactory.getMementoFromWeapon(memento.gun)
+		elseif memento.cannon ~= nil then
+			self.cannon = WeaponFactory.getMementoFromWeapon(memento.cannon)
+		elseif memento.missile ~= nil then
+			self.missile = WeaponFactory.getMementoFromWeapon(memento.missile)
+		elseif memento.body ~= nil then
+			self.body = WeaponFactory.getMementoFromWeapon(memento.body)
+		elseif memento.engine ~= nil then
+			self.engine = WeaponFactory.getMementoFromWeapon(memento.engine)
+		end
 
-		self.maxHitPoints = memento
-
+		self:recalculateSpecs()
 	end
 
 	function model:setHitPoints(value)

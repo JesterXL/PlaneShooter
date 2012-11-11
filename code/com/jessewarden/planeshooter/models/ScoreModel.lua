@@ -3,6 +3,7 @@ ScoreModel = {}
 function ScoreModel:new()
 
 	local model = {}
+	model.classType = "ScoreModel"
 	model.score = 0
 
 	function model:setScore(value)
