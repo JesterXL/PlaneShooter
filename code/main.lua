@@ -1155,6 +1155,15 @@ local function testPlaneShooter()
 	context:mapController("com.jessewarden.planeshooter.views.ScoreView", 
 							"com.jessewarden.planeshooter.controllers.ScoreViewController")
 
+	context:mapCommand("LevelViewController_levelComplete",
+						"com.jessewarden.planeshooter.commands.LevelCompleteCommand")
+
+	context:mapCommand("LevelViewController_nextLevel",
+						"com.jessewarden.planeshooter.commands.LoadNextLevelCommand")
+
+	context:mapCommand("PlaneShooterController_newGame",
+						"com.jessewarden.planeshooter.commands.LoadNextLevelCommand")
+
 	local game = PlaneShooterView:new()
 end
 

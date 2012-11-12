@@ -61,8 +61,11 @@ function LevelView:new()
 		if self.levelEndView == nil then
 			self.levelEndView = LevelCompleteScreen:new(1, 3000)
 			self:insert(self.levelEndView)
-			self.levelEndView:addEventListener("onAnimationCompleted", function()
+			self.levelEndView:addEventListener("onNextLevelTouched", function(e)
 				self.levelEndView:hide()
+			end)
+			self.levelEndView:addEventListener("onHideAnimationCompleted", function()
+				view:dispatchEvent({name="onNextLevel", target=view})
 			end)
 		end
 		self.levelEndView:show()

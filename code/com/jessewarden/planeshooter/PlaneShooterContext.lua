@@ -6,6 +6,7 @@ function PlaneShooterContext:new()
 	context.controllerMap = {}
 	context.controllerInstances = {}
 	context.models = {}
+	context.commandMap = {}
 
 	function context:mapSingletonModel(name, modelClass)
 		assert(name ~= nil, "name must not be nil")
@@ -137,6 +138,33 @@ function PlaneShooterContext:new()
 			end
 		end
 		return false
+	end
+
+	-- private --
+	function context:mapCommand(eventName, commandClass)
+		assert(eventName ~= nil, "eventName required.")
+		assert(commandClass ~= nil, "commandClass required.")
+		assert(require(commandClass), "Could not find commandClass")
+		self.commandMap[eventName] = commandClass
+		Runtime:addEventListener(eventName, function(e)
+			self:onCommandEvent(e)
+		end)
+	end
+
+	function context:onCommandEvent(event)
+		local commandClassName = context.commandMap[event.name]
+		if commandClassName ~= nil then
+			local commandRequire = require(commandClassName)
+			local command
+			if type(commandRequire) == "table" then
+				command = commandRequire:new()
+			else
+				local className = self:getClassNameFromPackage(commandClassName)
+				command = _G[className]:new()
+			end
+			assert(command ~= nil, "Failed to create command class.")
+			command:execute(event, context)
+		end
 	end
 
 	return context

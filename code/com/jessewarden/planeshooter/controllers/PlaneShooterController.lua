@@ -23,11 +23,7 @@ function PlaneShooterController:new()
 
 	function controller:onPlaneShooterNewGame(event)
 		print("PlaneShooterController::onPlaneShooterNewGame")
-		local level = LoadLevelService:new("level3.json")
-		print("level: ", level)
-		local model = self.levelModel
-		model:init(level)
-		model:start()
+		Runtime:dispatchEvent({name="PlaneShooterController_newGame", target=self})
 	end
 
 	return controller

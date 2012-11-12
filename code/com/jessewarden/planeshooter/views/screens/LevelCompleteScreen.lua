@@ -276,7 +276,9 @@ function LevelCompleteScreen:new(levelNumber, totalScore)
 			{x=targetX, alpha=0}, 
 			{ease=gtween.easing.inExponential, delay=delay})
 
-
+		levelText.tween.onComplete = function()
+			screen:dispatchEvent({name="onHideAnimationCompleted", target=screen})
+		end
 	end
 
 	screen:init(levelNumber, totalScore)

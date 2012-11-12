@@ -23,6 +23,7 @@ function LevelViewController:new()
 		Runtime:addEventListener("LevelModel_levelComplete", self)
 
 		self.view:addEventListener("onMovieEnded", self)
+		self.view:addEventListener("onNextLevel", self)
 	end
 
 	function controller:onRemove()
@@ -33,6 +34,7 @@ function LevelViewController:new()
 		Runtime:removeEventListener("LevelModel_levelComplete", self)
 
 		self.view:removeEventListener("onMovieEnded", self)
+		self.view:removeEventListener("onNextLevel", self)
 	end
 
 	function controller:LevelModel_onEnemyEvent(event)
@@ -81,17 +83,15 @@ function LevelViewController:new()
 	
 	function controller:LevelModel_levelComplete(event)
 		self.view:onLevelEnd()
-		local context = self.context
-		-- TODO: move to Commands, shit's only going to get worse from here
-		local progressModel = context:getModel("progressModel")
-		local levelModel = context:getModel("levelModel")
-		local scoreModel = context:getModel("scoreModel")
-		local playerModel = context:getModel("playerModel")
-		progressModel:saveProgress(levelModel.level.fileName, scoreModel.score, playerModel:getMemento())
+		Runtime:dispatchEvent({name="LevelViewController_levelComplete", target=self})
 	end
 
 	function controller:onMovieEnded(event)
 		self.levelModel:start()
+	end
+
+	function controller:onNextLevel(event)
+		Runtime:dispatchEvent({name="LevelViewController_nextLevel", target=self})
 	end
 
 	function controller:onDestroy(event)
