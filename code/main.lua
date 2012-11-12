@@ -1144,7 +1144,7 @@ local function testPlaneShooter()
 	context:mapSingletonModel("levelModel", "com.jessewarden.planeshooter.models.LevelModel")
 	context:mapSingletonModel("playerModel", "com.jessewarden.planeshooter.models.PlayerModel")
 	context:mapSingletonModel("scoreModel", "com.jessewarden.planeshooter.models.ScoreModel")
-
+	context:mapSingletonModel("progressModel", "com.jessewarden.planeshooter.models.ProgressModel")
 
 	context:mapController("com.jessewarden.planeshooter.views.PlaneShooterView", 
 							"com.jessewarden.planeshooter.controllers.PlaneShooterController")
@@ -1173,6 +1173,33 @@ local function testInsertOverrides()
 	local cheese = display.newGroup()
 	cow:insert(cheese)
 
+end
+
+local function testUserProgressSaveAndRead()
+	require "com.jessewarden.planeshooter.services.UserProgressService"
+	require "com.jessewarden.planeshooter.vo.UserProgressVO"
+	local service = UserProgressService:new()
+	service:delete()
+	local nilVO = service:read()
+	assert(nilVO == nil, "We've got an old file laying around.")
+
+	local vo = UserProgressVO:new()
+	vo.level = 3
+	vo.weaponsConfig = {gun="something", cannon={left="yep", right=2}}
+	vo.score = 200000
+	assert(service:save(vo))
+
+	local newVO = service:read()
+	assert(newVO ~= nil, "Couldn't get VO out of file.")
+	print(newVO.level, newVO.score, newVO.weaponsConfig.cannon.right)
+
+end
+
+local function testDateStrings()
+	local time = os.date()
+	print(time)
+	print(time.year)
+	print(os.date( "%c" ))
 end
 
 --[[
@@ -1246,8 +1273,12 @@ startPhysics()
 
 --testScoreView()
 --testMementoSet()
+--testInsertOverrides()
+--testUserProgressSaveAndRead()
+--testDateStrings()
+
 
 testPlaneShooter()
---testInsertOverrides()
+
 
 --require "testsmain"

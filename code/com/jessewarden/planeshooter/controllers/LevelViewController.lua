@@ -1,6 +1,8 @@
 require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShip"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
 require "com.jessewarden.planeshooter.sprites.enemies.UFO"
+require "com.jessewarden.planeshooter.services.UserProgressService"
+require "com.jessewarden.planeshooter.vo.UserProgressVO"
 
 LevelViewController = {}
 
@@ -79,6 +81,13 @@ function LevelViewController:new()
 	
 	function controller:LevelModel_levelComplete(event)
 		self.view:onLevelEnd()
+		local context = self.context
+		-- TODO: move to Commands, shit's only going to get worse from here
+		local progressModel = context:getModel("progressModel")
+		local levelModel = context:getModel("levelModel")
+		local scoreModel = context:getModel("scoreModel")
+		local playerModel = context:getModel("playerModel")
+		progressModel:saveProgress(levelModel.level.fileName, scoreModel.score, playerModel:getMemento())
 	end
 
 	function controller:onMovieEnded(event)

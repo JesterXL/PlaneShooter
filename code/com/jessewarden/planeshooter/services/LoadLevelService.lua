@@ -39,6 +39,7 @@ function LoadLevelService:new(jsonFileName)
 
 	local jsonString = loader:jsonFile(jsonFileName)
 	local level = json.decode(jsonString)
+	level.fileName = jsonFileName
 
 	return level
 end
