@@ -56,6 +56,8 @@ function EnemySmallShip:new(startX, startY, bottom)
 		end
 		local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound)
 		audio.setVolume(.4, {channel = smallShipDeathSoundChannel})
+		Runtime:dispatchEvent({name="onShowFloatingText", 
+								x=self.x, y=self.y, target=self, amount=100})
 		self:destroy()
 	end
 	

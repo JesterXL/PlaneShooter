@@ -17,6 +17,7 @@ function PlaneShooterContext:new()
 	function context:getModel(modelName)
 		assert(modelName ~= nil, "modelName cannot be nil.")
 		local object = self.models[modelName]
+		if object == nil then return nil end
 		if object.instance == nil then
 			local classObject = require(object.class)
 			local instance = classObject:new()

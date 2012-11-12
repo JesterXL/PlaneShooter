@@ -1,5 +1,6 @@
-
 require "com.jessewarden.planeshooter.core.constants"
+require "com.jessewarden.planeshooter.controllers.PlayerMovementController"
+require "com.jessewarden.planeshooter.controllers.PlayerWeaponsController"
 
 Player = {}
 
@@ -25,14 +26,31 @@ function Player:new()
 	img.planeYTarget = 200
 	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
 	img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
+
+	img.movementController = nil
+	img.weaponsController = nil
 	
-	--[[
-	physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
-								bodyType = "kinematic", 
-								isBullet = true, isSensor = true, isFixedRotation = true,
-								filter = { categoryBits = 1, maskBits = 28 }
-							} )
-]]--
+	function img:init()
+		self.movementController = PlayerMovementController:new(self)
+		self.movementController:start()
+
+		self.weaponsController = PlayerWeaponsController:new(self)
+		self.weaponsController:start()
+		self.weaponsController:setPowerLevel(1)
+
+		physics.addBody( img, { density = 1.0, friction = 0.3, bounce = 0.2, 
+									bodyType = "kinematic", 
+									isBullet = true, isSensor = true, isFixedRotation = true,
+									filter = { categoryBits = 1, maskBits = 28 }
+								} )
+
+		gameLoop:addLoop(self)
+	end
+
+	function img:destroy()
+
+	end
+
 						
 	function img:move(x, y)
 		self.x = x
@@ -96,6 +114,8 @@ function Player:new()
 		end	
 	end
 	
+	img:init()
+
 	return img
 end
 

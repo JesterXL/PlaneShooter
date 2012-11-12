@@ -12,6 +12,7 @@ function LevelModel:new()
 
 	function model:init(level)
 		print("LevelModel::init, level: ", level)
+		assert(level ~= nil, "You cannot pass a nil level to LevelModel.")
 		self.level = level
 
 		local oldEvents = self.oldEvents

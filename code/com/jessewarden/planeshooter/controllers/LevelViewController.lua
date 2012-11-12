@@ -95,11 +95,19 @@ function LevelViewController:new()
 	end
 
 	function controller:onDestroy(event)
+		print("LevelViewController::onDestroy")
 		local target = event.target
 		target:removeEventListener("onDestroy", self)
 		local enemyVO = target.vo
 		target.vo = nil
-		enemyVO.unpauseCallback()
+		if enemyVO.unpauseCallback ~= nil then
+			enemyVO.unpauseCallback()
+		end
+		-- TODO: figure out amount based on enemy destroyed, should be in event
+		-- I believe based on enemy type
+		local scoreModel = self.context:getModel("scoreModel")
+		print("scoreModel: ", scoreModel)
+		scoreModel:addToScore(100)
 	end
 
 	return controller

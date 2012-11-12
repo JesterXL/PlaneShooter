@@ -7,8 +7,9 @@ function ScoreViewController:new()
 	controller.scoreModel = nil
 
 	function controller:onRegister()
-		self.scoreModel = self.context.getModel("scoreMode")
-		self.scoreView:setScore(self.scoreModel.score)
+		print("ScoreViewController::onRegister")
+		self.scoreModel = self.context:getModel("scoreModel")
+		self.view:setScore(self.scoreModel.score)
 
 		Runtime:addEventListener("ScoreModel_scoreChanged", self)
 		Runtime:addEventListener("onAddToScore", self)
@@ -20,7 +21,9 @@ function ScoreViewController:new()
 	end
 
 	function controller:ScoreModel_scoreChanged(event)
-		self.scoreView:setScore(self.scoreModel.score)
+		print("ScoreViewController::ScoreModel_scoreChanged")
+		print("\tself.scoreModel.score: ", self.scoreModel.score)
+		self.view:setScore(self.scoreModel.score)
 	end
 
 	function controller:onAddToScore(event)

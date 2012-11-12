@@ -41,6 +41,7 @@ function PlayerBulletAngle:new(startX, startY, targetX, targetY)
 									isBullet = true, isSensor = true, isFixedRotation = true,
 									filter = { categoryBits = 2, maskBits = 4 }
 								} )
+		gameLoop:addLoop(self)
 	end
 	
 	function img:tick(millisecondsPassed)

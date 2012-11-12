@@ -87,21 +87,18 @@ function PlayerWeaponsController:new(player)
 		local player = regulator.player
 		local bullet = PlayerBulletSingle:new(player.x, player.y)
 		mainGroup:insert(bullet)
-		gameLoop:addLoop(bullet)
 	end
 
 	function createBullet2()
 		local player = regulator.player
 		local bullet = PlayerBulletDual:new(player.x, player.y)
 		mainGroup:insert(bullet)
-		gameLoop:addLoop(bullet)
 	end
 
 	function createBullet3()
 		local player = regulator.player
 		local bullet1 = PlayerBulletDual:new(player.x, player.y)
 		mainGroup:insert(bullet1)
-		gameLoop:addLoop(bullet1)
 
 		local target = {x = player.x, y = player.y}
 		target.x = target.x - 3
@@ -113,8 +110,6 @@ function PlayerWeaponsController:new(player)
 		local bullet3 = PlayerBulletAngle:new(player.x, player.y, target.x, target.y)
 		mainGroup:insert(bullet2)
 		mainGroup:insert(bullet3)
-		gameLoop:addLoop(bullet2)
-		gameLoop:addLoop(bullet3)
 	end
 
 	

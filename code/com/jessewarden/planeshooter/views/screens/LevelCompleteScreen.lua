@@ -133,6 +133,11 @@ function LevelCompleteScreen:new(levelNumber, totalScore)
 		end
 	end
 
+	function screen:comma_value(n) -- credit http://richard.warburton.it
+		local left,num,right = string.match(n,'^([^%d]*%d)(%d*)(.-)$')
+		return left..(num:reverse():gsub('(%d%d%d)','%1,'):reverse())..right
+	end
+
 	function screen:onScoreTweenComplete()
 		self.startScore = 0
 		local scoreText = self.scoreText
@@ -141,7 +146,7 @@ function LevelCompleteScreen:new(levelNumber, totalScore)
 		scoreText.tween = gtween.new(self, 2, 
 			{startScore=self.totalScore})
 		scoreText.tween.onChange = function(tween)
-			scoreText.text = tostring(math.round(screen.startScore))
+			scoreText.text = screen:comma_value(tostring(math.round(screen.startScore)))
 			scoreText.x = scoreTitleText.x + scoreTitleText.width + 20
 		end
 		scoreText.tween.onComplete = function()

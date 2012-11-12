@@ -10,12 +10,13 @@ function LoadNextLevelCommand:new()
 		if progressModel.currentLevel == nil then
 			-- start the game
 			print(">>> Loading level3.json")
-			level = LoadLevelService:new("level3.json")
+			level = LoadLevelService:new("level.json")
 		elseif progressModel.currentLevel.fileName == "level3.json" then
 			-- load level 2
 			print(">>> Loading level2.json")
 			level = LoadLevelService:new("level.json")
 		end
+		assert(level ~= nil, "You cannot create a nil next level.")
 		progressModel.currentLevel = level
 
 		local levelModel = context:getModel("levelModel")

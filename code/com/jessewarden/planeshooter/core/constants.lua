@@ -49,4 +49,6 @@ constants.MISSILE                        = "missile"
 constants.BODY                           = "body"
 constants.ENGINE                         = "engine"
 
+constants.FLOATING_TEXT_FONT_SIZE		= 14
+
 

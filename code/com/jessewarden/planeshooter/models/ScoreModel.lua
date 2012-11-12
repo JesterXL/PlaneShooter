@@ -14,6 +14,7 @@ function ScoreModel:new()
 	end
 
 	function model:addToScore(value)
+		print("ScoreModel::addToScore, value: ", value)
 		assert(value ~= nil, "You must pass in a valid score value to add.")
 		assert(value > 0, "You must pass in a value greater than 0.")
 		self:setScore(self.score + value)

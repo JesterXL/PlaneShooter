@@ -1155,6 +1155,7 @@ local function testPlaneShooter()
 	context:mapController("com.jessewarden.planeshooter.views.ScoreView", 
 							"com.jessewarden.planeshooter.controllers.ScoreViewController")
 
+
 	context:mapCommand("LevelViewController_levelComplete",
 						"com.jessewarden.planeshooter.commands.LevelCompleteCommand")
 
@@ -1209,6 +1210,22 @@ local function testDateStrings()
 	print(time)
 	print(time.year)
 	print(os.date( "%c" ))
+end
+
+local function testingNewFloatingText()
+	require "com.jessewarden.planeshooter.views.FloatingText"
+	local float = FloatingText:new()
+	function onTouch(event)
+		--if event.phase == "began" then
+			float:showText(event.x, event.y, 1)
+		--end
+	end
+	Runtime:addEventListener("touch", onTouch)
+end
+
+local function testNegativeRandoms()
+	print(math.random(10, 20))
+	print(math.random(-10, 2))
 end
 
 --[[
@@ -1285,6 +1302,8 @@ startPhysics()
 --testInsertOverrides()
 --testUserProgressSaveAndRead()
 --testDateStrings()
+--testingNewFloatingText()
+--testNegativeRandoms()
 
 
 testPlaneShooter()

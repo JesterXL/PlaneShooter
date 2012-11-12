@@ -3,6 +3,9 @@ require "com.jessewarden.planeshooter.views.screens.StageIntroScreen"
 require "com.jessewarden.planeshooter.views.screens.LevelCompleteScreen"
 require "com.jessewarden.planeshooter.views.controls.ScrollingTerrain"
 require "com.jessewarden.planeshooter.views.ScoreView"
+require "com.jessewarden.planeshooter.views.FloatingText"
+
+require "com.jessewarden.planeshooter.sprites.player.Player"
 
 LevelView = {}
 
@@ -15,14 +18,24 @@ function LevelView:new()
 	view.levelEndView = nil
 	view.scrollingTerrainView = nil
 	view.scoreView = nil
+	view.playerView = nil
+	view.floatingText = nil
 
 	function view:init()
 		self.scrollingTerrainView = ScrollingTerrain:new("debug_terrain_2.jpg")
 		self:insert(self.scrollingTerrainView)
 
+		self.scoreView = ScoreView:new()
+		self:insert(self.scoreView)
+
 		self.moviePlayer = MoviePlayerView:new()
 		self:insert(self.moviePlayer)
 		self.moviePlayer:addEventListener("onMovieEnded", self)
+
+		self.floatingText = FloatingText:new()
+		self:insert(self.floatingText)
+
+		self.playerView = Player:new()
 
 		Runtime:dispatchEvent({name = "LevelView_init", target=self})
 	end

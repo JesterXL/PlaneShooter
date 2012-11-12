@@ -1,3 +1,5 @@
+require "com.jessewarden.planeshooter.utils.TweenUtils"
+gtween = require("gtween")
 ScoreView = {}
 
 function ScoreView:new()
@@ -13,6 +15,7 @@ function ScoreView:new()
 	--text:setReferencePoint(display.TopLeftReferencePoint)
 	text:setTextColor(255, 255, 0)
 	view:insert(text)
+	view.field = text
 	text.y = 20
 
 	view.score = 0
@@ -26,31 +29,46 @@ function ScoreView:new()
 	
 	function view:setScore(value)
 		assert(value, "you must pass a valid value.")
-		local oldValue = self.value
+		self.newScore = self.score
+		self.score = value
 		local str
 		if type(value) == "number" then
 			str = tostring(value)
 		else
 			str = value
 		end
-		text.text = self:comma_value(str)
-		text.x = text.width / 2 + 4 -- <-- gee, that doesn't look like Flash...
+		--text.text = self:comma_value(str)
+		--text.x = text.width / 2 + 4 -- <-- gee, that doesn't look like Flash...
+		
 		-- TODO: figure out how to tween this like you do in Flash; 
 		-- I forget how to do getter/setters in Lua
-		--[[
-		self.newScore = value
-		if(view.scoreTween ~= nil) then
-			transition.cancel(view.scoreTween)
+
+		TweenUtils.stopTween(self.tween)
+		self.tween = gtween.new(self, 1, 
+			{newScore=value})
+		self.tween.onChange = function(tween)
+		--print("score: ", self.newScore)
+			view.field.text = self:comma_value(tostring(math.round(self.newScore)))
+			view.field.x = view.field.width / 2 + 4
 		end
-		view.scoreTween = transition.to(self.score, {score = value, time=1000, transition = easing.outExpo})
-		]]--
+		self.tween.onComplete = function()
+			--self.text.text = self:comma_value(tostring(math.round(self.newValue)))
+			--self.text.x = self.text.width / 2 + 4
+		end
+	end
+
+	function view:init()
+		Runtime:dispatchEvent({name="ScoreView_init", target=self})
 	end
 
 	function view:destroy()
+		Runtime:dispatchEvent({name="ScoreView_destroy", target=self})
 		img:removeSelf()
 		text:removeSelf()
 		self:removeSelf()
 	end
+
+	view:init()
 
 	return view
 end
