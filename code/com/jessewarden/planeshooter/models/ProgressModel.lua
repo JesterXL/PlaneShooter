@@ -1,4 +1,4 @@
-require "com.jessewarden.planeshooter.services.UserProgressService"
+ require "com.jessewarden.planeshooter.services.UserProgressService"
 require "com.jessewarden.planeshooter.vo.UserProgressVO"
 
 ProgressModel = {}
@@ -7,6 +7,7 @@ function ProgressModel:new()
 
 	local model = {}
 	model.classType = "ProgressModel"
+	model.currentLevel = nil
 
 	function model:saveProgress(levelFileName, score, weaponsConfig)
 		local vo = UserProgressVO:new()
@@ -24,14 +25,6 @@ function ProgressModel:new()
 		if vo ~= nil then
 			Runtime:dispatchEvent({name="ProgressModel_loadProgress", target=self, vo=vo})
 		end
-	end
-
-	function model:getMemento()
-		return {score = self.score}
-	end
-
-	function model:setMemento(memento)
-		self:setScore(memento.score)
 	end
 
 	return model
