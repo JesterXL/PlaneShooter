@@ -114,6 +114,16 @@
 				movie.pause = moviePauseCheckBox.selected;
 			}
 			
+			private function onXPositionChanged():void
+			{
+				enemy.move(xPositionNumericStepper.value, enemy.y);
+			}
+			
+			private function onYPositionChanged():void
+			{
+				enemy.move(enemy.x, yPositionNumericStepper.value);
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -148,6 +158,10 @@
 		<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" includeIn="enemy" />
 		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="{enemy.pause}" includeIn="enemy" click="onPause()" />
 		<s:CheckBox id="moviePauseCheckBox" label="Pause" selectAll="{movie.pause}" includeIn="movie" click="onToggleMoviePause()" />
+		<s:Label text="x:" />
+		<s:NumericStepper id="xPositionNumericStepper" value="{enemy.x}" minimum="0" maximum="1000" change="onXPositionChanged()" />
+		<s:Label text="y:" />
+		<s:NumericStepper id="yPositionNumericStepper" value="{enemy.y}" minimum="0" maximum="1000" change="onYPositionChanged()" />
 		<s:Image width="22" height="22" id="enemyIconImage" source="{enemyIcon}" includeIn="enemy" />
 		<mx:LinkButton label="Edit" click="onEditMovie()" includeIn="movie" />
 		<s:Button label="X" width="40" click="onDelete()" />

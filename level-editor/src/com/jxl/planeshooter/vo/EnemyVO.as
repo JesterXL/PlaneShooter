@@ -1,17 +1,27 @@
 package com.jxl.planeshooter.vo
 {
 	import com.jxl.planeshooter.constants.EnemyTypes;
+	
+	import flash.events.Event;
 
 	[Bindable]
-	public class EnemyVO
+	public class EnemyVO extends EventVO
 	{
-		public var when:int 				= 0;
 		public var pause:Boolean			= false;
 		public var type:String 				= EnemyTypes.PLANE;
 		public var configurations:Object 	= {};
+		public var x:Number 				= 0;
+		public var y:Number 				= 0;
 		
 		public function EnemyVO()
 		{
+		}
+		
+		public function move(newX:Number, newY:Number):void
+		{
+			x = newX;
+			y = newY;
+			dispatchEvent(new Event("xOrYChanged"));
 		}
 		
 		public function toObject():Object
@@ -22,6 +32,8 @@ package com.jxl.planeshooter.vo
 			obj.pause						= pause;
 			obj.type						= type;
 			obj.configurations				= configurations;
+			obj.x 							= x;
+			obj.y							= y;
 			return obj;
 		}
 		
@@ -31,6 +43,14 @@ package com.jxl.planeshooter.vo
 			pause					= obj.pause;
 			type					= obj.type;
 			configurations			= obj.configurations;
+			x 						= obj.x;
+			y 						= obj.y;
+			
+			if(isNaN(x))
+				x = 0;
+			
+			if(isNaN(y))
+				y = 0;
 		}
 	}
 }

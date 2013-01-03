@@ -3,9 +3,8 @@ package com.jxl.planeshooter.vo
 	import mx.collections.ArrayCollection;
 
 	[Bindable]
-	public class MovieVO
+	public class MovieVO extends EventVO
 	{
-		public var when:int								= 0;
 		public var pause:Boolean						= true;
 		public var name:String							= "Default Movie";
 		public var dialogues:ArrayCollection			= new ArrayCollection();

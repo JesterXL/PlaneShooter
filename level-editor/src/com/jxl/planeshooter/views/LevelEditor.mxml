@@ -4,7 +4,7 @@
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
 		 width="560" height="650" 
 		 title="Level Editor"
-		 xmlns:levelviews="com.jxl.planeshooter.views.levelviews.*">
+		 xmlns:levelviews="com.jxl.planeshooter.views.levelviews.*" xmlns:views="com.jxl.planeshooter.views.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -45,10 +45,7 @@
 			private function onNewEnemy():void
 			{
 				if(level)
-				{
-					if(level.events == null)
-						level.events = new ArrayCollection();
-					
+				{	
 					var enemy:EnemyVO = new EnemyVO();
 					level.events.addItem(enemy);
 				}
@@ -58,9 +55,6 @@
 			{
 				if(level)
 				{
-					if(level.events == null)
-						level.events = new ArrayCollection();
-					
 					var movie:MovieVO = new MovieVO();
 					level.events.addItem(movie);
 				}
@@ -106,11 +100,20 @@
 	<s:Button label="Save Level" click="onSaveLevel()" />
 	<s:Button label="Sort By Time" click="onSortByTime()" />
 	
-	<s:Scroller width="100%" height="100%">
-		<levelviews:EventDataGroup dataProvider="{level.events}"
-								   editMovie="onEditMovie(event)"
-								   deleteItem="onDeleteItem(event)"/>
-	</s:Scroller>
+	<s:HGroup width="100%" height="100%">
+		<s:Scroller width="100%" height="100%">
+			<levelviews:EventDataGroup dataProvider="{level.events}"
+									   editMovie="onEditMovie(event)"
+									   deleteItem="onDeleteItem(event)"/>
+		</s:Scroller>
+		<s:VGroup>
+			<views:LevelPreview id="levelPreview" events="{level.events}" currentTime="{currentTimeSlider.value}" />
+			<s:Label text="Current Time: {levelPreview.currentTime}" />
+			<s:HSlider id="currentTimeSlider" width="320" minimum="0" maximum="{level.totalTime}" value="0" />
+		</s:VGroup>
+		
+	</s:HGroup>
+	
 	
 	
 </s:Window>

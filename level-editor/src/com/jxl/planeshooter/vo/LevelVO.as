@@ -1,15 +1,67 @@
 package com.jxl.planeshooter.vo
 {
 	import mx.collections.ArrayCollection;
+	import mx.events.CollectionEvent;
 
-	[Bindable]
 	public class LevelVO
 	{
+		private var _events:ArrayCollection;
 		
-		public var events:ArrayCollection;
+		[Bindable]
+		public function get events():ArrayCollection { return _events; }
+		public function set events(value:ArrayCollection):void
+		{
+			if(_events)
+			{
+				_events.removeEventListener(CollectionEvent.COLLECTION_CHANGE, onChanged);
+			}
+			_events = value;
+			if(_events)
+			{
+				_events.addEventListener(CollectionEvent.COLLECTION_CHANGE, onChanged);
+			}
+		}
+		
+		private var _totalTime:Number = 0;
+		
+		[Bindable]
+		public function get totalTime():Number
+		{
+			return _totalTime;
+		}
+		public function set totalTime(value:Number):void
+		{
+			_totalTime = value;
+			if(isNaN(_totalTime) == true)
+			{
+				_totalTime = 10;
+			}
+			
+			if(_totalTime < 10)
+			{
+				_totalTime = 10;
+			}
+		}
 			
 		public function LevelVO()
 		{
+		}
+		
+		private function onChanged(event:CollectionEvent):void
+		{
+			recalculateTotalTime();
+		}
+		
+		private function recalculateTotalTime():void
+		{
+			var len:int = events.length;
+			var time:Number = 0;
+			while(len--)
+			{
+				var event:EventVO = events[len];
+				time += event.when;
+			}
+			totalTime = time;
 		}
 		
 		public function toObject():Object
