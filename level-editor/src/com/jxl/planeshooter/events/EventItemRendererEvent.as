@@ -8,6 +8,7 @@ package com.jxl.planeshooter.events
 	{
 		public static const EDIT_MOVIE:String = "editMovie";
 		public static const DELETE_ITEM:String = "deleteItem";
+		public static const TIME_CHANGED:String = "timeChanged";
 		
 		public var movie:MovieVO;
 		public var item:*;

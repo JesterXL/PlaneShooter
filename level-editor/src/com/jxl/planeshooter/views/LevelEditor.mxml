@@ -2,7 +2,7 @@
 <s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="1000" height="1100" 
+		 width="1130" height="1120" 
 		 title="Level Editor"
 		 xmlns:levelviews="com.jxl.planeshooter.views.levelviews.*" xmlns:views="com.jxl.planeshooter.views.*" xmlns:levelpreviewviews="com.jxl.planeshooter.views.levelpreviewviews.*">
 	<fx:Declarations>
@@ -89,6 +89,11 @@
 				level.events.refresh();
 			}
 			
+			private function onTimeChanged():void
+			{
+				enemyTimelineView.redraw();
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -108,6 +113,7 @@
 				<levelviews:EventDataGroup dataProvider="{level.events}"
 										   editMovie="onEditMovie(event)"
 										   deleteItem="onDeleteItem(event)"
+										   timeChanged="onTimeChanged()"
 										   bottom="4" top="4" left="4" right="4" />
 			</s:Scroller>
 		</s:HGroup>
@@ -121,7 +127,8 @@
 						   minimum="0" maximum="{level.totalTime}" 
 						   value="0" 
 						   showDataTip="false" snapInterval="0.1"  />
-				<levelpreviewviews:EnemyTimelineView width="100%" level="{level}" currentTime="{currentTimeSlider.value}" 
+				<levelpreviewviews:EnemyTimelineView id="enemyTimelineView" 
+					width="100%" level="{level}" currentTime="{currentTimeSlider.value}" 
 													 bottom="4" top="4" left="4" right="4" />
 			</s:VGroup>
 		</s:VGroup>

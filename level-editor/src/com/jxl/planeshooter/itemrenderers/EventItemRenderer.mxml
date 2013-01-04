@@ -74,8 +74,11 @@
 			{
 				var seconds:Number = timeNumericStepper.value;
 				var minutes:Number = seconds / 60;
-				timeLabel.text = Math.floor(minutes) + " minutes, " + Math.floor(seconds) + " seconds";
+				//timeLabel.text = Math.floor(minutes) + " minutes, " + Math.floor(seconds) + " seconds";
 				data.when = timeNumericStepper.value;
+				
+				var evt:EventItemRendererEvent = new EventItemRendererEvent(EventItemRendererEvent.TIME_CHANGED);
+				dispatchEvent(evt);
 			}
 			
 			private function onEditMovie():void
@@ -153,7 +156,8 @@
 		<s:NumericStepper id="timeNumericStepper" minimum="0" maximum="300" 
 						  value="{data.when}"
 						  change="onTimeChange()" />
-		<s:Label id="timeLabel" />
+		<!--<s:Label id="timeLabel" />-->
+		
 		<s:Label text="Enemy:"  includeIn="enemy" />
 		<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" includeIn="enemy" />
 		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="{enemy.pause}" includeIn="enemy" click="onPause()" />
