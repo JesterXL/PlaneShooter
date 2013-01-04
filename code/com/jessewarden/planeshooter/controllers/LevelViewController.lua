@@ -53,15 +53,15 @@ function LevelViewController:new()
 
 		local enemyType = enemyVO.type
 		if enemyType == "Plane" then
-			enemy = EnemySmallShip:new(randomX, -10, stage.height)
+			enemy = EnemySmallShip:new(event.event.x, event.event.y, stage.height)
 		elseif enemyType == "Missile" then
-			enemy = EnemyMissile:new(randomX, -10)
+			enemy = EnemyMissile:new(event.event.x, event.event.y)
 		elseif enemyType == "Jet" then
-			enemy = EnemyMissileJet:new(randomX, -10, stage.height)
+			enemy = EnemyMissileJet:new(event.event.x, event.event.y, stage.height)
 		elseif enemyType == "Bomber" then
 			enemy = BossBigPlane:new()
 		elseif enemyType == "UFO" then
-			enemy = UFO:new(randomX, 100)
+			enemy = UFO:new(event.event.x, event.event.y)
 		end
 
 		if enemyVO.unpauseCallback ~= nil then

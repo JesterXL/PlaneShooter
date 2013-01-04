@@ -2,9 +2,9 @@
 <s:Window xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
 		 xmlns:mx="library://ns.adobe.com/flex/mx"
-		 width="560" height="650" 
+		 width="1000" height="1100" 
 		 title="Level Editor"
-		 xmlns:levelviews="com.jxl.planeshooter.views.levelviews.*" xmlns:views="com.jxl.planeshooter.views.*">
+		 xmlns:levelviews="com.jxl.planeshooter.views.levelviews.*" xmlns:views="com.jxl.planeshooter.views.*" xmlns:levelpreviewviews="com.jxl.planeshooter.views.levelpreviewviews.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -47,6 +47,7 @@
 				if(level)
 				{	
 					var enemy:EnemyVO = new EnemyVO();
+					enemy.when = currentTimeSlider.value;
 					level.events.addItem(enemy);
 				}
 			}
@@ -100,19 +101,37 @@
 	<s:Button label="Save Level" click="onSaveLevel()" />
 	<s:Button label="Sort By Time" click="onSortByTime()" />
 	
-	<s:HGroup width="100%" height="100%">
-		<s:Scroller width="100%" height="100%">
-			<levelviews:EventDataGroup dataProvider="{level.events}"
-									   editMovie="onEditMovie(event)"
-									   deleteItem="onDeleteItem(event)"/>
-		</s:Scroller>
+	<s:HGroup>
+		
+		<s:HGroup width="100%" height="100%">
+			<s:Scroller width="100%" height="100%">
+				<levelviews:EventDataGroup dataProvider="{level.events}"
+										   editMovie="onEditMovie(event)"
+										   deleteItem="onDeleteItem(event)"
+										   bottom="4" top="4" left="4" right="4" />
+			</s:Scroller>
+		</s:HGroup>
+		
 		<s:VGroup>
 			<views:LevelPreview id="levelPreview" events="{level.events}" currentTime="{currentTimeSlider.value}" />
 			<s:Label text="Current Time: {levelPreview.currentTime}" />
-			<s:HSlider id="currentTimeSlider" width="320" minimum="0" maximum="{level.totalTime}" value="0" />
+			
+			<s:VGroup width="100%" height="100%">
+				<s:HSlider id="currentTimeSlider" width="100%" 
+						   minimum="0" maximum="{level.totalTime}" 
+						   value="0" 
+						   showDataTip="false" snapInterval="0.1"  />
+				<levelpreviewviews:EnemyTimelineView width="100%" level="{level}" currentTime="{currentTimeSlider.value}" 
+													 bottom="4" top="4" left="4" right="4" />
+			</s:VGroup>
 		</s:VGroup>
 		
 	</s:HGroup>
+	
+	
+	
+	
+	
 	
 	
 	

@@ -1,9 +1,12 @@
 package com.jxl.planeshooter.vo
 {
+	import flash.events.Event;
+	import flash.events.EventDispatcher;
+	
 	import mx.collections.ArrayCollection;
 	import mx.events.CollectionEvent;
 
-	public class LevelVO
+	public class LevelVO extends EventDispatcher
 	{
 		private var _events:ArrayCollection;
 		
@@ -24,7 +27,7 @@ package com.jxl.planeshooter.vo
 		
 		private var _totalTime:Number = 0;
 		
-		[Bindable]
+		[Bindable(event="totalTimeChanged")]
 		public function get totalTime():Number
 		{
 			return _totalTime;
@@ -41,6 +44,7 @@ package com.jxl.planeshooter.vo
 			{
 				_totalTime = 10;
 			}
+			dispatchEvent(new Event("totalTimeChanged"));
 		}
 			
 		public function LevelVO()
@@ -59,7 +63,7 @@ package com.jxl.planeshooter.vo
 			while(len--)
 			{
 				var event:EventVO = events[len];
-				time += event.when;
+				time = Math.max(time, event.when);
 			}
 			totalTime = time;
 		}

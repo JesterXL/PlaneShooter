@@ -4,6 +4,15 @@ require "gameNetwork"
 
 require "com.jessewarden.planeshooter.core.GameLoop"
 
+function showProps(o)
+	print("-- showProps --")
+	print("o: ", o)
+	for key,value in pairs(o) do
+		print("key: ", key, ", value: ", value);
+	end
+	print("-- end showProps --")
+end
+
 local function setupGlobals()
 	_G.gameLoop = GameLoop:new()
 	gameLoop:start()

@@ -14,6 +14,7 @@ package com.jxl.planeshooter.views
 	import mx.collections.ArrayCollection;
 	import mx.core.UIComponent;
 	import mx.events.CollectionEvent;
+	import mx.events.CollectionEventKind;
 	
 	public class LevelPreview extends UIComponent
 	{
@@ -72,12 +73,12 @@ package com.jxl.planeshooter.views
 			if(isNaN(_currentTime) == true)
 			{
 				_currentTime = 0;
-				_startTime = -1;
+				_startTime = 0;
 				_endTime = 1;
 			}
 			else
 			{
-				_startTime = _currentTime - 1;
+				_startTime = _currentTime;
 				_endTime = _currentTime + 1;
 			}
 			
@@ -138,7 +139,17 @@ package com.jxl.planeshooter.views
 		
 		private function onChanged(event:CollectionEvent):void
 		{
-			redraw();
+			switch(event.kind)
+			{
+				case CollectionEventKind.REFRESH:
+					refresh();
+					break;
+				
+				case CollectionEventKind.ADD:
+				case CollectionEventKind.REMOVE:
+					redraw();
+					break;
+			}
 		}
 		
 		private function redraw():void
@@ -158,6 +169,7 @@ package com.jxl.planeshooter.views
 					enemyView.x = enemyVO.x;
 					enemyView.y = enemyVO.y;
 					enemyView.visible = false;
+					enemyView.alpha = 0;
 				}
 			}
 			
@@ -167,20 +179,27 @@ package com.jxl.planeshooter.views
 		private function refresh():void
 		{
 			var len:int = childrenSprite.numChildren;
+			var diff:Number = _endTime - _startTime;
 			while(len--)
 			{
 				var view:EnemyView = childrenSprite.getChildAt(len) as EnemyView;
 				var enemy:EnemyVO = view.enemy;
-				if(enemy.when >= _startTime && enemy.when <= _endTime)
+				if(_currentTime + .1 > enemy.when && _currentTime < enemy.when + diff + .1)
 				{
-					view.visible = true;
-					view.alpha = 0;
-					TweenLite.to(view, .5, {alpha: 1, ease: Expo.easeOut});
+					if(view.alpha == 0)
+					{
+						view.visible = true;
+						var targetX:Number = view.x;
+						var targetY:Number = view.y;
+						view.scaleX = view.scaleY = 6;
+						
+						TweenLite.to(view, .5, {alpha: 1, scaleX: 1, scaleY: 1, ease: Expo.easeOut, overwrite: 0});
+					}
 				}
 				else
 				{
 					//view.visible = false;
-					TweenLite.to(view, .3, {alpha: 0, ease: Expo.easeOut});
+					TweenLite.to(view, .3, {alpha: 0, ease: Expo.easeOut, overwrite:1});
 				}
 			}
 		}

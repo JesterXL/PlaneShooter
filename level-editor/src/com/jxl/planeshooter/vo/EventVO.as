@@ -4,7 +4,7 @@ package com.jxl.planeshooter.vo
 
 	public class EventVO extends EventDispatcher
 	{
-		public var when:Number;
+		public var when:Number = 0;
 		
 		public function EventVO()
 		{
