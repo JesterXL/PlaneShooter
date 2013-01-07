@@ -1,0 +1,191 @@
+{
+   "events":[
+      {
+         "when":5,
+         "pause":true,
+         "classType":"movie",
+         "name":"Default Movie",
+         "dialogues":[
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":":: laughs :: No more bananas for you, RANDOLPH!\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-001-laugh-no.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Rudolph",
+               "message":"Ruff ruff!\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/rudolph/Rudolph-001-ruff-ruff.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"O",
+               "message":"KAY, stop feeding that dog our clients' merchandise!\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/o/O-001-kay-stop.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"But dad, he's hungry!\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-002-but-dad.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"O",
+               "message":"*sigh* Are you close to the town?\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/o/O-002-are-you.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"Yeah... pretty close...\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-003-yeah-pretty.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"O",
+               "message":"Be careful. I couldn't reach them on the radio. I got a bad feeling about this...\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/o/O-003-be-careful.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"Ok!",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-004-ok.mp3"
+            }
+         ]
+      },
+      {
+         "when":8,
+         "pause":true,
+         "classType":"movie",
+         "name":"Default Movie",
+         "dialogues":[
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"What was that!?\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-005-what-was.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"O",
+               "message":"What did it look like?\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/o/O-004-what-did.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"A small single engine plane with red dots on the wings.\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-006-a-small.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"O",
+               "message":"Oh my g... KAY, do NOT fire on them. Only fire if fired upon.\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/o/O-005-oh-my.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"Yeah... they're firing.\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-007-they're-firing.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"O",
+               "message":"\r*grumble* Defend yourself and land at the town as soon as you can. I'm on my way. And Kay... be careful.\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/o/O-006-defend-yourself.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"I will dad!\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-008-i-will.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Kay",
+               "message":"...they must really want these bananas...\r",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/kay/Kay-009-they-must.mp3"
+            },
+            {
+               "advanceOnAudioEnd":true,
+               "characterName":"Rudolph",
+               "message":"Ruff!",
+               "autoPlay":true,
+               "emotion":"normal",
+               "dialogueTime":0,
+               "audioName":null,
+               "audioFile":"audio/rudolph/Rudolph-002-ruff.mp3"
+            }
+         ]
+      }
+   ],
+   "totalTime":8
+}

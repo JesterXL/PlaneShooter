@@ -1237,6 +1237,23 @@ local function testNegativeRandoms()
 	print(math.random(-10, 2))
 end
 
+local function testLevel1MoviePlayer()
+	require "com.jessewarden.planeshooter.vo.DialogueVO"
+	require "com.jessewarden.planeshooter.vo.MovieVO"
+	require "com.jessewarden.planeshooter.views.MoviePlayerView"
+	require "com.jessewarden.planeshooter.services.LoadLevelService"
+	local player = MoviePlayerView:new()
+	local level = LoadLevelService:new("level1.json")
+	local firstMovie = level.events[1]
+	local secondMovie = level.events[2]
+	player:startMovie(firstMovie)
+	local t = {}
+	function t:onMovieEnded()
+		player:startMovie(secondMovie)
+	end
+	player:addEventListener("onMovieEnded", t)
+end
+
 --[[
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
@@ -1314,8 +1331,9 @@ startPhysics()
 --testingNewFloatingText()
 --testNegativeRandoms()
 
+testLevel1MoviePlayer()
 
-testPlaneShooter()
+--testPlaneShooter()
 
 
 --require "testsmain"

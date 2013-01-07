@@ -6,14 +6,14 @@ package com.jxl.planeshooter.vo
 	[Bindable]
 	public class DialogueVO
 	{
-		public var characterName:String			= CharacterTypes.JESTERXL;
+		public var characterName:String			= CharacterTypes.KAY;
 		public var emotion:String 				= EmotionTypes.NORMAL;
 		public var audioName:String;
 		public var audioFile:String;
 		public var message:String				= "Hello!";
-		public var advanceOnAudioEnd:Boolean 	= false;
+		public var advanceOnAudioEnd:Boolean 	= true;
 		public var dialogueTime:int 			= NaN;
-		public var autoPlay:Boolean				= false;
+		public var autoPlay:Boolean				= true;
 		
 		public function DialogueVO()
 		{

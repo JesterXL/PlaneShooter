@@ -8,7 +8,7 @@ package com.jxl.planeshooter.vo
 
 	public class LevelVO extends EventDispatcher
 	{
-		private var _events:ArrayCollection;
+		private var _events:ArrayCollection = new ArrayCollection();
 		
 		[Bindable]
 		public function get events():ArrayCollection { return _events; }

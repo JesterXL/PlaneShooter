@@ -153,7 +153,15 @@ package com.jxl.planeshooter.views.levelpreviewviews
 			g.drawRect(0, 0, width, height);
 			
 			var startTime:Number = 0;
-			var len:int = level.events.length;
+			var len:int;
+			if(level && level.events)
+			{
+				len = level.events.length;
+			}
+			else
+			{
+				len = 0;
+			}
 			var event:EventVO;
 			var eventsLen:int = 0;
 			for(var index:int = 0; index < len; index++)

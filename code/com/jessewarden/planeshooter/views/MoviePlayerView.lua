@@ -19,6 +19,7 @@ function MoviePlayerView:new()
 	group.totalTimePassed = nil
 	group:addEventListener("touch", function() return true end)
 	group:addEventListener("tap", function() return true end)
+	group.lastSoundChannel = nil
 
 	function group:startMovie(movie)
 		assert(movie ~= nil, "Movie cannot be nil.")
@@ -161,12 +162,14 @@ function MoviePlayerView:new()
 		local callback = function(e)
 			group:onComplete(e)
 		end
-		audio.play(self.audioFile, {onComplete=callback})
+		self.lastSoundChannel = audio.play(self.audioFile, {onComplete=callback})
 	end
 
 	function group:destroyAudioFile()
 		if self.audioFile ~= nil then
-			audio.stop(self.audioFile)
+			print("self.audioFile: ", self.audioFile)
+			audio.stop(self.lastSoundChannel)
+			self.lastSoundChannel = nil
 			audio.dispose(self.audioFile)
 			self.audioFile = nil
 		end

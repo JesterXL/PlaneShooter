@@ -162,11 +162,11 @@
 		<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" includeIn="enemy" />
 		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="{enemy.pause}" includeIn="enemy" click="onPause()" />
 		<s:CheckBox id="moviePauseCheckBox" label="Pause" selectAll="{movie.pause}" includeIn="movie" click="onToggleMoviePause()" />
-		<s:Label text="x:" />
-		<s:NumericStepper id="xPositionNumericStepper" value="{enemy.x}" minimum="-1000" maximum="1000" change="onXPositionChanged()" />
-		<s:Label text="y:" />
-		<s:NumericStepper id="yPositionNumericStepper" value="{enemy.y}" minimum="-1000" maximum="1000" change="onYPositionChanged()" />
-		<s:Image width="22" height="22" id="enemyIconImage" source="{enemyIcon}" includeIn="enemy" />
+		<s:Label text="x:" excludeFrom="movie" />
+		<s:NumericStepper id="xPositionNumericStepper" value="{enemy.x}" minimum="-1000" maximum="1000" change="onXPositionChanged()" excludeFrom="movie"  />
+		<s:Label text="y:" excludeFrom="movie"  />
+		<s:NumericStepper id="yPositionNumericStepper" value="{enemy.y}" minimum="-1000" maximum="1000" change="onYPositionChanged()" excludeFrom="movie"  />
+		<s:Image width="22" height="22" id="enemyIconImage" source="{enemyIcon}" excludeFrom="movie"  />
 		<mx:LinkButton label="Edit" click="onEditMovie()" includeIn="movie" />
 		<s:Button label="X" width="40" click="onDelete()" />
 	</s:HGroup>

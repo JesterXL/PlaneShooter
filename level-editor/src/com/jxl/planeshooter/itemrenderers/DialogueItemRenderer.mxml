@@ -28,8 +28,11 @@
 			private function init():void
 			{
 				characters = new ArrayCollection();
-				characters.addItem(CharacterTypes.JESTERXL);
-				characters.addItem(CharacterTypes.BINDY);
+				characters.addItem(CharacterTypes.KAY);
+				characters.addItem(CharacterTypes.O);
+				characters.addItem(CharacterTypes.BIG_JACK);
+				characters.addItem(CharacterTypes.RUDOLPH);
+				characters.addItem(CharacterTypes.COLONEL);
 				
 				emotions = new ArrayCollection();
 				emotions.addItem(EmotionTypes.NORMAL);
@@ -75,7 +78,7 @@
 			
 			private function onAudioFileSelected(event:Event):void
 			{
-				dialogue.audioFile = fileRef.name;
+				dialogue.audioFile = fileRef.url;
 			}
 			
 			private function onToggleAutoPlay():void
