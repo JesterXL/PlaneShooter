@@ -60,6 +60,7 @@ function GameLoop:new()
 		--print("GameLoop::pause")
 		self.paused = true
 		Runtime:removeEventListener("enterFrame", self)
+		Runtime:dispatchEvent({name="GameLoop_onPauseChanged", target=self})
 	end
 
 	function gameLoop:reset()
@@ -71,6 +72,7 @@ function GameLoop:new()
 		Runtime:removeEventListener("enterFrame", self)
 		self.paused = false
 		Runtime:addEventListener("enterFrame", self)
+		Runtime:dispatchEvent({name="GameLoop_onPauseChanged", target=self})
 	end
 
 	return gameLoop

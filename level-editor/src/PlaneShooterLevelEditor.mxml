@@ -2,8 +2,10 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
 					   xmlns:s="library://ns.adobe.com/flex/spark"
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
-					   width="222" height="189" applicationComplete="init()"
-					   addedToStage="onAdded()">
+					   width="222" height="189" 
+					   applicationComplete="init()"
+					   addedToStage="onAdded()"
+					   keyDown="onKeyDown(event)">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -17,6 +19,7 @@
 			import com.jxl.planeshooter.views.LevelEditor;
 			import com.jxl.planeshooter.vo.LevelVO;
 			
+			import mx.core.FlexGlobals;
 			import mx.managers.PopUpManager;
 			
 			import spark.components.Window;
@@ -39,6 +42,7 @@
 				createDebugWin();
 				
 				move(Screen.mainScreen.bounds.x + 20, Screen.mainScreen.bounds.y + 20);
+				this.activate();
 			}
 			
 			private function createDebugWin():void
@@ -89,8 +93,19 @@
 				win.move(nativeWindow.x + width, nativeWindow.y);
 			}
 			
+			private function onKeyDown(event:KeyboardEvent):void
+			{
+				trace("event: " + event);
+			}
+			
 		]]>
 	</fx:Script>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="#FFFFFF" />
+		</s:fill>
+	</s:Rect>
 	
 	<s:VGroup>
 		<s:Button width="200" height="60" label="New Level" click="onNewLevel()"/>

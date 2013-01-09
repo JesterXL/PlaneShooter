@@ -78,7 +78,10 @@
 			
 			private function onAudioFileSelected(event:Event):void
 			{
-				dialogue.audioFile = fileRef.url;
+				// HACK/KLUDGE: removing the file prefix so we have relative URL's
+				var theURL:String = fileRef.url;
+				theURL = "audio/" + theURL.split("audio/")[1];
+				dialogue.audioFile = theURL;
 			}
 			
 			private function onToggleAutoPlay():void

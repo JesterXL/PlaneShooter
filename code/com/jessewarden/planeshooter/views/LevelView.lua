@@ -4,6 +4,7 @@ require "com.jessewarden.planeshooter.views.screens.LevelCompleteScreen"
 require "com.jessewarden.planeshooter.views.controls.ScrollingTerrain"
 require "com.jessewarden.planeshooter.views.ScoreView"
 require "com.jessewarden.planeshooter.views.FloatingText"
+require "com.jessewarden.planeshooter.views.DebugView"
 
 require "com.jessewarden.planeshooter.sprites.player.Player"
 
@@ -20,10 +21,12 @@ function LevelView:new()
 	view.scoreView = nil
 	view.playerView = nil
 	view.floatingText = nil
+	view.debugView = nil
 
 	function view:init()
 		self.scrollingTerrainView = ScrollingTerrain:new("debug_terrain_2.jpg")
 		self:insert(self.scrollingTerrainView)
+		self.scrollingTerrainView.isVisible = false
 
 		self.scoreView = ScoreView:new()
 		self:insert(self.scoreView)
@@ -35,6 +38,10 @@ function LevelView:new()
 		self.floatingText = FloatingText:new()
 		self:insert(self.floatingText)
 
+		self.debugView = DebugView:new()
+		self:insert(self.debugView)
+		self.debugView.x = display.getCurrentStage().contentWidth - 100
+
 		self.playerView = Player:new()
 
 		Runtime:dispatchEvent({name = "LevelView_init", target=self})
@@ -43,7 +50,7 @@ function LevelView:new()
 	function view:destroy()
 		self.scrollingTerrainView:removeSelf()
 
-		self.moviePlayer:addEventListener("onMovieEnded", self)
+		self.moviePlayer:removeEventListener("onMovieEnded", self)
 		self.moviePlayer:removeSelf()
 
 		Runtime:dispatchEvent({name = "LevelView_destroy", target=self})

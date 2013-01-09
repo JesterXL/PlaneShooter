@@ -1,6 +1,7 @@
 require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShip"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
 require "com.jessewarden.planeshooter.sprites.enemies.UFO"
+require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
 require "com.jessewarden.planeshooter.services.UserProgressService"
 require "com.jessewarden.planeshooter.vo.UserProgressVO"
 

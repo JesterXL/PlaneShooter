@@ -4,11 +4,14 @@
 				xmlns:mx="library://ns.adobe.com/flex/mx"
 				currentState="hidden"
 				autoDrawBackground="false"
-				creationComplete="init();">
+				creationComplete="init();"
+				click="onClicked()">
 	
 	<fx:Metadata>
 		[Event(name="editMovie", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
 		[Event(name="deleteItem", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
+		[Event(name="timeChanged", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
+		[Event(name="eventClicked", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
 	</fx:Metadata>
 	
 	<fx:Script>
@@ -127,6 +130,13 @@
 				enemy.move(enemy.x, yPositionNumericStepper.value);
 			}
 			
+			private function onClicked():void
+			{
+				var evt:EventItemRendererEvent = new EventItemRendererEvent(EventItemRendererEvent.EVENT_CLICKED);
+				evt.item = data;
+				dispatchEvent(evt);
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -161,7 +171,7 @@
 		<s:Label text="Enemy:"  includeIn="enemy" />
 		<s:ComboBox id="enemyComboBox" selectedItem="{enemy.type}" dataProvider="{enemyTypes}" change="onUpdateEnemyIcon()" includeIn="enemy" />
 		<s:CheckBox id="pauseCheckBox" label="Pause:" selected="{enemy.pause}" includeIn="enemy" click="onPause()" />
-		<s:CheckBox id="moviePauseCheckBox" label="Pause" selectAll="{movie.pause}" includeIn="movie" click="onToggleMoviePause()" />
+		<s:CheckBox id="moviePauseCheckBox" label="Pause" selected="{movie.pause}" includeIn="movie" click="onToggleMoviePause()" />
 		<s:Label text="x:" excludeFrom="movie" />
 		<s:NumericStepper id="xPositionNumericStepper" value="{enemy.x}" minimum="-1000" maximum="1000" change="onXPositionChanged()" excludeFrom="movie"  />
 		<s:Label text="y:" excludeFrom="movie"  />

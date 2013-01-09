@@ -9,6 +9,7 @@
 		[Event(name="editMovie", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
 		[Event(name="deleteItem", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
 		[Event(name="timeChanged", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
+		[Event(name="eventClicked", type="com.jxl.planeshooter.events.EventItemRendererEvent")]
 	</fx:Metadata>
 
 	

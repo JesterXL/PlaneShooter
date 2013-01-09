@@ -96,9 +96,11 @@ function LevelModel:new()
 				-- TODO: use proper classType's in level editor
 				if event.classType == "EnemyVO" or event.classType == "enemy" then
 					--print("LevelModel_onEnemyEvent")
-					event.unpauseCallback = function()
-						--print("unpauseCallback")
-						self:start()
+					if event.pause == true then
+						event.unpauseCallback = function()
+							--print("unpauseCallback")
+							self:start()
+						end
 					end
 					Runtime:dispatchEvent({name="LevelModel_onEnemyEvent", target=self, event=event})
 				elseif event.classType == "MovieVO" or event.classType == "movie" then

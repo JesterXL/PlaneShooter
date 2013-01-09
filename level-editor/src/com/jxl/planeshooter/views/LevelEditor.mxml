@@ -94,6 +94,11 @@
 				enemyTimelineView.redraw();
 			}
 			
+			private function onEventClicked(event:EventItemRendererEvent):void
+			{
+				currentTimeSlider.value = event.item.when;
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -101,22 +106,22 @@
 		<s:VerticalLayout />
 	</s:layout>
 	
-	<s:Button label="New Enemy" click="onNewEnemy()" />
-	<s:Button label="New Movie" click="onNewMovie()" />
-	<s:Button label="Save Level" click="onSaveLevel()" />
-	<s:Button label="Sort By Time" click="onSortByTime()" />
-	
 	<s:HGroup>
-		
-		<s:HGroup width="100%" height="100%">
-			<s:Scroller width="100%" height="100%">
-				<levelviews:EventDataGroup dataProvider="{level.events}"
-										   editMovie="onEditMovie(event)"
-										   deleteItem="onDeleteItem(event)"
-										   timeChanged="onTimeChanged()"
-										   bottom="4" top="4" left="4" right="4" />
-			</s:Scroller>
-		</s:HGroup>
+		<s:Button label="New Enemy" click="onNewEnemy()" />
+		<s:Button label="New Movie" click="onNewMovie()" />
+		<s:Button label="Save Level" click="onSaveLevel()" />
+		<s:Button label="Sort By Time" click="onSortByTime()" />
+	</s:HGroup>
+	
+	<s:HGroup width="100%" height="100%">
+		<s:Scroller width="100%" height="70%">
+			<levelviews:EventDataGroup dataProvider="{level.events}"
+									   editMovie="onEditMovie(event)"
+									   deleteItem="onDeleteItem(event)"
+									   timeChanged="onTimeChanged()"
+									   eventClicked="onEventClicked(event)"
+									   bottom="4" top="4" left="4" right="4" />
+		</s:Scroller>
 		
 		<s:VGroup>
 			<views:LevelPreview id="levelPreview" events="{level.events}" currentTime="{currentTimeSlider.value}" />
@@ -128,17 +133,12 @@
 						   value="0" 
 						   showDataTip="false" snapInterval="0.1"  />
 				<levelpreviewviews:EnemyTimelineView id="enemyTimelineView" 
-					width="100%" level="{level}" currentTime="{currentTimeSlider.value}" 
+													 width="100%" level="{level}" currentTime="{currentTimeSlider.value}" 
 													 bottom="4" top="4" left="4" right="4" />
 			</s:VGroup>
 		</s:VGroup>
 		
 	</s:HGroup>
-	
-	
-	
-	
-	
 	
 	
 	

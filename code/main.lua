@@ -785,7 +785,7 @@ local function testPlayerWeapons()
 	startPhysics()
 
 	local player = Player:new()
-	gameLoop:addLoop(player)
+	--gameLoop:addLoop(player)
 	local controller = PlayerMovementController:new(player)
 	controller:start()
 	local weapons = PlayerWeaponsController:new(player)
@@ -1164,6 +1164,9 @@ local function testPlaneShooter()
 	context:mapController("com.jessewarden.planeshooter.views.ScoreView", 
 							"com.jessewarden.planeshooter.controllers.ScoreViewController")
 
+	context:mapController("com.jessewarden.planeshooter.views.DebugView", 
+							"com.jessewarden.planeshooter.controllers.DebugViewController")
+
 
 	context:mapCommand("LevelViewController_levelComplete",
 						"com.jessewarden.planeshooter.commands.LevelCompleteCommand")
@@ -1331,9 +1334,9 @@ startPhysics()
 --testingNewFloatingText()
 --testNegativeRandoms()
 
-testLevel1MoviePlayer()
+--testLevel1MoviePlayer()
 
---testPlaneShooter()
+testPlaneShooter()
 
 
 --require "testsmain"

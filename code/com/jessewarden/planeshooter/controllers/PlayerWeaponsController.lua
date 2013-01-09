@@ -84,6 +84,7 @@ function PlayerWeaponsController:new(player)
 	end
 
 	function createBullet1(millisecondsPassed)
+		print("createBullet1: ", millisecondsPassed)
 		local player = regulator.player
 		local bullet = PlayerBulletSingle:new(player.x, player.y)
 		mainGroup:insert(bullet)
