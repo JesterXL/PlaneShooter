@@ -34,6 +34,7 @@ package com.jxl.planeshooter.vo
 		}
 		public function set totalTime(value:Number):void
 		{
+			var old:Number = _totalTime;
 			_totalTime = value;
 			if(isNaN(_totalTime) == true)
 			{
@@ -44,7 +45,11 @@ package com.jxl.planeshooter.vo
 			{
 				_totalTime = 10;
 			}
-			dispatchEvent(new Event("totalTimeChanged"));
+			
+			if(old != _totalTime)
+			{
+				dispatchEvent(new Event("totalTimeChanged"));
+			}
 		}
 			
 		public function LevelVO()
@@ -63,9 +68,17 @@ package com.jxl.planeshooter.vo
 			while(len--)
 			{
 				var event:EventVO = events[len];
+				// TODO: beware, if someone removes the event, this event listener isn't necessarely removed, ack.
+				event.removeEventListener("whenChanged", onWhenChanged);
+				event.addEventListener("whenChanged", onWhenChanged, false, 0, true);
 				time = Math.max(time, event.when);
 			}
 			totalTime = time;
+		}
+		
+		private function onWhenChanged(event:Event):void
+		{
+			recalculateTotalTime();
 		}
 		
 		public function toObject():Object

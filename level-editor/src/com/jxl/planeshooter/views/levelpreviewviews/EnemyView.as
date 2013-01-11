@@ -25,11 +25,13 @@ package com.jxl.planeshooter.views.levelpreviewviews
 			if(_enemy)
 			{
 				_enemy.removeEventListener("xOrYChanged", onXorYChanged);
+				_enemy.removeEventListener("typeChanged", updateIcon);
 			}
 			_enemy = value;
 			if(_enemy)
 			{
 				_enemy.addEventListener("xOrYChanged", onXorYChanged);
+				_enemy.addEventListener("typeChanged", updateIcon);
 			}
 			updateIcon();
 		}
@@ -72,7 +74,7 @@ package com.jxl.planeshooter.views.levelpreviewviews
 			g.endFill();
 		}
 		
-		private function updateIcon():void
+		private function updateIcon(event:Event=null):void
 		{
 			if(_enemy && _enemy.type)
 			{

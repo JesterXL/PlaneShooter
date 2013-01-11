@@ -99,6 +99,11 @@
 				dialogue.advanceOnAudioEnd = advanceOnAudioEndCheckBox.selected;
 			}
 			
+			private function onToggleRadio():void
+			{
+				dialogue.radio = radioCheckBox.selected;
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -126,6 +131,9 @@
 		</s:FormItem>
 		<s:FormItem label="Emotion:">
 			<s:ComboBox id="emotionComboBox" dataProvider="{emotions}" selectedItem="{dialogue.emotion}" change="onChangeEmotion()" />
+		</s:FormItem>
+		<s:FormItem label="Radio:">
+			<s:CheckBox id="radioCheckBox" selected="{dialogue.radio}" change="onToggleRadio()" />
 		</s:FormItem>
 		<s:FormItem label="Message:">
 			<mx:TextArea id="messageTextArea" text="{dialogue.message}" change="dialogue.message = messageTextArea.text" />

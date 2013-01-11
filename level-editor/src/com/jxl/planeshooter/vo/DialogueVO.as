@@ -8,6 +8,7 @@ package com.jxl.planeshooter.vo
 	{
 		public var characterName:String			= CharacterTypes.KAY;
 		public var emotion:String 				= EmotionTypes.NORMAL;
+		public var radio:Boolean				= false;
 		public var audioName:String;
 		public var audioFile:String;
 		public var message:String				= "Hello!";
@@ -30,6 +31,7 @@ package com.jxl.planeshooter.vo
 			obj.advanceOnAudioEnd				= advanceOnAudioEnd;
 			obj.autoPlay 						= autoPlay;
 			obj.dialogueTime					= dialogueTime;
+			obj.radio							= radio;
 			return obj;
 		}
 		
@@ -43,6 +45,7 @@ package com.jxl.planeshooter.vo
 			advanceOnAudioEnd		= obj.advanceOnAudioEnd;
 			autoPlay 				= obj.autoPlay;
 			dialogueTime			= obj.dialogueTime;
+			radio					= obj.radio;
 		}
 	}
 }

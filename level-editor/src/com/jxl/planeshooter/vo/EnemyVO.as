@@ -8,7 +8,16 @@ package com.jxl.planeshooter.vo
 	public class EnemyVO extends EventVO
 	{
 		public var pause:Boolean			= false;
-		public var type:String 				= EnemyTypes.PLANE;
+		private var _type:String  			= EnemyTypes.PLANE;
+		
+		[Bindable(event="typeChanged")]
+		public function get type():String { return _type; }
+		public function set type(value:String):void
+		{
+			_type = value;
+			dispatchEvent(new Event("typeChanged"));
+		}
+		
 		public var configurations:Object 	= {};
 		public var x:Number 				= 0;
 		public var y:Number 				= 0;

@@ -1257,6 +1257,12 @@ local function testLevel1MoviePlayer()
 	player:addEventListener("onMovieEnded", t)
 end
 
+local function testUberJet()
+	require "com.jessewarden.planeshooter.sprites.enemies.UberJet"
+
+	local uberJet = UberJet:new()
+end
+
 --[[
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
@@ -1335,8 +1341,9 @@ startPhysics()
 --testNegativeRandoms()
 
 --testLevel1MoviePlayer()
+testUberJet()
 
-testPlaneShooter()
+--testPlaneShooter()
 
 
 --require "testsmain"
