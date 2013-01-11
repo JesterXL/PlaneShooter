@@ -44,8 +44,9 @@
 					EnemyTypes.MISSILE,
 					EnemyTypes.JET,
 					EnemyTypes.BOMBER,
-					EnemyTypes.UFO
-					
+					EnemyTypes.UFO,
+					EnemyTypes.UBER_JET,
+					EnemyTypes.TANK_MAN
 					]);
 			}
 			

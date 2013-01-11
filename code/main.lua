@@ -1263,6 +1263,12 @@ local function testUberJet()
 	local uberJet = UberJet:new()
 end
 
+local function testTankMan()
+	require "com.jessewarden.planeshooter.sprites.enemies.TankMan"
+
+	local tankMan = TankMan:new()
+end
+
 --[[
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
@@ -1341,7 +1347,9 @@ startPhysics()
 --testNegativeRandoms()
 
 --testLevel1MoviePlayer()
-testUberJet()
+--testUberJet()
+testTankMan()
+
 
 --testPlaneShooter()
 
