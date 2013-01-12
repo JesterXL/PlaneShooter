@@ -1,7 +1,9 @@
 require "com.jessewarden.planeshooter.sprites.enemies.EnemySmallShip"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
+require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissileJet"
 require "com.jessewarden.planeshooter.sprites.enemies.UFO"
 require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
+require "com.jessewarden.planeshooter.sprites.enemies.TankMan"
 require "com.jessewarden.planeshooter.services.UserProgressService"
 require "com.jessewarden.planeshooter.vo.UserProgressVO"
 
@@ -61,6 +63,8 @@ function LevelViewController:new()
 			enemy = EnemyMissileJet:new(event.event.x, event.event.y, stage.height)
 		elseif enemyType == "Bomber" then
 			enemy = BossBigPlane:new()
+		elseif enemyType == "Tank Man" then
+			enemy = TankMan:new()
 		elseif enemyType == "UFO" then
 			enemy = UFO:new(event.event.x, event.event.y)
 		end

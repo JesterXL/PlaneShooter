@@ -13,8 +13,10 @@ function LevelModel:new()
 	function model:init(level)
 		print("LevelModel::init, level: ", level)
 		assert(level ~= nil, "You cannot pass a nil level to LevelModel.")
+		self:stop()
 		self.level = level
 
+		--[[
 		local oldEvents = self.oldEvents
 		local events = self.level.events
 		if oldEvents ~= nil then
@@ -26,10 +28,15 @@ function LevelModel:new()
 				i = i - 1
 			end
 		end
+		]]--
 
 		self.oldEvents = {}
 		self.totalMilliseconds = 0
 		self.started = false
+	end
+
+	function model:setLevelTime(milliseconds)
+		self.totalMilliseconds = milliseconds
 	end
 
 	function model:getMemento()

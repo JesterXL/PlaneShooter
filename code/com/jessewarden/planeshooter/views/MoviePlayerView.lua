@@ -20,6 +20,10 @@ function MoviePlayerView:new()
 	group:addEventListener("touch", function() return true end)
 	group:addEventListener("tap", function() return true end)
 	group.lastSoundChannel = nil
+	group.staticStartSound = nil
+	group.staticEndSound = nil
+	group.staticStartSoundChannel = nil
+	group.staticEndSoundChannel = nil
 
 	function group:startMovie(movie)
 		assert(movie ~= nil, "Movie cannot be nil.")
@@ -156,22 +160,81 @@ function MoviePlayerView:new()
 	end
 
 	function group:playAudio(dialogueVO)
-		print("playAudio, name: ", dialogueVO.audioFile)
-		self:destroyAudioFile()
+		print("MoviePlayerView::playAudio, name: ", dialogueVO.audioFile)
+
+		if dialogueVO.radio == true then
+			print("\tplaying static")
+			if self.staticStartSound == nil then
+				self.staticStartSound = audio.loadSound("audio/radio/static_start.wav")
+			end
+
+			if self.staticEndSound == nil then
+				self.staticEndSound = audio.loadSound("audio/radio/static_end.wav")
+			end
+
+			local callback = function(e)
+				if e.completed == true then
+					group:playCurrentDialogueVO()
+				end
+			end
+			self.staticStartSoundChannel = audio.play(self.staticStartSound, {onComplete=callback})
+			print("static start sound channel chosen: ", self.staticStartSoundChannel)
+		else
+			self:playCurrentDialogueVO()
+		end
+	end
+
+	function group:playCurrentDialogueVO()
+		print("MoviePlayerView::playCurrentDialogueVO")
+		local dialogueVO = self.currentDialogueVO
 		self.audioFile = audio.loadSound(dialogueVO.audioFile)
-		local callback = function(e)
-			group:onComplete(e)
+		local callback
+		if dialogueVO.radio == true then
+			callback = function(e)
+				if e.completed == true then
+					group:playStaticEnd()
+				end
+			end
+		else
+			callback = function(e)
+				if e.completed == true then
+					group:onComplete(e)
+				end
+			end
 		end
 		self.lastSoundChannel = audio.play(self.audioFile, {onComplete=callback})
 	end
 
+	function group:playStaticEnd()
+		print("MoviePlayerView::playStaticEnd")
+		local callback = function(e)
+			if e.completed == true then
+				group:onComplete(e)
+			end
+		end
+		self.staticEndSoundChannel = audio.play(self.staticEndSound, {onComplete=callback})
+		print("static end sound channel chosen: ", self.staticEndSoundChannel)
+	end
+
 	function group:destroyAudioFile()
+		print("MoviePlayerView::destroyAudioFile")
+		self:stopAllStaticAudio()
 		if self.audioFile ~= nil then
-			print("self.audioFile: ", self.audioFile)
+			--print("self.audioFile: ", self.audioFile)
 			audio.stop(self.lastSoundChannel)
 			self.lastSoundChannel = nil
 			audio.dispose(self.audioFile)
 			self.audioFile = nil
+		end
+	end
+
+	function group:stopAllStaticAudio()
+		if self.staticStartSoundChannel ~= nil then
+			audio.stop(self.staticStartSoundChannel)
+		end
+
+		if self.staticEndSoundChannel ~= nil then
+			audio.stop(self.staticEndSoundChannel)
 		end
 	end
 
@@ -188,6 +251,7 @@ function MoviePlayerView:new()
 	
 	function group:touch(event)
 		if event.phase == "ended" then
+			self:destroyAudioFile()
 			self:nextDialogue()
 			return true
 		end

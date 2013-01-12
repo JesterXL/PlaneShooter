@@ -1348,10 +1348,10 @@ startPhysics()
 
 --testLevel1MoviePlayer()
 --testUberJet()
-testTankMan()
+--testTankMan()
 
 
---testPlaneShooter()
+testPlaneShooter()
 
 
 --require "testsmain"
