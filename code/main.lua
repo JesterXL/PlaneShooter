@@ -1269,6 +1269,20 @@ local function testTankMan()
 	local tankMan = TankMan:new()
 end
 
+local function testFindSoundChannels()
+	print("total channels:", audio.totalChannels)
+	print("free channels:", audio.freeChannels)
+	print("free channel:", audio.findFreeChannel())
+	print("max volume:", audio.getMaxVolume())
+	print("min volume:", audio.getMinVolume())
+	print("channel active 0:", audio.isChannelActive(0))
+	print("before reserved channels:", audio.reservedChannels)
+	print("before unreserved before:", audio.unreservedFreeChannels)
+	print("reserve 2:", audio.reserveChannels(2))
+	print("after reserved channels:", audio.reservedChannels)
+	print("after unreserved before:", audio.unreservedFreeChannels)
+end
+
 --[[
 local stage = display.getCurrentStage()
 local rect = display.newRect(0, 0, stage.width, stage.height)
@@ -1349,6 +1363,8 @@ startPhysics()
 --testLevel1MoviePlayer()
 --testUberJet()
 --testTankMan()
+
+--testFindSoundChannels()
 
 
 testPlaneShooter()
