@@ -600,7 +600,12 @@ end
 local function testMoviePlayer()
 	require "com.jessewarden.planeshooter.vo.DialogueVO"
 	require "com.jessewarden.planeshooter.vo.MovieVO"
-	local player = MoviePlayerView:new()
+	require "com.jessewarden.planeshooter.models.AudioModel"
+	require "com.jessewarden.planeshooter.views.MoviePlayerView"
+
+	local model = AudioModel:new()
+
+	local player = MoviePlayerView:new(model)
 	local movie = MovieVO:new()
 	local getDia = function(name, message)
 		local dia = DialogueVO:new()

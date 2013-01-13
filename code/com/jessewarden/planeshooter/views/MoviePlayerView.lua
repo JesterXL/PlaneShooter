@@ -1,4 +1,5 @@
 require "com.jessewarden.planeshooter.views.DialogueView"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 local gtween = require("gtween")
 
 MoviePlayerView = {}
@@ -19,11 +20,11 @@ function MoviePlayerView:new()
 	group.totalTimePassed = nil
 	group:addEventListener("touch", function() return true end)
 	group:addEventListener("tap", function() return true end)
-	group.lastSoundChannel = nil
-	group.staticStartSound = nil
-	group.staticEndSound = nil
-	group.staticStartSoundChannel = nil
-	group.staticEndSoundChannel = nil
+	--group.lastSoundChannel = nil
+	--group.staticStartSound = nil
+	--group.staticEndSound = nil
+	--group.staticStartSoundChannel = nil
+	--group.staticEndSoundChannel = nil
 
 	function group:startMovie(movie)
 		assert(movie ~= nil, "Movie cannot be nil.")
@@ -161,97 +162,72 @@ function MoviePlayerView:new()
 
 	function group:playAudio(dialogueVO)
 		print("MoviePlayerView::playAudio, name: ", dialogueVO.audioFile)
-
 		if dialogueVO.radio == true then
-			print("\tplaying static")
-			if self.staticStartSound == nil then
-				self.staticStartSound = audio.loadSound("audio/radio/static_start.wav")
-			end
-
-			if self.staticEndSound == nil then
-				self.staticEndSound = audio.loadSound("audio/radio/static_end.wav")
-			end
-
-			local callback = function(e)
-				if e.completed == true then
-					group:playCurrentDialogueVO()
-				end
-			end
-			self.staticStartSoundChannel = audio.play(self.staticStartSound, {onComplete=callback})
-			print("static start sound channel chosen: ", self.staticStartSoundChannel)
+			SoundManager.inst:playStaticStartSound(function() group:onStaticStartSoundComplete() end)
 		else
 			self:playCurrentDialogueVO()
 		end
 	end
 
+	function group:onStaticStartSoundComplete()
+		self:playCurrentDialogueVO()
+	end
+
 	function group:playCurrentDialogueVO()
 		print("MoviePlayerView::playCurrentDialogueVO")
 		local dialogueVO = self.currentDialogueVO
-		self.audioFile = audio.loadSound(dialogueVO.audioFile)
+		--self.audioFile = audio.loadSound(dialogueVO.audioFile)
 		local callback
 		if dialogueVO.radio == true then
-			callback = function(e)
-				if e.completed == true then
-					group:playStaticEnd()
-				end
+			callback = function()
+				group:playStaticEnd()
 			end
 		else
-			callback = function(e)
-				if e.completed == true then
-					group:onComplete(e)
-				end
+			callback = function()
+				group:onDialogueComplete()
 			end
 		end
-		self.lastSoundChannel = audio.play(self.audioFile, {onComplete=callback})
+		--self.lastSoundChannel = audio.play(self.audioFile, {onComplete=callback})
+		SoundManager.inst:playDialogue(dialogueVO.audioFile, callback)
 	end
 
 	function group:playStaticEnd()
 		print("MoviePlayerView::playStaticEnd")
-		local callback = function(e)
-			if e.completed == true then
-				group:onComplete(e)
-			end
+		local callback = function()
+			group:onDialogueComplete()
 		end
-		self.staticEndSoundChannel = audio.play(self.staticEndSound, {onComplete=callback})
-		print("static end sound channel chosen: ", self.staticEndSoundChannel)
+		--self.staticEndSoundChannel = audio.play(self.staticEndSound, {onComplete=callback})
+		SoundManager.inst:playStaticEndSound(callback)
 	end
 
 	function group:destroyAudioFile()
 		print("MoviePlayerView::destroyAudioFile")
-		self:stopAllStaticAudio()
-		if self.audioFile ~= nil then
-			--print("self.audioFile: ", self.audioFile)
-			audio.stop(self.lastSoundChannel)
-			self.lastSoundChannel = nil
-			audio.dispose(self.audioFile)
-			self.audioFile = nil
-		end
+		--self:stopAllStaticAudio()
+		SoundManager.inst:stopAllStaticSounds()
+		SoundManager.inst:destroyDialogue()
+		--if self.audioFile ~= nil then
+			--audio.stop(self.lastSoundChannel)
+			--self.lastSoundChannel = nil
+			--audio.dispose(self.audioFile)
+			--self.audioFile = nil
+		--end
 	end
 
-	function group:stopAllStaticAudio()
-		if self.staticStartSoundChannel ~= nil then
-			audio.stop(self.staticStartSoundChannel)
-		end
-
-		if self.staticEndSoundChannel ~= nil then
-			audio.stop(self.staticEndSoundChannel)
-		end
-	end
-
-	function group:onComplete(event)
-		print("onComplete, completed: ", event.completed)
-		if self.currentDialogueVO ~= nil then
+	function group:onDialogueComplete()
+		if self.currentDialogueVO then
 			print("self.currentDialogueVO.advanceOnAudioEnd: ", self.currentDialogueVO.advanceOnAudioEnd)
 		end
-		if event.completed == true and self.currentDialogueVO.advanceOnAudioEnd == true then
-			self:destroyAudioFile()
+		if self.currentDialogueVO.advanceOnAudioEnd == true then
+			--self:destroyAudioFile()
+			SoundManager.inst:destroyDialogue()
 			self:nextDialogue()
 		end
 	end
 	
 	function group:touch(event)
 		if event.phase == "ended" then
-			self:destroyAudioFile()
+			--self:destroyAudioFile()
+			SoundManager.inst:destroyDialogue()
 			self:nextDialogue()
 			return true
 		end
