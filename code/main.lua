@@ -329,6 +329,16 @@ function startPhysics()
 	physics.start()
 	physics.setDrawMode( "normal" )
 	physics.setGravity( 0, 0 )
+
+	Runtime:addEventListener("GameLoop_onPauseChanged", GameLoop_onPauseChanged)
+end
+
+function GameLoop_onPauseChanged(event)
+	if gameLoop.paused == true then
+		physics.pause()
+	else
+		physics.start()
+	end
 end
 
 function startThisMug()
@@ -713,19 +723,70 @@ local function testEnemyJet()
 end
 
 local function testEnemyMissile()
-	local player = {x=200, y=display.getCurrentStage().height}
-	local missile = EnemyMissile:new(40, 0, player)
+	require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
+	local missile = EnemyMissile:new(40, 0)
 	local loop = GameLoop:new()
 	loop:start()
 	loop:addLoop(missile)
 
+	local tTouch = {}
+	function tTouch:touch(event)
+		playerView.x = event.x
+		playerView.y = event.y
+	end
+	Runtime:addEventListener("touch", tTouch)
+
 	local t = {}
 	function t:timer()
-		player.x = player.x + 1
-		player.y = player.y - 20
+		
 	end
-	timer.performWithDelay(50, t, 0)
+	--timer.performWithDelay(50, t, 0)
 end
+
+local function testEnemyMissileSimple()
+	startPhysics()
+	local missile = display.newImage("enemy_missle_jet_missle_sheet.png")
+	physics.addBody( missile, { density = .7, friction = 0.3, bounce = 0.2,
+								bodyType = "kinematic",
+								isBullet = true, isSensor = true, isFixedRotation = true
+							} )
+	function missile:tick(m)
+		local xForce, yForce
+		local power = 0.03
+		if missile.x > playerView.x then
+			xForce = -power
+		else
+			xForce = power
+		end
+		if missile.y > playerView.y then
+			yForce = -power
+		else
+			yForce = power
+		end
+		print(xForce, yForce)
+		missile:applyLinearImpulse(xForce, yForce, missile.x, missile.y)
+	end
+
+	local loop = GameLoop:new()
+	loop:start()
+	loop:addLoop(missile)
+
+	local tTouch = {}
+	function tTouch:touch(event)
+		playerView.x = event.x
+		playerView.y = event.y
+		print(event.phase)
+		if event.phase == "began" then
+			gameLoop:pause()
+			physics.pause()
+		else
+			gameLoop:start()
+			physics.start()
+		end
+	end
+	Runtime:addEventListener("touch", tTouch)
+end
+
 
 local function testGenericGunTurret()
 	local player = display.newGroup()
@@ -1330,6 +1391,7 @@ startPhysics()
 --testEnemyBulletSingle()
 --testEnemyJet()
 --testEnemyMissile()
+testEnemyMissileSimple()
 --testGenericGunTurret()
 --testFlak()
 --bunchOfFlak()
@@ -1372,7 +1434,7 @@ startPhysics()
 --testFindSoundChannels()
 
 
-testPlaneShooter()
+--testPlaneShooter()
 
 
 --require "testsmain"

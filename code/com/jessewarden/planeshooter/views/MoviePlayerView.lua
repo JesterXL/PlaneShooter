@@ -214,6 +214,12 @@ function MoviePlayerView:new()
 	end
 
 	function group:onDialogueComplete()
+		-- FIXME: I believe this is because nextDialogue runs, nilling ou thte VO.
+		-- maybe we should put it into the event instead?
+		if self.currentDialogueVO == nil then
+			error("MoviePlayerView::onDialogueComplete")
+		end
+
 		if self.currentDialogueVO then
 			print("self.currentDialogueVO.advanceOnAudioEnd: ", self.currentDialogueVO.advanceOnAudioEnd)
 		end

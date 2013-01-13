@@ -55,6 +55,8 @@ function Player:new()
 	function img:move(x, y)
 		self.x = x
 		self.y = y
+		playerView.x = x
+		playerView.y = y
 	end
 	function img:setDestination(x, y)
 		self.planeXTarget = x
@@ -104,12 +106,10 @@ function Player:new()
 			local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 				
 			if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-				self.x = self.planeXTarget
-				self.y = self.planeYTarget
+				self:move(self.planeXTarget, self.planeYTarget)
 				self.reachedDestination = true
 			else
-				self.x = self.x - moveX
-				self.y = self.y - moveY
+				self:move(self.x - moveX, self.y - moveY)
 			end
 		end	
 	end

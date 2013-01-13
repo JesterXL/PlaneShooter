@@ -58,6 +58,7 @@ function EnemyMissile:new(startX, startY)
 		return rot
 	end
 
+	--[[
 	function img:tick(millisecondsPassed)
 	-- TODO: make sure using milliseconds vs. hardcoding step speed
 		self.currentLife = self.currentLife + millisecondsPassed
@@ -83,6 +84,51 @@ function EnemyMissile:new(startX, startY)
 		else
 			self.x = self.x - moveX
 			self.y = self.y - moveY
+		end
+	end
+	]]--
+
+	function img:tick(millisecondsPassed)
+	-- TODO: make sure using milliseconds vs. hardcoding step speed
+		self.currentLife = self.currentLife + millisecondsPassed
+		if(self.currentLife >= self.lifeTime) then
+			--self:destroy()
+			--return true
+		end
+
+		self.rotation = self:getRotation()
+		--self.x = self.x + math.cos(self.angle) * self.speed
+	   	--self.y = self.y + math.sin(self.angle) * self.speed
+
+		local deltaX = self.x - playerView.x
+		local deltaY = self.y - playerView.y
+		local dist = math.sqrt((deltaX * deltaX) + (deltaY * deltaY))
+
+		local moveX = self.speed * (deltaX / dist) * millisecondsPassed
+		local moveY = self.speed * (deltaY / dist) * millisecondsPassed
+
+		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
+			--self.x = playerView.x
+			--self.y = playerView.y
+
+		else
+			--self.x = self.x - moveX
+			--self.y = self.y - moveY
+			local speedX = (self.x + moveX)
+			local speedY = (self.y + moveY)
+			print(speedX, speedY)
+			--self:applyForce(-1 * (self.x - moveX), -1 * (self.y - moveY), self.x + (self.width / 2), self.y + (self.height / 2))
+			if speedX > 0 then
+				speedX = 0.1
+			else
+				speedX = -0.1
+			end
+			if speedY > 0 then
+				speedY = 0.1
+			else
+				speedY = -0.1
+			end
+			self:applyForce(moveX, moveY, self.x + (self.width / 2), self.y + (self.height / 2))
 		end
 	end
 
