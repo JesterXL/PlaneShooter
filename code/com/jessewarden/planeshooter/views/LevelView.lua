@@ -24,9 +24,9 @@ function LevelView:new()
 	view.debugView = nil
 
 	function view:init()
-		self.scrollingTerrainView = ScrollingTerrain:new("debug_terrain_2.jpg")
+		self.scrollingTerrainView = ScrollingTerrain:new("Level1Background.jpg")
 		self:insert(self.scrollingTerrainView)
-		self.scrollingTerrainView.isVisible = false
+		--self.scrollingTerrainView.isVisible = false
 
 		self.scoreView = ScoreView:new()
 		self:insert(self.scoreView)

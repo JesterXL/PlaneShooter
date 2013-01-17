@@ -7,7 +7,7 @@ function PlayerBulletSingle:new(startX, startY)
 	assert(startX ~= nil, "Must pass in a startX value")
 	assert(startY ~= nil, "Must pass in a startY value")
 
-	local img = display.newImage("player_bullet_1.png")
+	local img = display.newImage("player_bullet_1.png", 0, 0, true)
 	img.classType = "PlayerBulletAngle"
 	img.name = "Bullet"
 	img.speed = constants.PLAYER_BULLET_SPEED

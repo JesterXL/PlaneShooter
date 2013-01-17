@@ -45,6 +45,7 @@ function PlaneShooterView:new()
 			local levelView = LevelView:new()
 			self:insert(levelView)
 			self.levelView = levelView
+			mainGroup:toFront()
 		end
 		self:dispatchEvent({name = "onPlaneShooterNewGame", target = self})
 	end

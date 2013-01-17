@@ -7,16 +7,18 @@ function ScrollingTerrain:new(image)
 	
 	local terrain = display.newGroup()
 	
-	local terrain1 = display.newImage(image, 0, 0)
+	local terrain1 = display.newImage(image, 0, 0, true)
+	terrain1:setReferencePoint(display.TopLeftReferencePoint)
 	terrain:insert(terrain1)
-	local terrain2 = display.newImage(image, 0, 0)
+	local terrain2 = display.newImage(image, 0, 0, true)
+	terrain2:setReferencePoint(display.TopLeftReferencePoint)
 	terrain:insert(terrain2)
 	terrain1.x = 0
 	terrain1.y = 0
 	terrain2.x = 0
 	terrain2.y = terrain1.y + terrain1.height
 	
-	terrain.speed = 0.2
+	terrain.speed = 0.07
 	terrain.onTerrain = terrain1
 	terrain.offTerrain = terrain2
 	terrain.targetY = terrain1.height

@@ -681,10 +681,12 @@ local function testMoviePlayerAutoPlayAudio()
 end
 
 local function testScrollingTerrain()
+	require "com.jessewarden.planeshooter.core.GameLoop"
+	require "com.jessewarden.planeshooter.views.controls.ScrollingTerrain"
 	local loop = GameLoop:new()
 	loop:start()
 
-	local terrain = ScrollingTerrain:new("debug_terrain_2.jpg")
+	local terrain = ScrollingTerrain:new("Level1Background.jpg")
 	--terrain.alpha = 0.7
 
 	loop:addLoop(terrain)
@@ -1391,7 +1393,7 @@ startPhysics()
 --testEnemyBulletSingle()
 --testEnemyJet()
 --testEnemyMissile()
-testEnemyMissileSimple()
+--testEnemyMissileSimple()
 --testGenericGunTurret()
 --testFlak()
 --bunchOfFlak()
@@ -1434,7 +1436,7 @@ testEnemyMissileSimple()
 --testFindSoundChannels()
 
 
---testPlaneShooter()
+testPlaneShooter()
 
 
 --require "testsmain"
