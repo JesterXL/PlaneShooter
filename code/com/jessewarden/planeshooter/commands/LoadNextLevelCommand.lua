@@ -1,3 +1,5 @@
+require "com.jessewarden.planeshooter.sounds.SoundManager"
+
 LoadNextLevelCommand = {}
 
 function LoadNextLevelCommand:new()
@@ -25,6 +27,7 @@ function LoadNextLevelCommand:new()
 		local levelModel = context:getModel("levelModel")
 		levelModel:init(level)
 		levelModel:start()
+		SoundManager.inst:playMusic("music_Level1.mp3")
 
 		--levelModel:setLevelTime(50 * 1000)
 	end

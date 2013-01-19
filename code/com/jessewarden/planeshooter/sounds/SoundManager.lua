@@ -7,7 +7,7 @@ SoundManager.inst = nil
 function SoundManager:new()
 
 	local manager = {}
-	manager.musicVolume = 0.7
+	manager.musicVolume = 0.6
 	manager.dialogueVolume = 1
 	manager.effectsVolume = 0.8
 	manager.masterVolume = 1
@@ -21,6 +21,7 @@ function SoundManager:new()
 	manager.staticStartSound = nil
 	manager.staticEndSound = nil
 	manager.dialogueStream = nil
+	manager.musicStream = nil
 
 	manager.staticStartSoundCompleteCallback = nil
 	manager.staticEndSoundCompleteCallback = nil
@@ -107,6 +108,16 @@ function SoundManager:new()
 			audio.dispose(self.dialogueStream)
 			self.dialogueStream = nil
 		end
+	end
+
+	function manager:playMusic(musicFile)
+		if musicFile == nil then
+			error("musicFile is required")
+		end
+
+		self.musicStream = audio.loadStream(musicFile)
+		audio.play(self.musicStream, {channel=self.CHANNEL_MUSIC})
+		audio.setVolume(self.musicVolume, {channel=self.CHANNEL_MUSIC})
 	end
 
 	return manager
