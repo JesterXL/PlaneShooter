@@ -1436,7 +1436,9 @@ startPhysics()
 --testFindSoundChannels()
 
 
+
 testPlaneShooter()
+
 
 
 --require "testsmain"
