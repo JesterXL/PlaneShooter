@@ -29,6 +29,7 @@ function SoundManager:new()
 	manager.playerDeathSound = nil
 
 	manager.bomberLoopSound = nil
+	manager.bomberLoopSoundChannel = nil
 	manager.bomberShootSound = nil
 	manager.bomberDeathSound = nil
 
@@ -213,6 +214,17 @@ function SoundManager:new()
 		audio.setVolume(self.effectsVolume, {channel=channel})
 	end
 
+	function manager:playBossBigPlaneEngineSound()
+		self.bomberLoopSoundChannel = audio.play(self.bomberLoopSound)
+		audio.setVolume(self.effectsVolume, {channel=self.bomberLoopSoundChannel})
+	end
+
+	function manager:stopBossBigPlaneEngineSound()
+		if self.bomberLoopSoundChannel then
+			audio.stop(self.bomberLoopSoundChannel)
+			self.bomberLoopSoundChannel = nil
+		end
+	end
 
 	return manager
 

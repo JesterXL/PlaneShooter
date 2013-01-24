@@ -81,9 +81,11 @@ function BossBigPlane:new()
 								shape=bossShape,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
+		SoundManager.inst:playBossBigPlaneEngineSound()
 	end
 
 	function boss:destroy()
+		SoundManager.inst:stopBossBigPlaneEngineSound()
 		gameLoop:removeLoop(self)
 		-- TODO: remove from game loop and handle death dispatch
 		self:dispatchEvent({name="enemyDead", target=self})
