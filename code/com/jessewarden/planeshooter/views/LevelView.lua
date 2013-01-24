@@ -5,7 +5,7 @@ require "com.jessewarden.planeshooter.views.controls.ScrollingTerrain"
 require "com.jessewarden.planeshooter.views.ScoreView"
 require "com.jessewarden.planeshooter.views.FloatingText"
 require "com.jessewarden.planeshooter.views.DebugView"
-
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 require "com.jessewarden.planeshooter.sprites.player.Player"
 
 LevelView = {}
@@ -89,6 +89,7 @@ function LevelView:new()
 			end)
 		end
 		self.levelEndView:show()
+		SoundManager.inst:playLevelEndSound()
 
 		self.scrollingTerrainView:stop()
 	end

@@ -1,6 +1,7 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "com.jessewarden.planeshooter.controllers.PlayerMovementController"
 require "com.jessewarden.planeshooter.controllers.PlayerWeaponsController"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 
 Player = {}
 
@@ -24,8 +25,8 @@ function Player:new()
 	img.reachedDestination = true
 	img.planeXTarget = 200
 	img.planeYTarget = 200
-	img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
-	img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
+	--img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
+	--img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
 
 	img.movementController = nil
 	img.weaponsController = nil
@@ -71,13 +72,15 @@ function Player:new()
 		self:dispatchEvent({name="bulletHit", target=self})
 		if(self.hitPoints <= 0) then
 			self.isVisible = false
-			audio.play(self.playerDeathSound, {loops=0})
+			--audio.play(self.playerDeathSound, {loops=0})
+			SoundManager.inst:playPlayerDeathSound()
 			------createPlayerDeath(self.x, self.y)
 			------stopPlayerInteraction()
 			------endGame()
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
-			audio.play(self.playerHitSound, {loops=0})
+			--audio.play(self.playerHitSound, {loops=0})
+			SoundManager.inst:playPlayerHitSound()
 		end
 	end
 
@@ -85,10 +88,12 @@ function Player:new()
 		self:dispatchEvent({name="missileHit", target=self})
 		if(self.hitPoints <= 0) then
 			self.isVisible = false
-			audio.play(self.playerDeathSound, {loops=0})
+			--audio.play(self.playerDeathSound, {loops=0})
+			SoundManager.inst:playPlayerDeathSound()
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
-			audio.play(self.playerHitSound, {loops=0})
+			--audio.play(self.playerHitSound, {loops=0})
+			SoundManager.inst:playPlayerHitSound()
 			AchievementsProxy:unlock(constants.achievements.zeeMissile)
 		end
 	end

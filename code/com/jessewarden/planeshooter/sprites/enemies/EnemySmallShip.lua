@@ -1,6 +1,7 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "org.robotlegs.globals"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 
 EnemySmallShip = {}
 EnemySmallShip.soundsInited = false
@@ -9,7 +10,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 	--print("EnemySmallShip::new, bottom: ", bottom)
 	if(EnemySmallShip.soundsInited == false) then
 		EnemySmallShip.soundsInited = true
-		EnemySmallShip.smallShipDeathSound = audio.loadSound("enemy_death_1.mp3")
+		--EnemySmallShip.smallShipDeathSound = audio.loadSound("enemy_death_1.mp3")
 	end
 	
 	local img = display.newImage("enemy_1.png")
@@ -54,8 +55,9 @@ function EnemySmallShip:new(startX, startY, bottom)
 		elseif(event.other.name == "Player") then
 			event.other:onBulletHit()
 		end
-		local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound)
-		audio.setVolume(.4, {channel = smallShipDeathSoundChannel})
+		--local smallShipDeathSoundChannel = audio.play(EnemySmallShip.smallShipDeathSound)
+		--audio.setVolume(.4, {channel = smallShipDeathSoundChannel})
+		SoundManager.inst:playSmallPlaneDeathSound()
 		Runtime:dispatchEvent({name="onShowFloatingText", 
 								x=self.x, y=self.y, target=self, amount=100})
 		self:destroy()

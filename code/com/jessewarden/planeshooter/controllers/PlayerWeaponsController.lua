@@ -2,6 +2,8 @@ require "com.jessewarden.planeshooter.sprites.player.PlayerBulletSingle"
 require "com.jessewarden.planeshooter.sprites.player.PlayerBulletDual"
 require "com.jessewarden.planeshooter.sprites.player.PlayerBulletAngle"
 require "com.jessewarden.planeshooter.sprites.player.PlayerRailGun"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
+
 
 PlayerWeaponsController = {}
 
@@ -46,6 +48,7 @@ function PlayerWeaponsController:new(player)
 		if event.phase == "began" or event.phase == "moved" then
 			self.enabled = true
 			--audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1})
+			SoundManager.inst:playPlayerShootSound()
 			return true
 		end
 
@@ -54,6 +57,7 @@ function PlayerWeaponsController:new(player)
 			--if planeShootSoundChannel ~= nil then
 			--	audio.stop(planeShootSoundChannel)
 			--end
+			SoundManager.inst:stopPlayerShootSound()
 			return true
 		end
 	end
@@ -84,7 +88,6 @@ function PlayerWeaponsController:new(player)
 	end
 
 	function createBullet1(millisecondsPassed)
-		print("createBullet1: ", millisecondsPassed)
 		local player = regulator.player
 		local bullet = PlayerBulletSingle:new(player.x, player.y)
 		mainGroup:insert(bullet)

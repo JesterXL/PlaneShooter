@@ -9,7 +9,7 @@ function SoundManager:new()
 	local manager = {}
 	manager.musicVolume = 0.6
 	manager.dialogueVolume = 1
-	manager.effectsVolume = 0.8
+	manager.effectsVolume = 0.3
 	manager.masterVolume = 1
 
 	manager.CHANNEL_MUSIC = 1
@@ -17,11 +17,22 @@ function SoundManager:new()
 	manager.CHANNEL_EFFECTS = 3
 	manager.CHANNEL_STATIC_START = 4
 	manager.CHANNEL_STATIC_END = 5
+	manager.CHANNEL_PLAYER = 6
 
 	manager.staticStartSound = nil
 	manager.staticEndSound = nil
 	manager.dialogueStream = nil
 	manager.musicStream = nil
+
+	manager.playerShootSound = nil
+	manager.playerHitSound = nil
+	manager.playerDeathSound = nil
+
+	manager.bomberLoopSound = nil
+	manager.bomberShootSound = nil
+	manager.bomberDeathSound = nil
+
+	manager.smallPlaneDeathSound = nil
 
 	manager.staticStartSoundCompleteCallback = nil
 	manager.staticEndSoundCompleteCallback = nil
@@ -30,6 +41,8 @@ function SoundManager:new()
 		self:reserveChannels()
 		--self:adjustVolume()
 		self:loadStaticSounds()
+		-- [jwarden 1.23.2013] TODO: add per level vs. all at once
+		self:loadSoundEffects()
 	end
 
 	function manager:reserveChannels()
@@ -57,8 +70,19 @@ function SoundManager:new()
 		Runtime:addEventListener("StaticEndSound_onComplete", self)
 	end
 
+	function manager:loadSoundEffects()
+		self.playerShootSound = audio.loadSound("audio/player/player_shoot.mp3")
+		self.playerHitSound = audio.loadSound("audio/player/player_hit_sound.mp3")
+		self.playerDeathSound = audio.loadSound("audio/player/player_death_sound.mp3")
+
+		self.bomberLoopSound = audio.loadSound("audio/bomber/bomber_loop.wav")
+		self.bomberShootSound = audio.loadSound("audio/bomber/bomber_turret_fire.wav")
+		self.bomberDeathSound = audio.loadSound("audio/bomber/bomber_explode.wav")
+
+		self.smallPlaneDeathSound = audio.loadSound("audio/small_plane/small_plane_death.mp3")
+	end
+
 	function manager:playStaticStartSound(callback)
-		print("SoundManager::playStaticStartSound")
 		self.staticStartSoundCompleteCallback = callback
 		self.staticStartSound:play()
 	end
@@ -100,6 +124,7 @@ function SoundManager:new()
 		self.dialogueStream = audio.loadStream(dialogueFile)
 		audio.play(self.dialogueStream, {channel=self.CHANNEL_DIALOGUE,
 											onComplete=callback})
+		audio.setVolume(self.dialogueVolume, {channel=self.CHANNEL_DIALOGUE})
 	end
 
 	function manager:destroyDialogue()
@@ -115,10 +140,79 @@ function SoundManager:new()
 			error("musicFile is required")
 		end
 
+		self:stopMusic()
+
 		self.musicStream = audio.loadStream(musicFile)
 		audio.play(self.musicStream, {channel=self.CHANNEL_MUSIC})
 		audio.setVolume(self.musicVolume, {channel=self.CHANNEL_MUSIC})
 	end
+
+	function manager:stopMusic()
+		if self.musicStream then
+			audio.stop(self.CHANNEL_MUSIC)
+			audio.dispose(self.musicStream)
+			self.musicStream = nil
+		end
+	end
+
+	function manager:playPlayerShootSound()
+		if audio.isChannelActive(self.CHANNEL_PLAYER) == false then
+			audio.play(self.playerShootSound, {channel=self.CHANNEL_PLAYER, loops=-1})
+			audio.setVolume(self.effectsVolume, {channel=self.CHANNEL_PLAYER})
+		end
+	end
+
+	function manager:stopPlayerShootSound()
+		audio.stop(self.CHANNEL_PLAYER)
+	end
+
+	function manager:playPlayerHitSound()
+		audio.play(self.playerHitSound, {channel=self.CHANNEL_PLAYER})
+		audio.setVolume(self.effectsVolume, {channel=self.CHANNEL_PLAYER})
+	end
+
+	function manager:stopPlayerHitSound()
+		audio.stop(self.CHANNEL_PLAYER)
+	end
+
+	function manager:playPlayerDeathSound()
+		audio.play(self.playerDeathSound, {channel=self.CHANNEL_PLAYER})
+		audio.setVolume(self.effectsVolume, {channel=self.CHANNEL_PLAYER})
+	end
+
+	function manager:stopPlayerDeathSound()
+		audio.stop(self.CHANNEL_PLAYER)
+	end
+
+	function manager:playLevelEndSound()
+		audio.play(self.playerDeathSound, {channel=self.CHANNEL_PLAYER})
+		audio.setVolume(self.effectsVolume, {channel=self.CHANNEL_PLAYER})
+	end
+
+	function manager:playLevelEndSound()
+		self:playMusic("audio/level_end.wav")
+	end
+
+	function manager:playBossBigPlaneDeathSound()
+		local channel = audio.play(self.bomberDeathSound)
+		audio.setVolume(self.effectsVolume, {channel=channel})
+	end
+
+	function manager:playBossBigPlaneHitSound()
+		local channel = audio.play(self.bomberHitSound)
+		audio.setVolume(self.effectsVolume, {channel=channel})
+	end
+
+	function manager:playBossBigPlaneShootSound()
+		local channel = audio.play(self.bomberShootSound)
+		audio.setVolume(self.effectsVolume, {channel=channel})
+	end
+
+	function manager:playSmallPlaneDeathSound()
+		local channel = audio.play(self.smallPlaneDeathSound)
+		audio.setVolume(self.effectsVolume, {channel=channel})
+	end
+
 
 	return manager
 

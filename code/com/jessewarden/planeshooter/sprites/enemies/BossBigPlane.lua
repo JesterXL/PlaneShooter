@@ -1,5 +1,6 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 
 BossBigPlane = {}
 
@@ -10,9 +11,9 @@ function BossBigPlane:new()
 		sprite.add(bossSet, "bossSheetSet1", 1, 2, 100, 0)
 		BossBigPlane.bossSheet = bossSheet
 		BossBigPlane.bossSet = bossSet
-		BossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
-		BossBigPlane.railHitSound = audio.loadSound("boss_rail_hit.wav")
-		BossBigPlane.fireSound = audio.loadSound("boss_big_plane_fire.wav")
+		--BossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
+		--BossBigPlane.railHitSound = audio.loadSound("boss_rail_hit.wav")
+		--BossBigPlane.fireSound = audio.loadSound("boss_big_plane_fire.wav")
 		-- TODO/FIXME: wrong sound yo
 		--BossBigPlane.deathSound = audio.loadSound("enemies/boss_hit_sound.mp3")
 	end
@@ -86,10 +87,6 @@ function BossBigPlane:new()
 		gameLoop:removeLoop(self)
 		-- TODO: remove from game loop and handle death dispatch
 		self:dispatchEvent({name="enemyDead", target=self})
-		
-		-- TODO: fix sound
-		--local enemyDeath1SoundChannel = audio.play(enemyDeath1Sound)
-		--audio.setVolume(1, {channel = enemyDeath1SoundChannel})
 		self:dispatchEvent({name="onDestroy", target=self})
 		self:removeSelf()
 	end
@@ -166,6 +163,7 @@ function BossBigPlane:new()
 			end
 
 			self.lastTick = 0
+			SoundManager.inst:playBossBigPlaneShootSound()
 		else
 			self.lastTick = self.lastTick + millisecondsPassed
 		end
@@ -210,13 +208,17 @@ function BossBigPlane:new()
 			end
 			
 			if(self.hitPoints <= 0) then
+				SoundManager.inst:playBossBigPlaneDeathSound()
 				self:dispatchEvent({name="death", target=self})
 				self:destroy()
 			else
 				
+				-- FIXME/TODO: I can't hear this play..... WHY NOT!?
+				SoundManager.inst:playBossBigPlaneHitSound()
 				if(event.other.name ~= "BulletRail") then
-					local chan = audio.play(BossBigPlane.hitSound)
-					audio.setVolume(.2, {channel=chan})
+					--local chan = audio.play(BossBigPlane.hitSound)
+					--audio.setVolume(.2, {channel=chan})
+					
 					--[[
 					if(BossBigPlane.hitSoundChannel ~= nil) then
 						audio.stop(BossBigPlane.hitSoundChannel)
