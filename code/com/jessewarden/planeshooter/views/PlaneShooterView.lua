@@ -14,7 +14,7 @@ function PlaneShooterView:new()
 	game.levelView = nil
 
 	function game:init()
-		print("PlaneShooterView::init")
+		--print("PlaneShooterView::init")
 		local screen
 		if game.titleScreen == nil then
 			screen = TitleScreen:new()

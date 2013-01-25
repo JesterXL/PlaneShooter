@@ -11,18 +11,18 @@ function PlaneShooterController:new()
 	controller.levelModel = nil
 
 	function controller:onRegister()
-		print("PlaneShooterController::onRegister")
+		--print("PlaneShooterController::onRegister")
 		self.view:addEventListener("onPlaneShooterNewGame", self)
 		self.levelModel = self.context:getModel("levelModel")
 	end
 
 	function controller:onRemove()
-		print("PlaneShooterController::onRemove")
+		--print("PlaneShooterController::onRemove")
 		self.view:removeEventListener("onPlaneShooterNewGame", self)
 	end
 
 	function controller:onPlaneShooterNewGame(event)
-		print("PlaneShooterController::onPlaneShooterNewGame")
+		--print("PlaneShooterController::onPlaneShooterNewGame")
 		Runtime:dispatchEvent({name="PlaneShooterController_newGame", target=self})
 	end
 

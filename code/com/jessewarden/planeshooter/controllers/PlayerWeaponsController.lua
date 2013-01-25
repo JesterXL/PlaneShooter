@@ -25,6 +25,9 @@ function PlayerWeaponsController:new(player)
 	regulator.powerLevel 		= 0
 
 	function regulator:start()
+		-- [jwarden 1.25.2013] HACK: If the player presses, and the movie comes up, it covers your finger.
+		-- this can cause this class to never get it's began/moved phases and screw things up.
+		Runtime:addEventListener("MoviePlayerView_onTouch", self)
 		gameLoop:addLoop(self)
 		Runtime:addEventListener("touch", self)
 	end
@@ -33,6 +36,12 @@ function PlayerWeaponsController:new(player)
 		self.enabled = false
 		gameLoop:removeLoop(self)
 		Runtime:removeEventListener("touch", self)
+		Runtime:removeEventListener("MoviePlayerView_onTouch", self)
+	end
+
+	function regulator:MoviePlayerView_onTouch()
+		self.enabled = false
+		SoundManager.inst:stopPlayerShootSound()
 	end
 
 	function regulator:onRegister()

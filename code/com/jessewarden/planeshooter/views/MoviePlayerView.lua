@@ -18,17 +18,19 @@ function MoviePlayerView:new()
 	group.tweenOut = nil
 	group.firstTime = false
 	group.totalTimePassed = nil
-	group:addEventListener("touch", function() return true end)
-	group:addEventListener("tap", function() return true end)
+	--group:addEventListener("touch", function() return true end)
+	--group:addEventListener("tap", function() return true end)
 	--group.lastSoundChannel = nil
 	--group.staticStartSound = nil
 	--group.staticEndSound = nil
 	--group.staticStartSoundChannel = nil
 	--group.staticEndSoundChannel = nil
+	group.playingMovie = false
 
 	function group:startMovie(movie)
 		assert(movie ~= nil, "Movie cannot be nil.")
 		--assert(movie.classType == "movie", "Movie has an unrecognized classType.")
+		self.playingMovie = true
 		self.movie = movie
 		self.currentDialogue =  0
 		self.firstTime = true
@@ -41,37 +43,57 @@ function MoviePlayerView:new()
 	function group:getDialogueView(right)
 		local dialogueView = DialogueView:new(right)
 		self:insert(dialogueView)
-		dialogueView:addEventListener("touch", self)
+		--dialogueView:addEventListener("touch", self)
+		dialogueView.isHitTestable = false
 		dialogueView.alpha = 0
 		return dialogueView
 	end
 	
 	function group:hideDialogue(dialogueView)
 		assert(dialogueView ~= nil, "You cannot pass in a nil dialogue view.")
+		self:cancelTweenOut()
+		local targetY = dialogueView.y
+		targetY = targetY - (dialogueView.height / 2)
+		dialogueView.alpha = 1
+		self.tweenOut = transition.to(dialogueView, 
+									{time=constants.DIALOGUE_MOVE_OUT_TIME, 
+									y=targetY, alpha=0, 
+									transition=easing.inExpo, 
+									onComplete=onHideDialogueComplete
+									})
+		return true
+	end
+
+	function group:cancelTweenOut()
 		if self.tweenOut ~= nil then
 			transition.cancel(self.tweenOut)
 			self.tweenOut = nil
 		end
-		local targetY = dialogueView.y
-		targetY = targetY - (dialogueView.height / 2)
-		dialogueView.alpha = 1
-		self.tweenOut = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_OUT_TIME, y=targetY, alpha=0, transition=easing.inExpo, onComplete=onHideDialogueComplete})
-		return true
 	end
-	
-	function group:showDialogue(dialogueView)
+
+	function group:cancelTweenIn()
 		if self.tweenIn ~= nil then
 			transition.cancel(self.tweenIn)
 			self.tweenIn = nil
 		end
-
+	end
+	
+	function group:showDialogue(dialogueView)
+		self:cancelTweenIn()
 		local stage = display.getCurrentStage()
 
 		local targetY = stage.height - dialogueView.height
 		dialogueView.y = targetY + (dialogueView.height / 2)
 		dialogueView.alpha = 0
 		dialogueView.isVisible = true
-		self.tweenIn = transition.to(dialogueView, {time=constants.DIALOGUE_MOVE_IN_TIME, y=targetY, alpha=1, transition=easing.outExpo, onComplete=onShowDialogueComplete})
+		self.tweenIn = transition.to(dialogueView, 
+										{
+											time=constants.DIALOGUE_MOVE_IN_TIME, 
+											y=targetY, 
+											alpha=1, 
+											transition=easing.outExpo, 
+											onComplete=onShowDialogueComplete
+										})
 	end
 	
 	function onShowDialogueComplete(dialogueView)
@@ -83,6 +105,9 @@ function MoviePlayerView:new()
 	end
 
 	function group:nextDialogue()
+		--print("MoviePlayerView::nextDialogue", system.getTimer())
+		if self.playingMovie == false then return false end
+
 		self.currentDialogue = group.currentDialogue + 1
 		local movie = self.movie
 		local currentIndex = self.currentDialogue
@@ -152,6 +177,8 @@ function MoviePlayerView:new()
 			end
 		else
 			-- end of conversation
+			--print("MoviePlayerView::end of conversation")
+			self.playingMovie = false
 			self:hideDialogue(self.lastDialogueView)
 			gameLoop:removeLoop(self)
 			self:destroyAudioFile()
@@ -161,7 +188,7 @@ function MoviePlayerView:new()
 	end
 
 	function group:playAudio(dialogueVO)
-		print("MoviePlayerView::playAudio, name: ", dialogueVO.audioFile)
+		--print("MoviePlayerView::playAudio, name: ", dialogueVO.audioFile)
 		if dialogueVO.radio == true then
 			SoundManager.inst:playStaticStartSound(function() group:onStaticStartSoundComplete() end)
 		else
@@ -174,7 +201,7 @@ function MoviePlayerView:new()
 	end
 
 	function group:playCurrentDialogueVO()
-		print("MoviePlayerView::playCurrentDialogueVO")
+		--print("MoviePlayerView::playCurrentDialogueVO", system.getTimer())
 		local dialogueVO = self.currentDialogueVO
 		--self.audioFile = audio.loadSound(dialogueVO.audioFile)
 		local callback
@@ -192,7 +219,7 @@ function MoviePlayerView:new()
 	end
 
 	function group:playStaticEnd()
-		print("MoviePlayerView::playStaticEnd")
+		--print("MoviePlayerView::playStaticEnd", system.getTimer())
 		local callback = function()
 			group:onDialogueComplete()
 		end
@@ -201,7 +228,7 @@ function MoviePlayerView:new()
 	end
 
 	function group:destroyAudioFile()
-		print("MoviePlayerView::destroyAudioFile")
+		--print("MoviePlayerView::destroyAudioFile")
 		--self:stopAllStaticAudio()
 		SoundManager.inst:stopAllStaticSounds()
 		SoundManager.inst:destroyDialogue()
@@ -214,15 +241,14 @@ function MoviePlayerView:new()
 	end
 
 	function group:onDialogueComplete()
-		-- FIXME: I believe this is because nextDialogue runs, nilling ou thte VO.
+		--print("MoviePlayerView::onDialogueComplete", system.getTimer())
+		-- FIXME: I believe this is because nextDialogue runs, nilling out the VO.
 		-- maybe we should put it into the event instead?
 		if self.currentDialogueVO == nil then
-			error("MoviePlayerView::onDialogueComplete")
+			SoundManager.inst:destroyDialogue()
+			return true
 		end
 
-		if self.currentDialogueVO then
-			print("self.currentDialogueVO.advanceOnAudioEnd: ", self.currentDialogueVO.advanceOnAudioEnd)
-		end
 		if self.currentDialogueVO.advanceOnAudioEnd == true then
 			--self:destroyAudioFile()
 			SoundManager.inst:destroyDialogue()
@@ -230,14 +256,18 @@ function MoviePlayerView:new()
 		end
 	end
 	
+	--[[
 	function group:touch(event)
+		Runtime:dispatchEvent({name="MoviePlayerView_onTouch", target=self})
 		if event.phase == "ended" then
+			--print("MoviePlayerView::touch")
 			--self:destroyAudioFile()
 			SoundManager.inst:destroyDialogue()
 			self:nextDialogue()
 			return true
 		end
 	end
+	]]--
 
 	function group:tick(milliseconds)
 		--print("self.totalTimePassed: ", self.totalTimePassed)
@@ -246,7 +276,6 @@ function MoviePlayerView:new()
 		if self.totalTimePassed == nil then return true end
 
 		self.totalTimePassed = self.totalTimePassed + milliseconds
-		print("self.currentDialogueVO.dialogueTime: ", self.currentDialogueVO.dialogueTime)
 		if self.totalTimePassed >= self.currentDialogueVO.dialogueTime then
 			self.totalTimePassed = nil
 			self:nextDialogue()

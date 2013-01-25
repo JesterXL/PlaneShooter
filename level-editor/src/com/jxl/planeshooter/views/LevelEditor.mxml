@@ -113,6 +113,17 @@
 		<s:Button label="Sort By Time" click="onSortByTime()" />
 	</s:HGroup>
 	
+	<s:HGroup>
+		<s:Form>
+			<s:FormItem label="Name:">
+				<s:TextInput id="levelNameTextInput" text="{level.levelName}" change="level.levelName = levelNameTextInput.text" />
+			</s:FormItem>
+			<s:FormItem label="Description:">
+				<s:TextInput id="levelDescriptionTextInput" text="{level.levelDescription}" change="level.levelDescription = levelDescriptionTextInput.text" />
+			</s:FormItem>
+		</s:Form>
+	</s:HGroup>
+	
 	<s:HGroup width="100%" height="100%">
 		<s:Scroller width="100%" height="70%">
 			<levelviews:EventDataGroup dataProvider="{level.events}"

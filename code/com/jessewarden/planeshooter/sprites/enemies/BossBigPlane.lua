@@ -1,14 +1,17 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyBulletSingle"
 require "com.jessewarden.planeshooter.sounds.SoundManager"
+require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlaneDeath"
 
 BossBigPlane = {}
 
 function BossBigPlane:new()
 	if(BossBigPlane.bossSheet == nil) then
 		local bossSheet = sprite.newSpriteSheet("boss_big_plane_sheet.png", 142, 98)
-		local bossSet = sprite.newSpriteSet(bossSheet, 1, 2)
+		local bossSet = sprite.newSpriteSet(bossSheet, 1, 6)
 		sprite.add(bossSet, "bossSheetSet1", 1, 2, 100, 0)
+		sprite.add(bossSet, "bossSheetSet2", 3, 2, 100, 0)
+		sprite.add(bossSet, "bossSheetSet3", 5, 2, 100, 0)
 		BossBigPlane.bossSheet = bossSheet
 		BossBigPlane.bossSet = bossSet
 		--BossBigPlane.hitSound = audio.loadSound("boss_hit_sound.mp3")
@@ -64,6 +67,7 @@ function BossBigPlane:new()
 	boss.rot = math.atan2(boss.y -  playerView.x,  boss.x - playerView.y) / math.pi * 180 -90;
 	boss.angle = (boss.rot -90) * math.pi / 180;
 	boss.hoveringDirection = "right"
+	boss.currentSpriteSet = 1
 	
 	
 	local halfWidth = boss.width / 2
@@ -85,9 +89,26 @@ function BossBigPlane:new()
 	end
 
 	function boss:destroy()
-		SoundManager.inst:stopBossBigPlaneEngineSound()
 		gameLoop:removeLoop(self)
-		-- TODO: remove from game loop and handle death dispatch
+		SoundManager.inst:stopBossBigPlaneEngineSound()
+
+		self.tick = nil
+		self.collision = nil
+		self:removeEventListener("collision", self)
+		
+		if physics.removeBody(self) == false then
+			local t = {}
+			function t:timer()
+				physics.removeBody(boss)
+			end
+			timer.performWithDelay(300, t, 1)
+		end
+
+		
+
+		local deathAnime = BossBigPlaneDeath:new(self.x, self.y)
+		mainGroup:insert(deathAnime)
+		self:dispatchEvent({name="death", target=self})
 		self:dispatchEvent({name="enemyDead", target=self})
 		self:dispatchEvent({name="onDestroy", target=self})
 		self:removeSelf()
@@ -126,6 +147,13 @@ function BossBigPlane:new()
 		end
 		--]]
 		
+		self:updateSpriteSheet()
+
+		if self.hitPoints <= 0 then
+			self:destroy()
+			return
+		end
+
 		local gunPoint1Img = boss.gunPoint1Image
 		local gunPoint2Img  = boss.gunPoint2Image
 		local gunPoint3Img  = boss.gunPoint3Image
@@ -169,6 +197,7 @@ function BossBigPlane:new()
 		else
 			self.lastTick = self.lastTick + millisecondsPassed
 		end
+
 	end
 
 	function boss:hover(millisecondsPassed)
@@ -200,18 +229,40 @@ function BossBigPlane:new()
 		end
 		
 	end
-	
+
+	function boss:updateSpriteSheet()
+		if self.hitPoints < 15 and self.hitPoints >= 7 then
+			if self.currentSpriteSet ~= 2 then
+				self.currentSpriteSet = 2
+				bossSpriteSheet:prepare("bossSheetSet2")
+				bossSpriteSheet:play()
+			end
+		elseif self.hitPoints < 7 then
+			if self.currentSpriteSet ~= 3 then
+				self.currentSpriteSet = 3
+				bossSpriteSheet:prepare("bossSheetSet3")
+				bossSpriteSheet:play()
+			end
+		else
+			if self.currentSpriteSet ~= 1 then
+				self.currentSpriteSet = 1
+				bossSpriteSheet:prepare("bossSheetSet1")
+				bossSpriteSheet:play()
+			end
+		end
+	end
+
 	function onHit(self, event)
 		-- TODO: ensure bullet name is same
 		if(event.other.name == "Bullet" or event.other.name == "BulletRail") then
 			self.hitPoints = self.hitPoints - 1
+			self:updateSpriteSheet()
+
 			if(event.other.name ~= "BulletRail") then
 				event.other:destroy();
 			end
 			
-			if(self.hitPoints <= 0) then
-				SoundManager.inst:playBossBigPlaneDeathSound()
-				self:dispatchEvent({name="death", target=self})
+			if self.hitPoints <= 0 then
 				self:destroy()
 			else
 				

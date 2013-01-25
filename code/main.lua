@@ -608,26 +608,26 @@ local function testDialogue()
 end
 
 local function testMoviePlayer()
-	require "com.jessewarden.planeshooter.vo.DialogueVO"
-	require "com.jessewarden.planeshooter.vo.MovieVO"
-	require "com.jessewarden.planeshooter.models.AudioModel"
+	require "com.jessewarden.planeshooter.services.LoadLevelService"
 	require "com.jessewarden.planeshooter.views.MoviePlayerView"
 
-	local model = AudioModel:new()
-
-	local player = MoviePlayerView:new(model)
-	local movie = MovieVO:new()
-	local getDia = function(name, message)
-		local dia = DialogueVO:new()
-		dia.characterName = name
-		dia.message = message
-		return dia
+	local level = LoadLevelService:new("level1.json")
+	local events = level.events
+	local movie
+	local i = 1
+	while events[i] do
+		local event = events[i]
+		if event.classType == "MovieVO" or event.classType == "movie" then
+			movie = event
+			break
+		end
 	end
-	table.insert(movie.dialogues, getDia("Sydney", "Hello!"))
-	table.insert(movie.dialogues, getDia("Dad", "Wazzzzuuup!"))
-	table.insert(movie.dialogues, getDia("Sydney", "How are you?"))
-	table.insert(movie.dialogues, getDia("Dad", "I'm great, thanks for asking."))
 
+	local player = MoviePlayerView:new()
+	print("*******************************************")
+	print("*******************************************")
+	print("*******************************************")
+	print("*******************************************")
 	player:startMovie(movie)
 end
 
@@ -835,15 +835,55 @@ local function bunchOfFlak()
 end
 
 local function testBoss()
-	local player = display.newGroup()
-	player.x = 200
-	player.y = 300
+
+	require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlane"
+
 
 	local boss = BossBigPlane:new(player)
-	local loop = GameLoop:new()
-	loop:start()
-	loop:addLoop(boss)
+
+	local touchList = function(e)
+		if e.phase == "began" then
+			boss.hitPoints = 0
+		end
+		--[[
+		if e.phase == "began" then
+			if boss.hitPoints == 20 then
+				boss.hitPoints = 14
+			elseif boss.hitPoints == 14 then
+				boss.hitPoints = 6
+			elseif boss.hitPoints == 6 then
+				boss.hitPoints = 20
+			end
+		end
+		]]--
+	end
+	Runtime:addEventListener("touch", touchList)
+	--[[
+	local t = {}
+	function t:timer()
+		boss.hitPoints = boss.hitPoints - 1
+		print(boss.hitPoints)
+	end
+	timer.performWithDelay(1000, t, 0)
+	]]--
 end
+
+local function testBossDeath()
+	require "com.jessewarden.planeshooter.sprites.enemies.BossBigPlaneDeath"
+	local touchList = function(e)
+		if e.phase == "began" then
+			print("gameLoop:", gameLoop.paused)
+			if gameLoop.paused == false then
+				gameLoop:pause()
+			else
+				gameLoop:start()
+			end
+		end
+	end
+	Runtime:addEventListener("touch", touchList)
+	local death = BossBigPlaneDeath:new(200, 300)
+end
+
 
 local function testPlayerWeapons()
 	require "com.jessewarden.planeshooter.sprites.player.Player"
@@ -1167,7 +1207,7 @@ end
 
 local function testMoviePlayerInLevelViewWithDynamicLevel()
 	require "com.jessewarden.planeshooter.services.LoadLevelService"
-	local level = LoadLevelService:new("level3.json")
+	local level = LoadLevelService:new("level.json")
 	
 	require "com.jessewarden.planeshooter.models.LevelModel"
 	local model = LevelModel:new()
@@ -1398,6 +1438,7 @@ startPhysics()
 --testFlak()
 --bunchOfFlak()
 --testBoss()
+--testBossDeath()
 --testPlayerWeapons()
 --testRailGun()
 --testTypeOf()

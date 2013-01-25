@@ -37,11 +37,11 @@ function PlaneShooterContext:new()
 		-- does with our classes.
 		local className = self:getClassNameFromPackage(viewClass)
 		Runtime:addEventListener(className .. "_init", function(e)
-			print("sup init")
+			--print("sup init")
 			self:onViewInit(e)
 		end)
 		Runtime:addEventListener(className .. "_destroy", function(e)
-			print("sup destroy")
+			--print("sup destroy")
 			self:onViewDestroy(e)
 		end)
 		self.controllerMap[className] = controllerClass

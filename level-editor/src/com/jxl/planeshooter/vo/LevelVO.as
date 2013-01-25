@@ -9,6 +9,11 @@ package com.jxl.planeshooter.vo
 	public class LevelVO extends EventDispatcher
 	{
 		private var _events:ArrayCollection = new ArrayCollection();
+		private var _totalTime:Number = 0;
+		
+		public var levelName:String;
+		public var levelDescription:String;
+		public var musicFile:String;
 		
 		[Bindable]
 		public function get events():ArrayCollection { return _events; }
@@ -25,7 +30,7 @@ package com.jxl.planeshooter.vo
 			}
 		}
 		
-		private var _totalTime:Number = 0;
+		
 		
 		[Bindable(event="totalTimeChanged")]
 		public function get totalTime():Number

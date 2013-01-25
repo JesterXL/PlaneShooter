@@ -37,6 +37,7 @@ function SoundManager:new()
 
 	manager.staticStartSoundCompleteCallback = nil
 	manager.staticEndSoundCompleteCallback = nil
+	manager.dialogueCallback = nil
 
 	function manager:init()
 		self:reserveChannels()
@@ -77,7 +78,7 @@ function SoundManager:new()
 		self.playerDeathSound = audio.loadSound("audio/player/player_death_sound.mp3")
 
 		self.bomberLoopSound = audio.loadSound("audio/bomber/bomber_loop.wav")
-		self.bomberShootSound = audio.loadSound("audio/bomber/bomber_turret_fire.wav")
+		self.bomberShootSound = audio.loadSound("audio/bomber/bomber_fire.wav")
 		self.bomberDeathSound = audio.loadSound("audio/bomber/bomber_explode.wav")
 
 		self.smallPlaneDeathSound = audio.loadSound("audio/small_plane/small_plane_death.mp3")
@@ -89,6 +90,7 @@ function SoundManager:new()
 	end
 
 	function manager:StaticStartSound_onComplete(event)
+		--print("SoundManager::StaticStartSound_onComplete")
 		local callback = self.staticStartSoundCompleteCallback
 		self.staticStartSoundCompleteCallback = nil
 		callback()
@@ -100,6 +102,7 @@ function SoundManager:new()
 	end
 
 	function manager:StaticEndSound_onComplete(event)
+		--print("SoundManager::StaticEndSound_onComplete")
 		local callback = self.staticEndSoundCompleteCallback
 		self.staticEndSoundCompleteCallback = nil
 		callback()
@@ -119,12 +122,14 @@ function SoundManager:new()
 
 		local localCallback = function(e)
 			if e.completed == true then
+				--print("SoundManager::playDialogue callback executing", system.getTimer())
 				callback()
 			end
 		end
+		self.dialogueCallback = localCallback
 		self.dialogueStream = audio.loadStream(dialogueFile)
 		audio.play(self.dialogueStream, {channel=self.CHANNEL_DIALOGUE,
-											onComplete=callback})
+											onComplete=self.dialogueCallback})
 		audio.setVolume(self.dialogueVolume, {channel=self.CHANNEL_DIALOGUE})
 	end
 
@@ -133,6 +138,9 @@ function SoundManager:new()
 			audio.stop(self.CHANNEL_DIALOGUE)
 			audio.dispose(self.dialogueStream)
 			self.dialogueStream = nil
+			self.staticStartSoundCompleteCallback = nil
+			self.staticEndSoundCompleteCallback = nil
+			self.dialogueCallback = nil
 		end
 	end
 
@@ -215,7 +223,7 @@ function SoundManager:new()
 	end
 
 	function manager:playBossBigPlaneEngineSound()
-		self.bomberLoopSoundChannel = audio.play(self.bomberLoopSound)
+		self.bomberLoopSoundChannel = audio.play(self.bomberLoopSound, {loops=-1})
 		audio.setVolume(self.effectsVolume, {channel=self.bomberLoopSoundChannel})
 	end
 

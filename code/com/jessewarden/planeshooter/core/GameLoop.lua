@@ -33,6 +33,7 @@ function GameLoop:new()
 				return true
 			end
 		end
+		self:pause()
 		error("!! item not found !!")
 		return false
 	end
