@@ -3,18 +3,18 @@ require "com.jessewarden.planeshooter.utils.TweenUtils"
 
 StageIntroScreen = {}
 
-function StageIntroScreen:new(stageNumber, title)
+function StageIntroScreen:new(title, description)
 
 	local screen = display.newGroup()
 	
-	function screen:init(stageNumber, title)
-		local stageNumberText = display.newText(screen, "Stage " .. stageNumber, 0, 0, native.systemFont, 32)
+	function screen:init(title, description)
+		local stageNumberText = display.newText(screen, title, 0, 0, native.systemFont, 32)
 		screen:initChild("stageNumberText", stageNumberText)
 
 		local line = display.newLine(screen, 0, 0, 100, 0)
 		screen:initChild("line", line)
 
-		local titleText = display.newText(screen, title, 0, 0, native.systemFont, 18)
+		local titleText = display.newText(screen, description, 0, 0, native.systemFont, 18)
 		screen:initChild("titleText", titleText)
 
 		self:createReadyAndGo()
@@ -218,7 +218,7 @@ function StageIntroScreen:new(stageNumber, title)
 		text.alpha = 0
 	end
 
-	screen:init(stageNumber, title)
+	screen:init(title, description)
 
 	return screen
 end

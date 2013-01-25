@@ -27,6 +27,7 @@
 			
 			private var movieEditor:MovieEditor;
 			private var saveLevelService:SaveLevelService;
+			private var fileRef:File;
 			
 			
 			private function onEditMovie(event:EventItemRendererEvent):void
@@ -99,6 +100,24 @@
 				currentTimeSlider.value = event.item.when;
 			}
 			
+			private function onBrowseForMusicFile():void
+			{
+				if(fileRef == null)
+				{
+					fileRef = new File();
+					fileRef.addEventListener(Event.SELECT, onAudioFileSelected);
+				}
+				fileRef.browseForOpen("Audio File", [new FileFilter("Wave", ".wave,.wav"), new FileFilter("mp3", ".mp3")]);
+			}
+			
+			private function onAudioFileSelected(event:Event):void
+			{
+				// HACK/KLUDGE: removing the file prefix so we have relative URL's
+				var theURL:String = fileRef.url;
+				theURL = "audio/" + theURL.split("audio/")[1];
+				level.musicFile = theURL;
+			}
+			
 		]]>
 	</fx:Script>
 	
@@ -116,10 +135,14 @@
 	<s:HGroup>
 		<s:Form>
 			<s:FormItem label="Name:">
-				<s:TextInput id="levelNameTextInput" text="{level.levelName}" change="level.levelName = levelNameTextInput.text" />
+				<s:TextInput id="levelNameTextInput" text="{level.name}" change="level.name = levelNameTextInput.text" />
 			</s:FormItem>
 			<s:FormItem label="Description:">
-				<s:TextInput id="levelDescriptionTextInput" text="{level.levelDescription}" change="level.levelDescription = levelDescriptionTextInput.text" />
+				<s:TextInput id="levelDescriptionTextInput" text="{level.description}" change="level.description = levelDescriptionTextInput.text" />
+			</s:FormItem>
+			<s:FormItem label="Music:">
+				<s:TextInput id="musicPathTextInput" enabled="false" text="{level.musicFile}" />
+				<s:Button label="Browse" click="onBrowseForMusicFile()" />
 			</s:FormItem>
 		</s:Form>
 	</s:HGroup>

@@ -64,9 +64,10 @@ function LevelView:new()
 		self:dispatchEvent({name="onMovieEnded", target=self})
 	end
 
-	function view:onLevelStart()
+	function view:onLevelStart(levelVO)
+		print("LevelView::onLevelStart, levelVO:", levelVO, ", levelVO.name:", levelVO.name, ", des:", levelVO.description)
 		if self.levelStartView == nil then
-			self.levelStartView = StageIntroScreen:new(1, "Default Test")
+			self.levelStartView = StageIntroScreen:new(levelVO.name, levelVO.description)
 			self:insert(self.levelStartView)
 			self.levelStartView:addEventListener("onScreenAnimationCompleted", function()
 				self.levelStartView:hide()
@@ -89,8 +90,7 @@ function LevelView:new()
 			end)
 		end
 		self.levelEndView:show()
-		SoundManager.inst:playLevelEndSound()
-
+		
 		self.scrollingTerrainView:stop()
 	end
 

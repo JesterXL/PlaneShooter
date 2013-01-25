@@ -11,9 +11,9 @@ package com.jxl.planeshooter.vo
 		private var _events:ArrayCollection = new ArrayCollection();
 		private var _totalTime:Number = 0;
 		
-		public var levelName:String;
-		public var levelDescription:String;
-		public var musicFile:String;
+		[Bindable] public var name:String;
+		[Bindable] public var description:String;
+		[Bindable] public var musicFile:String;
 		
 		[Bindable]
 		public function get events():ArrayCollection { return _events; }
@@ -91,6 +91,9 @@ package com.jxl.planeshooter.vo
 			var obj:Object 					= {};
 			obj.events 						= [];
 			obj.totalTime					= 0;
+			obj.name 				= name;
+			obj.description 				= description;
+			obj.musicFile 					= musicFile;
 			if(events && events.length > 0)
 			{
 				var len:int = events.length;
@@ -136,6 +139,10 @@ package com.jxl.planeshooter.vo
 					}
 				}
 			}
+			
+			name 					= obj.name;
+			description 			= obj.description;
+			musicFile 				= obj.musicFile;
 		}
 	}
 }

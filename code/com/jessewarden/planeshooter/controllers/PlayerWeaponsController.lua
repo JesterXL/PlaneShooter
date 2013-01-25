@@ -54,6 +54,7 @@ function PlayerWeaponsController:new(player)
 
 	function regulator:touch(event)
 		--print("touch: ", event.phase)
+		
 		if event.phase == "began" or event.phase == "moved" then
 			self.enabled = true
 			--audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1})

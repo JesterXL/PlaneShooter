@@ -1,3 +1,5 @@
+require "com.jessewarden.planeshooter.sounds.SoundManager"
+
 LevelCompleteCommand = {}
 
 function LevelCompleteCommand:new()
@@ -6,6 +8,9 @@ function LevelCompleteCommand:new()
 
 	function command:execute(event, context)
 		print("LevelCompleteCommand::execute")
+		
+		SoundManager.inst:playLevelEndSound()
+
 		local progressModel = context:getModel("progressModel")
 		local levelModel = context:getModel("levelModel")
 		local scoreModel = context:getModel("scoreModel")

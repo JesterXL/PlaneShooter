@@ -27,7 +27,7 @@ function LoadNextLevelCommand:new()
 		local levelModel = context:getModel("levelModel")
 		levelModel:init(level)
 		levelModel:start()
-		SoundManager.inst:playMusic("music_Level1.mp3")
+		SoundManager.inst:playMusic(level.musicFile)
 
 		--levelModel:setLevelTime(50 * 1000)
 	end

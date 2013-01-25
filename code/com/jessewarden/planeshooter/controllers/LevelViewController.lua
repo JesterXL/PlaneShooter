@@ -83,7 +83,7 @@ function LevelViewController:new()
 	end
 
 	function controller:LevelModel_levelStart(event)
-		self.view:onLevelStart()
+		self.view:onLevelStart(self.levelModel.level)
 	end
 	
 	function controller:LevelModel_levelComplete(event)
