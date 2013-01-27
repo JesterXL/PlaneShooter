@@ -39,6 +39,8 @@ function SoundManager:new()
 	manager.staticEndSoundCompleteCallback = nil
 	manager.dialogueCallback = nil
 
+	manager.missileSound = nil
+
 	function manager:init()
 		self:reserveChannels()
 		--self:adjustVolume()
@@ -82,6 +84,8 @@ function SoundManager:new()
 		self.bomberDeathSound = audio.loadSound("audio/bomber/bomber_explode.wav")
 
 		self.smallPlaneDeathSound = audio.loadSound("audio/small_plane/small_plane_death.mp3")
+
+		self.missileSound = audio.loadSound("audio/jet/enemy_missle_jet_missle.mp3")
 	end
 
 	function manager:playStaticStartSound(callback)
@@ -232,6 +236,11 @@ function SoundManager:new()
 			audio.stop(self.bomberLoopSoundChannel)
 			self.bomberLoopSoundChannel = nil
 		end
+	end
+
+	function manager:playMissileSound()
+		local channel = audio.play(self.missileSound)
+		audio.setVolume(self.effectsVolume, {channel=channel})
 	end
 
 	return manager

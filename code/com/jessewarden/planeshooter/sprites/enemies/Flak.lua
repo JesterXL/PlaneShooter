@@ -12,15 +12,24 @@ function Flak:new()
 	
 	local flak = sprite.newSprite(Flak.spriteSet)
 
+	function flak:init()
+		flak:addEventListener("sprite", flak)
+		flak:prepare("flak")
+		flak:play()
+	end
+
+	function flak:destroy()
+		self.isVisible = false
+		self:removeSelf()
+	end
+
 	function flak:sprite(event)
 		if event.phase == "end" then
-			self.isVisible = false
+			self:destroy()
 		end
 	end
 
-	flak:addEventListener("sprite", flak)
-	flak:prepare("flak")
-	flak:play()
+	flak:init()
 
 	return flak
 

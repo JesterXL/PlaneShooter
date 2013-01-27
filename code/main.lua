@@ -1371,12 +1371,6 @@ local function testUberJet()
 	local uberJet = UberJet:new()
 end
 
-local function testTankMan()
-	require "com.jessewarden.planeshooter.sprites.enemies.TankMan"
-
-	local tankMan = TankMan:new()
-end
-
 local function testFindSoundChannels()
 	print("total channels:", audio.totalChannels)
 	print("free channels:", audio.freeChannels)
@@ -1389,6 +1383,76 @@ local function testFindSoundChannels()
 	print("reserve 2:", audio.reserveChannels(2))
 	print("after reserved channels:", audio.reservedChannels)
 	print("after unreserved before:", audio.unreservedFreeChannels)
+end
+
+local function testTankMan()
+	require "com.jessewarden.planeshooter.sprites.enemies.TankMan"
+	local tankMan = TankMan:new()
+	tankMan.x = 40
+	tankMan.y = 30
+
+--[[
+	local dot = display.newRect(0, 0, 10, 10)
+	dot:setFillColor(255, 0, 0)
+	dot.x = 55
+	dot.y = 90
+	]]--
+
+	Runtime:addEventListener("touch", function(e)
+		if e.phase == "began" then
+			--tankMan:startSpinSAMS()
+			--tankMan:startSuperSpinSams()
+			playerView.x = e.x
+			playerView.y = e.y
+			--tankMan:startFiringMissiles()
+			--tankMan:startFiringFlak()
+			tankMan:startRotateToSpreadPosition()
+		elseif e.phase == "ended" then
+			--tankMan:stopSpinSAMS()
+			--tankMan:stopSuperSpinSams()
+			--tankMan:stopFiringMissiles()
+			--tankMan:stopFiringFlak()
+			--tankMan:rotateToClosePosition()
+			tankMan:startRotateToClosePosition()
+		end
+	end)
+end
+
+local function testPivotJoint()
+
+	physics.setGravity( 0, 9.8 )
+
+	local getPart = function(image)
+		local part = display.newImage(image)
+		--part:setReferencePoint(display.TopLeftReferencePoint)
+		physics.addBody(part, {
+								bodyType="kinematic", 
+								isSensor=true
+								})
+		return part
+	end
+
+	local connectX = 15
+	local connectY = 15
+	local shoulder = getPart("images/sprites/tank_man/tank_man_left_shoulder.png")
+	shoulder.bodyType = "static"
+	shoulder.isFixedRotation = true
+	local arm = getPart("images/sprites/tank_man/tank_man_left_arm.png")
+	arm.x = 15
+	arm.y = 42
+	local joint = physics.newJoint("pivot", shoulder, arm, connectX, connectY)
+	--joint.isLimitEnabled = true
+	--joint:setRotationLimits( -45, 45 )
+	joint.isMotorEnabled = true
+	joint.maxMotorTorque = 1000000
+	joint.motorSpeed = 1000
+
+--[[
+	local dot = display.newCircle(10, 10, 3)
+	dot:setFillColor(255, 0, 0)
+	dot.x = connectX
+	dot.y = connectY
+	]]--
 end
 
 --[[
@@ -1472,13 +1536,13 @@ startPhysics()
 
 --testLevel1MoviePlayer()
 --testUberJet()
---testTankMan()
 
 --testFindSoundChannels()
 
+testTankMan()
+--testPivotJoint()
 
-
-testPlaneShooter()
+--testPlaneShooter()
 
 
 

@@ -1,12 +1,12 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "physics"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 
 EnemyMissile = {}
 
 function EnemyMissile:new(startX, startY)
 
 	if(EnemyMissile.missileSound == nil) then
-		EnemyMissile.missileSound = audio.loadSound("enemy_missle_jet_missle.mp3")
 		local missleSheet = sprite.newSpriteSheet("enemy_missle_jet_missle_sheet.png", 6, 15)
 		local missleSet = sprite.newSpriteSet(missleSheet, 1, 3)
 		sprite.add(missleSet, "missleFlare", 1, 3, 100, 0)
@@ -41,6 +41,7 @@ function EnemyMissile:new(startX, startY)
 								isBullet = true, isSensor = true, isFixedRotation = true,
 								filter = { categoryBits = 4, maskBits = 3 }
 							} )
+		SoundManager.inst:playMissileSound()
 	end
 
 	function img:destroy()
@@ -92,8 +93,8 @@ function EnemyMissile:new(startX, startY)
 	-- TODO: make sure using milliseconds vs. hardcoding step speed
 		self.currentLife = self.currentLife + millisecondsPassed
 		if(self.currentLife >= self.lifeTime) then
-			--self:destroy()
-			--return true
+			self:destroy()
+			return true
 		end
 
 		self.rotation = self:getRotation()
@@ -108,27 +109,27 @@ function EnemyMissile:new(startX, startY)
 		local moveY = self.speed * (deltaY / dist) * millisecondsPassed
 
 		if (math.abs(moveX) > dist or math.abs(moveY) > dist) then
-			--self.x = playerView.x
-			--self.y = playerView.y
+			self.x = playerView.x
+			self.y = playerView.y
 
 		else
-			--self.x = self.x - moveX
-			--self.y = self.y - moveY
-			local speedX = (self.x + moveX)
-			local speedY = (self.y + moveY)
-			print(speedX, speedY)
+			self.x = self.x - moveX
+			self.y = self.y - moveY
+			--local speedX = (self.x + moveX)
+			--local speedY = (self.y + moveY)
+			--print(speedX, speedY)
 			--self:applyForce(-1 * (self.x - moveX), -1 * (self.y - moveY), self.x + (self.width / 2), self.y + (self.height / 2))
-			if speedX > 0 then
-				speedX = 0.1
-			else
-				speedX = -0.1
-			end
-			if speedY > 0 then
-				speedY = 0.1
-			else
-				speedY = -0.1
-			end
-			self:applyForce(moveX, moveY, self.x + (self.width / 2), self.y + (self.height / 2))
+			--if speedX > 0 then
+			--	speedX = 0.1
+			--else
+			--	speedX = -0.1
+			--end
+			--if speedY > 0 then
+			--	speedY = 0.1
+			--else
+			--	speedY = -0.1
+			--end
+			--self:applyForce(moveX, moveY, self.x + (self.width / 2), self.y + (self.height / 2))
 		end
 	end
 
