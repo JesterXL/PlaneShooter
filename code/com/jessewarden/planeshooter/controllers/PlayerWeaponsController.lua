@@ -57,8 +57,12 @@ function PlayerWeaponsController:new(player)
 		
 		if event.phase == "began" or event.phase == "moved" then
 			self.enabled = true
-			--audio.play(planeShootSound, {channel=planeShootSoundChannel, loops=-1})
-			SoundManager.inst:playPlayerShootSound()
+			print("self.powerLevel:", self.powerLevel)
+			if self.powerLevel == 1 then
+				SoundManager.inst:playPlayerShootSingleSound()
+			elseif self.powerLevel == 2 then
+				SoundManager.inst:playPlayerShootDualSound()
+			end
 			return true
 		end
 

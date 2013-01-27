@@ -1,12 +1,12 @@
 require "com.jessewarden.planeshooter.core.constants"
 require "org.robotlegs.globals"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 
 EnemyMissileJet = {}
 
 function EnemyMissileJet:new(startX, startY, bottom)
 
 	if(EnemyMissileJet.jetSheet == nil) then
-		EnemyMissileJet.jetSound = audio.loadSound("enemy_missle_jet.mp3")
 	  	local jetSheet = sprite.newSpriteSheet("enemy_missle_jet_sheet.png", 25, 32)
 		local jetSet = sprite.newSpriteSet(jetSheet, 1, 2)
 		sprite.add(jetSet, "jetFly", 1, 2, 100, 0)
@@ -36,6 +36,7 @@ function EnemyMissileJet:new(startX, startY, bottom)
 							} )
 		img.collision = onHit
 		img:addEventListener("collision", img)
+		SoundManager.inst:playJetFlyBySound()
 	end
 
 	function onHit(self, event)

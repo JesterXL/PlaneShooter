@@ -894,11 +894,11 @@ local function testPlayerWeapons()
 
 	local player = Player:new()
 	--gameLoop:addLoop(player)
-	local controller = PlayerMovementController:new(player)
-	controller:start()
-	local weapons = PlayerWeaponsController:new(player)
-	weapons:start()
-	weapons:setPowerLevel(1)
+	--local controller = PlayerMovementController:new(player)
+	--controller:start()
+	--local weapons = PlayerWeaponsController:new(player)
+	--weapons:start()
+	player.weaponsController:setPowerLevel(2)
 
 	local t = {}
 	function t:timer(e)
@@ -920,7 +920,7 @@ local function testPlayerWeapons()
 		--print("weapons.fireSpeed: ", weapons.fireSpeed)
 	end
 
-	timer.performWithDelay(2000, t, 0)
+	--timer.performWithDelay(2000, t, 0)
 end
 
 local function testRailGun()
@@ -1404,18 +1404,26 @@ local function testTankMan()
 			--tankMan:startSuperSpinSams()
 			playerView.x = e.x
 			playerView.y = e.y
-			--tankMan:startFiringMissiles()
+			tankMan:startFiringMissiles()
 			--tankMan:startFiringFlak()
 			tankMan:startRotateToSpreadPosition()
 		elseif e.phase == "ended" then
 			--tankMan:stopSpinSAMS()
 			--tankMan:stopSuperSpinSams()
-			--tankMan:stopFiringMissiles()
+			tankMan:stopFiringMissiles()
 			--tankMan:stopFiringFlak()
 			--tankMan:rotateToClosePosition()
 			tankMan:startRotateToClosePosition()
 		end
 	end)
+
+	--local t = {}
+	--function t:timer()
+	--	tankMan:setHitPoints(50)
+	--end
+	--timer.performWithDelay(12 * 1000, t)
+	--require "com.jessewarden.planeshooter.sounds.SoundManager"
+	--SoundManager.inst:playTankManHitSound()
 end
 
 local function testPivotJoint()
@@ -1453,6 +1461,29 @@ local function testPivotJoint()
 	dot.x = connectX
 	dot.y = connectY
 	]]--
+end
+
+local function testRandomOneOrTwo()
+	local getOneOrTwo = function()
+		local num = math.floor(math.random() * 2)
+		return num
+	end
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
+	print(getOneOrTwo())
 end
 
 --[[
@@ -1533,6 +1564,7 @@ startPhysics()
 --testDateStrings()
 --testingNewFloatingText()
 --testNegativeRandoms()
+--testRandomOneOrTwo()
 
 --testLevel1MoviePlayer()
 --testUberJet()

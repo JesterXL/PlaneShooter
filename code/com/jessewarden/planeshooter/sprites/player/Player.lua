@@ -25,8 +25,6 @@ function Player:new()
 	img.reachedDestination = true
 	img.planeXTarget = 200
 	img.planeYTarget = 200
-	--img.playerHitSound = audio.loadSound("player_hit_sound.mp3")
-	--img.playerDeathSound = audio.loadSound("player_death_sound.mp3")
 
 	img.movementController = nil
 	img.weaponsController = nil
@@ -72,15 +70,14 @@ function Player:new()
 		self:dispatchEvent({name="bulletHit", target=self})
 		if(self.hitPoints <= 0) then
 			self.isVisible = false
-			--audio.play(self.playerDeathSound, {loops=0})
-			SoundManager.inst:playPlayerDeathSound()
+			SoundManager.inst:playPlayerRandomDeathSound()
 			------createPlayerDeath(self.x, self.y)
 			------stopPlayerInteraction()
 			------endGame()
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
 			--audio.play(self.playerHitSound, {loops=0})
-			SoundManager.inst:playPlayerHitSound()
+			SoundManager.inst:playPlayerRandomHitSound()
 		end
 	end
 
@@ -89,11 +86,11 @@ function Player:new()
 		if(self.hitPoints <= 0) then
 			self.isVisible = false
 			--audio.play(self.playerDeathSound, {loops=0})
-			SoundManager.inst:playPlayerDeathSound()
+			SoundManager.inst:playPlayerRandomDeathSound()
 			self:dispatchEvent({target=self, name="playerDead"})
 		else
 			--audio.play(self.playerHitSound, {loops=0})
-			SoundManager.inst:playPlayerHitSound()
+			SoundManager.inst:playPlayerRandomHitSound()
 			AchievementsProxy:unlock(constants.achievements.zeeMissile)
 		end
 	end

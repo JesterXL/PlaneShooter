@@ -79,6 +79,7 @@ function EnemySmallShip:new(startX, startY, bottom)
 			self.fireTime = self.fireTime - millisecondsPassed
 			if(self.fireTime <= 0) then
 				self.fired = true
+				SoundManager.inst:playSmallPlaneShootSound()
 				local bullet = EnemyBulletSingle:new(self.x, self.y, playerView)
 				self.parent:insert(bullet)
 			end

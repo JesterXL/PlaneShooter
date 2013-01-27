@@ -1,6 +1,7 @@
 require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
 require "com.jessewarden.planeshooter.sprites.enemies.Flak"
 require "com.jessewarden.planeshooter.core.constants"
+require "com.jessewarden.planeshooter.sounds.SoundManager"
 
 TankMan = {}
 
@@ -171,6 +172,9 @@ function TankMan:new()
 		window.y = 40
 
 		gameLoop:addLoop(self)
+
+		SoundManager.inst:playTankManAnnouncement()
+		SoundManager.inst:playTankManEngineNormalSound({fadeIn = true})
 	end
 
 	--[[
@@ -192,6 +196,8 @@ function TankMan:new()
 
 
 	function tank:startRotateToClosePosition()
+		SoundManager.inst:playTankManArmsMove2Sound()
+
 		self.rotatingFirePosition = true
 		self.leftShoulderArmJointTarget = 300
 		self.leftForearmLeftElbowJointTarget = -600
@@ -223,6 +229,8 @@ function TankMan:new()
 
 
 	function tank:startRotateToSpreadPosition()
+		SoundManager.inst:playTankManArmsMove1Sound()
+
 		self.rotatingFirePosition = true
 		self.leftShoulderArmJointTarget = 486
 		self.leftForearmLeftElbowJointTarget = -971
@@ -318,6 +326,7 @@ function TankMan:new()
 	end
 
 	function tank:collision(event)
+		SoundManager.inst:playTankManHitSound()
 		if(event.other.name == "Bullet") then
 			event.other:destroy()
 		elseif(event.other.name == "Player") then
@@ -353,11 +362,10 @@ function TankMan:new()
 	end
 
 	function tank:tick(milliseconds)
-
 		if self.rotatingFirePosition == true then
-			print("------")
-			print(self.leftShoulderArmJoint.jointAngle, ", ", self.leftShoulderArmJoint.jointAngle / 360)
-			print(self.leftForearmLeftElbowJoint.jointAngle, ", ", self.leftForearmLeftElbowJoint.jointAngle / 360)
+			--print("------")
+			--print(self.leftShoulderArmJoint.jointAngle, ", ", self.leftShoulderArmJoint.jointAngle / 360)
+			--print(self.leftForearmLeftElbowJoint.jointAngle, ", ", self.leftForearmLeftElbowJoint.jointAngle / 360)
 			self:stopMotorIfAroundTargetAngle(self.leftShoulderArmJoint, self.leftShoulderArmJointTarget)
 			self:stopMotorIfAroundTargetAngle(self.leftForearmLeftElbowJoint, self.leftForearmLeftElbowJointTarget)
 			self:stopMotorIfAroundTargetAngle(self.rightShoulderArmJoint, self.rightShoulderArmJointTarget)
@@ -368,6 +376,7 @@ function TankMan:new()
 			local tres = self.rightShoulderArmJoint.motorSpeed
 			local quatro = self.rightForearmRightElbowJoint.motorSpeed
 			if uno == 0 and dos == 0 and tres == 0 and quatro == 0 then
+				self:dispatchEvent({name="onReachedFirePosition", target=self})
 				self.rotatingFirePosition = false
 			end
 
@@ -394,6 +403,7 @@ function TankMan:new()
 		--local missile1 = EnemyMissile:new(self.leftSam.x, self.leftSam.y)
 		--local missile2 = EnemyMissile:new(self.rightSam.x, self.rightSam.y)
 		if self.currentMissile + 1 <= self.missileVolleyAmount then
+			self.currentMissile = self.currentMissile + 1
 			local targetX, targetY
 			if self.fireMissileSide == "left" then
 				self.fireMissileSide = "right"
@@ -439,6 +449,7 @@ function TankMan:new()
 		if self.currentFlakPoint + 1 <= #points then
 			self.currentFlakPoint = self.currentFlakPoint + 1
 			local point = points[self.currentFlakPoint]
+			SoundManager.inst:playTankManFlakSound()
 			local flak = Flak:new()
 			mainGroup:insert(flak)
 			flak.x = point[1]
@@ -446,6 +457,15 @@ function TankMan:new()
 		else
 			self:dispatchEvent({name="onFireFlakCompleted", target=self})
 			self:stopFiringFlak()
+		end
+	end
+
+	function tank:setHitPoints(value)
+		local oldValue = self.hitPoints
+		self.hitPoints = value
+		if self.hitPoints <= 50 and oldValue > 50 then
+			SoundManager.inst:stopTankManEngineNormalSound()
+			SoundManager.inst:playTankManEngineDamagedSound()
 		end
 	end
 
