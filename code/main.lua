@@ -1583,10 +1583,10 @@ startPhysics()
 --testUberJet()
 
 --testFindSoundChannels()
-testTankMan()
+--testTankMan()
 --testPivotJoint()
 
---testPlaneShooter()
+testPlaneShooter()
 
 
 

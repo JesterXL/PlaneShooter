@@ -13,10 +13,14 @@ function LoadNextLevelCommand:new()
 			-- start the game
 			print(">>> Loading level1.json")
 			level = LoadLevelService:new("level1.json")
+			-- [jwarden 1.27.2013] HACK/KLUDGE: CAN YOU SMELL WHAT THE DEADLINE IS COOKIN!?
+			Runtime:dispatchEvent({name="onLevelChanged", target=self, level="level1.json"})
 		elseif progressModel.currentLevel.fileName == "level1.json" then
 			-- load level 2
 			print(">>> Loading level2.json")
 			level = LoadLevelService:new("level2.json")
+			-- [jwarden 1.27.2013] HACK/KLUDGE: CAN YOU SMELL WHAT THE DEADLINE IS COOKIN!?
+			Runtime:dispatchEvent({name="onLevelChanged", target=self, level="level2.json"})
 		else
 			print("done!")
 			level = nil

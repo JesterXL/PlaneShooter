@@ -38,9 +38,9 @@ function LevelView:new()
 		self.floatingText = FloatingText:new()
 		self:insert(self.floatingText)
 
-		self.debugView = DebugView:new()
-		self:insert(self.debugView)
-		self.debugView.x = display.getCurrentStage().contentWidth - 100
+		--self.debugView = DebugView:new()
+		--self:insert(self.debugView)
+		--self.debugView.x = display.getCurrentStage().contentWidth - 100
 
 		self.playerView = Player:new()
 

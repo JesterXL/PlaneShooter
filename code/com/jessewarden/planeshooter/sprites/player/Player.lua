@@ -21,7 +21,7 @@ function Player:new()
 	img.speed = constants.PLAYER_MOVE_SPEED -- pixels per second
 	img.name = "Player"
 	img.maxHitPoints = 3
-	img.hitPoints = 3
+	img.hitPoints = 6
 	img.reachedDestination = true
 	img.planeXTarget = 200
 	img.planeYTarget = 200
@@ -44,12 +44,20 @@ function Player:new()
 								} )
 
 		gameLoop:addLoop(self)
+		Runtime:addEventListener("onLevelChanged", self)
 	end
 
 	function img:destroy()
-
+		--Runtime:removeEventListener("onLevelChanged", self)
 	end
 
+	function img:onLevelChanged(event)
+		if event.level == "level1.json" then
+			self.weaponsController:setPowerLevel(1)
+		elseif event.level == "level2.json" then
+			self.weaponsController:setPowerLevel(2)
+		end
+	end
 						
 	function img:move(x, y)
 		self.x = x

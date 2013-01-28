@@ -119,6 +119,8 @@ function LevelModel:new()
 			i = i + 1
 		end
 
+		-- TODO: the last one that has a pause is still considered the end of a level...
+		
 		local index = #events
 		if seconds >= level.totalTime and index == 0 and self.paused == false then
 			print("LevelModel_levelComplete")
