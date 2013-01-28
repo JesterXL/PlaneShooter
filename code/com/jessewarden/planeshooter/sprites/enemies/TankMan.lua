@@ -2,6 +2,11 @@ require "com.jessewarden.planeshooter.sprites.enemies.EnemyMissile"
 require "com.jessewarden.planeshooter.sprites.enemies.Flak"
 require "com.jessewarden.planeshooter.core.constants"
 require "com.jessewarden.planeshooter.sounds.SoundManager"
+require "com.jessewarden.statemachine.StateMachine"
+require "com.jessewarden.planeshooter.sprites.enemies.tankmanclasses.TankManNormalState"
+require "com.jessewarden.planeshooter.sprites.enemies.tankmanclasses.TankManDamagedState"
+require "com.jessewarden.planeshooter.sprites.enemies.tankmanclasses.TankManCrazyState"
+require "com.jessewarden.planeshooter.sprites.enemies.tankmanclasses.TankManDeadState"
 
 TankMan = {}
 
@@ -55,6 +60,7 @@ function TankMan:new()
 								}
 	
 	tank.rotatingFirePosition = false
+	tank.targetPosition = nil
 	tank.leftShoulderArmJointTarget = nil
 	tank.leftForearmLeftElbowJointTarget = nil
 	tank.rightShoulderArmJointTarget = nil
@@ -62,6 +68,8 @@ function TankMan:new()
 	tank.lastDiff = nil 
 
 	tank.hitPoints = 200
+
+	tank.stateMachine = nil
 
 	function tank:init()
 
@@ -74,7 +82,7 @@ function TankMan:new()
 		end
 
 		local flakGunLeft = self:makePart("flakGunLeft", "images/sprites/tank_man/tank_man_flak_left.png")
-		local flakGunRight = self:makePart("flakGunLeft", "images/sprites/tank_man/tank_man_flak_right.png")
+		local flakGunRight = self:makePart("flakGunRight", "images/sprites/tank_man/tank_man_flak_right.png")
 		local background = self:makePart("background", "images/sprites/tank_man/tank_man_background.png")
 		background.isFixedRotation = true
 		local window = self:makePart("window", "images/sprites/tank_man/tank_man_window.png")
@@ -171,10 +179,17 @@ function TankMan:new()
 		window.x = 51
 		window.y = 40
 
-		gameLoop:addLoop(self)
-
 		SoundManager.inst:playTankManAnnouncement()
 		SoundManager.inst:playTankManEngineNormalSound({fadeIn = true})
+
+		self.stateMachine = StateMachine:new(self)
+		self.stateMachine:addState2(TankManNormalState:new())
+		self.stateMachine:addState2(TankManDamagedState:new())
+		self.stateMachine:addState2(TankManCrazyState:new())
+		self.stateMachine:addState2(TankManDeadState:new())
+		self.stateMachine:setInitialState("normal")
+
+		gameLoop:addLoop(self)
 	end
 
 	--[[
@@ -199,6 +214,7 @@ function TankMan:new()
 		SoundManager.inst:playTankManArmsMove2Sound()
 
 		self.rotatingFirePosition = true
+		self.targetPosition = "close"
 		self.leftShoulderArmJointTarget = 300
 		self.leftForearmLeftElbowJointTarget = -600
 		self.rightShoulderArmJointTarget = -300
@@ -232,6 +248,7 @@ function TankMan:new()
 		SoundManager.inst:playTankManArmsMove1Sound()
 
 		self.rotatingFirePosition = true
+		self.targetPosition = "spread"
 		self.leftShoulderArmJointTarget = 486
 		self.leftForearmLeftElbowJointTarget = -971
 		self.rightShoulderArmJointTarget = -486
@@ -262,7 +279,7 @@ function TankMan:new()
 		print(self.rightForearmRightElbowJoint.jointAngle)
 		]]--
 
-
+		self.rotatingFirePosition = false
 		self.leftShoulderArmJoint.motorSpeed = 100
 		self.leftForearmLeftElbowJoint.motorSpeed = -200
 		self.rightShoulderArmJoint.motorSpeed = -100
@@ -287,6 +304,7 @@ function TankMan:new()
 	end
 
 	function tank:startSuperSpinSams()
+		self.rotatingFirePosition = false
 		self.leftForearmLeftElbowJoint.motorSpeed = -500
 		self.rightForearmRightElbowJoint.motorSpeed = 500
 	end
@@ -320,8 +338,43 @@ function TankMan:new()
 	end
 
 	function tank:destroy()
+		tank:stopRotateToClosePosition()
+		tank:stopRotateToSpreadPosition()
+		tank:stopSpinSAMS()
+		tank:stopSuperSpinSams()
+		tank:stopFiringMissiles()
+		tank:stopFiringFlak()
+
 		gameLoop:removeLoop(self)
 		self:removeEventListener("collision", self)
+
+		SoundManager.inst:stopTankManEngineDamagedSound()
+		SoundManager.inst:stopTankManEngineNormalSound()
+
+		self.leftShoulderArmJoint:removeSelf()
+		self.leftElbowLeftArmJoint:removeSelf()
+		self.leftForearmLeftElbowJoint:removeSelf()
+		self.leftSamLeftForearmJoint:removeSelf()
+		self.rightShoulderArmJoint:removeSelf()
+		self.rightElbowRightArmJoint:removeSelf()
+		self.rightForearmRightElbowJoint:removeSelf()
+		self.rightSamRightForearmJoint:removeSelf()
+
+		self.rightSam:removeSelf()
+		self.leftSam:removeSelf()
+		self.leftElbow:removeSelf()
+		self.rightElbow:removeSelf()
+		self.rightForearm:removeSelf()
+		self.leftForearm:removeSelf()
+		self.rightShoulder:removeSelf()
+		self.leftShoulder:removeSelf()
+		self.leftArm:removeSelf()
+		self.rightArm:removeSelf()
+		self.window:removeSelf()
+		self.background:removeSelf()
+		self.flakGunRight:removeSelf()
+		self.flakGunLeft:removeSelf()
+
 		self:removeSelf()
 	end
 
@@ -362,6 +415,7 @@ function TankMan:new()
 	end
 
 	function tank:tick(milliseconds)
+		self.stateMachine:tick(milliseconds)
 		if self.rotatingFirePosition == true then
 			--print("------")
 			--print(self.leftShoulderArmJoint.jointAngle, ", ", self.leftShoulderArmJoint.jointAngle / 360)
@@ -420,8 +474,8 @@ function TankMan:new()
 			local missile = EnemyMissile:new(targetX, targetY)
 			missile.speed = constants.ENEMY_MISSLE_TANK_MAN_MISSLE_SPEED
 		else
-			self:dispatchEvent({name="onFireMissilesCompleted", target=self})
 			self:stopFiringMissiles()
+			self:dispatchEvent({name="onFireMissilesCompleted", target=self})
 		end
 	end
 
@@ -455,8 +509,8 @@ function TankMan:new()
 			flak.x = point[1]
 			flak.y = point[2]
 		else
-			self:dispatchEvent({name="onFireFlakCompleted", target=self})
 			self:stopFiringFlak()
+			self:dispatchEvent({name="onFireFlakCompleted", target=self})
 		end
 	end
 

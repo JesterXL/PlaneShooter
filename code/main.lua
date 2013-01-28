@@ -1402,18 +1402,18 @@ local function testTankMan()
 		if e.phase == "began" then
 			--tankMan:startSpinSAMS()
 			--tankMan:startSuperSpinSams()
-			playerView.x = e.x
-			playerView.y = e.y
-			tankMan:startFiringMissiles()
+			--playerView.x = e.x
+			--playerView.y = e.y
+			--tankMan:startFiringMissiles()
 			--tankMan:startFiringFlak()
-			tankMan:startRotateToSpreadPosition()
+			--tankMan:startRotateToSpreadPosition()
 		elseif e.phase == "ended" then
 			--tankMan:stopSpinSAMS()
 			--tankMan:stopSuperSpinSams()
-			tankMan:stopFiringMissiles()
+			--tankMan:stopFiringMissiles()
 			--tankMan:stopFiringFlak()
 			--tankMan:rotateToClosePosition()
-			tankMan:startRotateToClosePosition()
+			--tankMan:startRotateToClosePosition()
 		end
 	end)
 
@@ -1424,6 +1424,20 @@ local function testTankMan()
 	--timer.performWithDelay(12 * 1000, t)
 	--require "com.jessewarden.planeshooter.sounds.SoundManager"
 	--SoundManager.inst:playTankManHitSound()
+
+	local t = {}
+	function t:timer()
+		print("tankMan.stateMachine.state:", tankMan.stateMachine.state)
+		if tankMan.stateMachine.state == "normal" then
+			tankMan.stateMachine:changeState("damaged")
+		elseif tankMan.stateMachine.state == "damaged" then
+			tankMan.stateMachine:changeState("crazy")
+		elseif tankMan.stateMachine.state == "crazy" then
+			tankMan.stateMachine:changeState("dead")
+		end
+	end
+	timer.performWithDelay(5 * 1000, t, 0)
+	--tankMan.stateMachine:changeState("crazy")
 end
 
 local function testPivotJoint()
@@ -1570,7 +1584,6 @@ startPhysics()
 --testUberJet()
 
 --testFindSoundChannels()
-
 testTankMan()
 --testPivotJoint()
 
