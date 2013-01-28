@@ -345,6 +345,9 @@ function TankMan:new()
 		tank:stopFiringMissiles()
 		tank:stopFiringFlak()
 
+		tank.stateMachine:destroy()
+		tank.stateMachine = nil
+
 		gameLoop:removeLoop(self)
 		self:removeEventListener("collision", self)
 
@@ -359,6 +362,22 @@ function TankMan:new()
 		self.rightElbowRightArmJoint:removeSelf()
 		self.rightForearmRightElbowJoint:removeSelf()
 		self.rightSamRightForearmJoint:removeSelf()
+
+		physics.addBody(self.rightSam)
+		physics.addBody(self.leftSam)
+		physics.addBody(self.leftElbow)
+		physics.addBody(self.rightElbow)
+		physics.addBody(self.leftForearm)
+		physics.addBody(self.rightForearm)
+		physics.addBody(self.rightShoulder)
+		physics.addBody(self.leftShoulder)
+		physics.addBody(self.leftArm)
+		physics.addBody(self.rightArm)
+		physics.addBody(self.window)
+		physics.addBody(self.background)
+		physics.addBody(self.flakGunRight)
+		physics.addBody(self.flakGunLeft)
+
 
 		self.rightSam:removeSelf()
 		self.leftSam:removeSelf()

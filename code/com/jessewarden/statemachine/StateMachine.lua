@@ -20,11 +20,11 @@ function StateMachine:new(entity)
 	stateMachine.parentStates = {}
 	stateMachine.path = {}
 	stateMachine.previousState = nil
-	stateMachine.entity = entity
 	stateMachine.lastTickTime = nil
 	stateMachine.stateToChangeTo = nil
 	stateMachine.changeStateAtTick = false
 	stateMachine.entity = entity
+	stateMachine.stateData = nil
 	
 	-- NOTE: if the user supplies a parent state and does not include in the from name/table,
 	-- that's ok, the State class checks to ensure.
@@ -317,6 +317,22 @@ function StateMachine:new(entity)
 				currentState:tick(time)
 			end
 		end	
+	end
+
+	function stateMachine:destroy()
+		self.states = nil
+		self.id = nil
+		self.state = nil
+		self.states = nil
+		self.parentState = nil
+		self.parentStates = nil
+		self.path = nil
+		self.previousState = nil
+		self.entity = nil
+		self.lastTickTime = nil
+		self.stateToChangeTo = nil
+		self.changeStateAtTick = false
+		self.stateData = nil
 	end
 	
 	return stateMachine

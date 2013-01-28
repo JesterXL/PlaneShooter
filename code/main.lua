@@ -1427,7 +1427,6 @@ local function testTankMan()
 
 	local t = {}
 	function t:timer()
-		print("tankMan.stateMachine.state:", tankMan.stateMachine.state)
 		if tankMan.stateMachine.state == "normal" then
 			tankMan.stateMachine:changeState("damaged")
 		elseif tankMan.stateMachine.state == "damaged" then
@@ -1436,7 +1435,7 @@ local function testTankMan()
 			tankMan.stateMachine:changeState("dead")
 		end
 	end
-	timer.performWithDelay(5 * 1000, t, 0)
+	--timer.performWithDelay(3 * 1000, t, 0)
 	--tankMan.stateMachine:changeState("crazy")
 end
 
