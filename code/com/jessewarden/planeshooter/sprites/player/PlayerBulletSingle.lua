@@ -8,17 +8,31 @@ function PlayerBulletSingle:new(startX, startY)
 	assert(startY ~= nil, "Must pass in a startY value")
 
 	local img = display.newImage("player_bullet_1.png", 0, 0, true)
-	img.classType = "PlayerBulletAngle"
+	img.classType = "PlayerBulletSingle"
 	img.name = "Bullet"
 	img.speed = constants.PLAYER_BULLET_SPEED
 	--img.id = globals:getID()
 	img.x = startX
 	img.y = startY
+	img.dead = false
 	
 	function img:destroy()
 		gameLoop:removeLoop(self)
 		self:removeEventListener("collision", img)
-		self:removeSelf()
+			
+		if self.dead == false then
+			self.dead = true
+			self.isVisible = false
+			
+			local t = {}
+			function t:timer()
+				if physics.removeBody(img) == true then
+					timer.cancel(t.id)
+					img:removeSelf()
+				end
+			end
+			t.id = timer.performWithDelay(100, t, -1)
+		end
 	end
 	
 	function img:collision(event)

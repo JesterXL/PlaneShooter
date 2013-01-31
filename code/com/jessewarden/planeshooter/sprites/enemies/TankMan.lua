@@ -106,15 +106,33 @@ function TankMan:new()
 		
 		local background = sprite.newSprite(TankMan.bodySheetSet)
 		background:setReferencePoint(display.TopLeftReferencePoint)
+		background.name = "background"
+		background.classType = "SpriteSheet"
 		self:insert(background)
 		background.x = 0
 		background.y = 0
 		self.background = background
 		physics.addBody(background, {
 								bodyType="kinematic", 
-								isSensor=true
+								isSensor=true,
+								filter = { categoryBits = 4, maskBits = 3 }
 								})
 		background.isFixedRotation = true
+		function background:collision(event)
+			print("background::collision")
+			print(event.target.name)
+			print(event.other.name)
+			print(event.selfElement)
+			print(event.otherElement)
+			SoundManager.inst:playTankManHitSound()
+			if(event.other.name == "Bullet") then
+				event.other:destroy()
+				tank:setHitPoints(tank.hitPoints - 1)
+			elseif(event.other.name == "Player") then
+				event.other:onBulletHit()
+			end
+		end
+		background:addEventListener("collision", background)
 
 		local leftArm = self:makePart("leftArm", "images/sprites/tank_man/tank_man_left_arm.png")
 		local rightArm = self:makePart("rightArm", "images/sprites/tank_man/tank_man_right_arm.png")
@@ -128,20 +146,53 @@ function TankMan:new()
 		local leftSam = sprite.newSprite(TankMan.leftTurretSheetSet)
 		--leftSam:setReferencePoint(display.TopLeftReferencePoint)
 		self:insert(leftSam)
+		leftSam.name = "leftSam"
+		leftSam.classType = "SpriteSheet"
 		self.leftSam = leftSam
 		physics.addBody(leftSam, {
 								bodyType="kinematic", 
-								isSensor=true
+								isSensor=true,
+								isBullet=true,
+								filter = { categoryBits = 4, maskBits = 3 }
 								})
+		leftSam.dead = false
+		function leftSam:collision(event)
+			--print("leftSam::collision")
+			SoundManager.inst:playTankManHitSound()
+			if(event.other.name == "Bullet") then
+				event.other:destroy()
+				tank:setLeftTurretHitPoints(tank.leftTurretHitPoints - 1)
+			elseif(event.other.name == "Player") then
+				event.other:onBulletHit()
+			end
+		end
+		leftSam:addEventListener("collision", leftSam)
+
 		local rightSam = sprite.newSprite(TankMan.rightTurretSheetSet)
 		--rightSam:setReferencePoint(display.TopLeftReferencePoint)
 		self:insert(rightSam)
+		rightSam.name = "rightSam"
+		rightSam.classType = "SpriteSheet"
 		self.rightSam = rightSam
 		physics.addBody(rightSam, {
 								bodyType="kinematic", 
-								isSensor=true
+								isSensor=true,
+								isBullet=true,
+								filter = { categoryBits = 4, maskBits = 3 }
 								})
-		
+		rightSam.dead = false
+		function rightSam:collision(event)
+			print("rightSam::collision")
+			print(event.other.name)
+			SoundManager.inst:playTankManHitSound()
+			if(event.other.name == "Bullet") then
+				event.other:destroy()
+				tank:setRightTurretHitPoints(tank.rightTurretHitPoints - 1)
+			elseif(event.other.name == "Player") then
+				event.other:onBulletHit()
+			end
+		end
+		rightSam:addEventListener("collision", rightSam)
 
 		leftShoulder.x = 4
 		leftShoulder.y = 36
@@ -228,9 +279,10 @@ function TankMan:new()
 		self.stateMachine:addState2(TankManDamagedState:new())
 		self.stateMachine:addState2(TankManCrazyState:new())
 		self.stateMachine:addState2(TankManDeadState:new())
-		--self.stateMachine:setInitialState("normal")
+		self.stateMachine:setInitialState("normal")
 
-		--gameLoop:addLoop(self)
+		background:addEventListener("collision", self)
+		gameLoop:addLoop(self)
 	end
 
 	--[[
@@ -364,21 +416,34 @@ function TankMan:new()
 		self.rightSam.y = self.leftSam.y
 	end
 
-
-
 	function tank:makePart(name, image)
 		local part = display.newImage(image)
 		--part:setReferencePoint(display.TopLeftReferencePoint)
 		self:insert(part)
+		part.name = name
 		physics.addBody(part, {
 								bodyType="kinematic", 
-								isSensor=true
+								isSensor=true,
+								filter = { categoryBits = 16, maskBits = 0 }
 								})
 		self[name] = part
 		return part
 	end
 
+	function tank:destroyLeftTurret()
+		self.leftSam.dead = true
+		self.leftSam:removeEventListener("collision", self.leftSam)
+	end
+
+	function tank:destroyRightTurret()
+		self.rightSam.dead = true
+		self.rightSam:removeEventListener("collision", self.rightSam)
+	end
+
 	function tank:destroy()
+		Runtime:dispatchEvent({name="onShowFloatingText", 
+								x=self.x, y=self.y, target=self, amount=100})
+
 		tank:stopRotateToClosePosition()
 		tank:stopRotateToSpreadPosition()
 		tank:stopSpinSAMS()
@@ -390,7 +455,10 @@ function TankMan:new()
 		tank.stateMachine = nil
 
 		gameLoop:removeLoop(self)
-		self:removeEventListener("collision", self)
+
+		background:removeEventListener("collision", background)
+		leftSam:removeEventListener("collision", leftSam)
+		rightSam:removeEventListener("collision", rightSam)
 
 		SoundManager.inst:stopTankManEngineDamagedSound()
 		SoundManager.inst:stopTankManEngineNormalSound()
@@ -438,19 +506,6 @@ function TankMan:new()
 			self:removeSelf()
 		end
 		timer.performWithDelay(100, t)
-	end
-
-	function tank:collision(event)
-		SoundManager.inst:playTankManHitSound()
-		if(event.other.name == "Bullet") then
-			event.other:destroy()
-			self:setHitPoints(self.hitPoints - 1)
-		elseif(event.other.name == "Player") then
-			event.other:onBulletHit()
-		end
-		Runtime:dispatchEvent({name="onShowFloatingText", 
-								x=self.x, y=self.y, target=self, amount=100})
-		self:destroy()
 	end
 	
 	function tank:startFiringMissiles()
@@ -517,25 +572,31 @@ function TankMan:new()
 	end
 
 	function tank:fireMissile()
-		--local missile1 = EnemyMissile:new(self.leftSam.x, self.leftSam.y)
-		--local missile2 = EnemyMissile:new(self.rightSam.x, self.rightSam.y)
+		local canFire = true
 		if self.currentMissile + 1 <= self.missileVolleyAmount then
 			self.currentMissile = self.currentMissile + 1
 			local targetX, targetY
 			if self.fireMissileSide == "left" then
 				self.fireMissileSide = "right"
+				if self.leftSam.dead == true then
+					canFire = false
+				end
 				targetX = self.leftSam.x
 				targetY = self.leftSam.y
 				targetX, targetY = self:localToContent(targetX, targetY)
 			else
 				self.fireMissileSide = "left"
+				if self.rightSam.dead == truedes then
+					canFire = false
+				end
 				targetX = self.rightSam.x
 				targetY = self.rightSam.y
 				targetX, targetY = self:localToContent(targetX, targetY)
 			end
-
-			local missile = EnemyMissile:new(targetX, targetY)
-			missile.speed = constants.ENEMY_MISSLE_TANK_MAN_MISSLE_SPEED
+			if canFire == true then
+				local missile = EnemyMissile:new(targetX, targetY)
+				missile.speed = constants.ENEMY_MISSLE_TANK_MAN_MISSLE_SPEED
+			end
 		else
 			self:stopFiringMissiles()
 			self:dispatchEvent({name="onFireMissilesCompleted", target=self})

@@ -327,7 +327,7 @@ end
 
 function startPhysics()
 	physics.start()
-	physics.setDrawMode( "normal" )
+	physics.setDrawMode( "hybrid" )
 	physics.setGravity( 0, 0 )
 
 	Runtime:addEventListener("GameLoop_onPauseChanged", GameLoop_onPauseChanged)
@@ -1398,8 +1398,8 @@ local function testTankMan()
 	dot.y = 90
 	]]--
 
-	Runtime:addEventListener("touch", function(e)
-		if e.phase == "began" then
+	--Runtime:addEventListener("touch", function(e)
+		--if e.phase == "began" then
 			--tankMan:startSpinSAMS()
 			--tankMan:startSuperSpinSams()
 			--playerView.x = e.x
@@ -1407,19 +1407,21 @@ local function testTankMan()
 			--tankMan:startFiringMissiles()
 			--tankMan:startFiringFlak()
 			--tankMan:startRotateToSpreadPosition()
-			--tankMan:setHitPoints(30)
-			tankMan:setRightTurretHitPoints(20)
-		elseif e.phase == "ended" then
+			--tankMan:setHitPoints(110)
+			--tankMan:setLeftTurretHitPoints(20)
+			--tankMan:setRightTurretHitPoints(20)
+		--elseif e.phase == "ended" then
 			--tankMan:stopSpinSAMS()
 			--tankMan:stopSuperSpinSams()
 			--tankMan:stopFiringMissiles()
 			--tankMan:stopFiringFlak()
 			--tankMan:rotateToClosePosition()
 			--tankMan:startRotateToClosePosition()
-			--tankMan:setHitPoints(110)
-			tankMan:setRightTurretHitPoints(0)
-		end
-	end)
+			--tankMan:setHitPoints(30)
+			--tankMan:setLeftTurretHitPoints(0)
+			--tankMan:setRightTurretHitPoints(0)
+		--end
+	--end)
 
 	--local t = {}
 	--function t:timer()
@@ -1443,6 +1445,11 @@ local function testTankMan()
 	--tankMan.stateMachine:changeState("crazy")
 
 	--timer.performWithDelay(3 * 1000, t, 0)
+
+	require "com.jessewarden.planeshooter.sprites.player.Player"
+	local player = Player:new()
+
+	tankMan:setLeftTurretHitPoints(0)
 end
 
 local function testPivotJoint()
