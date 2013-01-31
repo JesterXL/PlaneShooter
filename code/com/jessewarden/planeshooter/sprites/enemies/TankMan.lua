@@ -68,24 +68,54 @@ function TankMan:new()
 	tank.lastDiff = nil 
 
 	tank.hitPoints = 200
+	tank.leftTurretHitPoints = 65
+	tank.rightTurretHitPoints = 65
 
 	tank.stateMachine = nil
 
 	function tank:init()
+		if TankMan.bodySheet == nil then
+			local FOLDER_PATH = "images/sprites/tank_man/"
+			local bodySheet = sprite.newSpriteSheet(FOLDER_PATH .. "tank_man_body_sheet.png", 102, 90)
+			local bodySheetSet = sprite.newSpriteSet(bodySheet, 1, 5)
+			sprite.add(bodySheetSet, "tankManNormal", 1, 1, 5000, 0)
+			sprite.add(bodySheetSet, "tankManDamagedLight", 2, 2, 300, 0)
+			sprite.add(bodySheetSet, "tankManDamagedHeavy", 4, 2, 300, 0)
+			TankMan.bodySheet = bodySheet
+			TankMan.bodySheetSet = bodySheetSet
 
-		if TankMan.spriteSheet == nil then
-			local spriteSheet = sprite.newSpriteSheet("tank_man_sheet.png", 248, 163)
-			local spriteSet = sprite.newSpriteSet(spriteSheet, 1, 1)
-			sprite.add(spriteSet, "tankman", 1, 1, 500, 0)
-			TankMan.spriteSheet = spriteSheet
-			TankMan.spriteSet = spriteSet
+			local leftTurretSheet = sprite.newSpriteSheet(FOLDER_PATH .. "tank_man_left_turret_sheet.png", 24, 56)
+			local leftTurretSheetSet = sprite.newSpriteSet(leftTurretSheet, 1, 5)
+			sprite.add(leftTurretSheetSet, "tankManLeftTurretNormal", 1, 1, 5000, 0)
+			sprite.add(leftTurretSheetSet, "tankManLeftTurretDamagedLight", 2, 2, 300, 0)
+			sprite.add(leftTurretSheetSet, "tankManLeftTurretDamagedHeavy", 4, 2, 300, 0)
+			TankMan.leftTurretSheet = leftTurretSheet
+			TankMan.leftTurretSheetSet = leftTurretSheetSet
+
+			local rightTurretSheet = sprite.newSpriteSheet(FOLDER_PATH .. "tank_man_right_turret_sheet.png", 24, 48)
+			local rightTurretSheetSet = sprite.newSpriteSet(rightTurretSheet, 1, 5)
+			sprite.add(rightTurretSheetSet, "tankManRightTurretNormal", 1, 1, 5000, 0)
+			sprite.add(rightTurretSheetSet, "tankManRightTurretDamagedLight", 2, 2, 300, 0)
+			sprite.add(rightTurretSheetSet, "tankManRightTurretDamagedHeavy", 4, 2, 300, 0)
+			TankMan.rightTurretSheet = rightTurretSheet
+			TankMan.rightTurretSheetSet = rightTurretSheetSet
 		end
 
 		local flakGunLeft = self:makePart("flakGunLeft", "images/sprites/tank_man/tank_man_flak_left.png")
 		local flakGunRight = self:makePart("flakGunRight", "images/sprites/tank_man/tank_man_flak_right.png")
-		local background = self:makePart("background", "images/sprites/tank_man/tank_man_background.png")
+		
+		local background = sprite.newSprite(TankMan.bodySheetSet)
+		background:setReferencePoint(display.TopLeftReferencePoint)
+		self:insert(background)
+		background.x = 0
+		background.y = 0
+		self.background = background
+		physics.addBody(background, {
+								bodyType="kinematic", 
+								isSensor=true
+								})
 		background.isFixedRotation = true
-		local window = self:makePart("window", "images/sprites/tank_man/tank_man_window.png")
+
 		local leftArm = self:makePart("leftArm", "images/sprites/tank_man/tank_man_left_arm.png")
 		local rightArm = self:makePart("rightArm", "images/sprites/tank_man/tank_man_right_arm.png")
 		local leftShoulder = self:makePart("leftShoulder", "images/sprites/tank_man/tank_man_left_shoulder.png")
@@ -94,8 +124,23 @@ function TankMan:new()
 		local rightForearm = self:makePart("rightForearm", "images/sprites/tank_man/tank_man_right_forearm.png")
 		local rightElbow = self:makePart("rightElbow", "images/sprites/tank_man/tank_man_right_elbow.png")
 		local leftElbow = self:makePart("leftElbow", "images/sprites/tank_man/tank_man_left_elbow.png")
-		local leftSam = self:makePart("leftSam", "images/sprites/tank_man/tank_man_left_sam.png")
-		local rightSam = self:makePart("rightSam", "images/sprites/tank_man/tank_man_right_sam.png")
+
+		local leftSam = sprite.newSprite(TankMan.leftTurretSheetSet)
+		--leftSam:setReferencePoint(display.TopLeftReferencePoint)
+		self:insert(leftSam)
+		self.leftSam = leftSam
+		physics.addBody(leftSam, {
+								bodyType="kinematic", 
+								isSensor=true
+								})
+		local rightSam = sprite.newSprite(TankMan.rightTurretSheetSet)
+		--rightSam:setReferencePoint(display.TopLeftReferencePoint)
+		self:insert(rightSam)
+		self.rightSam = rightSam
+		physics.addBody(rightSam, {
+								bodyType="kinematic", 
+								isSensor=true
+								})
 		
 
 		leftShoulder.x = 4
@@ -130,11 +175,11 @@ function TankMan:new()
 		
 		self.leftForearmLeftElbowJoint = leftForearmLeftElbowJoint
 
-		leftSam.x = 2
-		leftSam.y = 90
+		leftSam.x = 4
+		leftSam.y = 80
 		leftSam.isFixedRotation = true
 
-		local leftSamLeftForearmJoint = physics.newJoint("pivot", leftSam, leftForearm, leftSam.x, leftSam.y)
+		local leftSamLeftForearmJoint = physics.newJoint("pivot", leftSam, leftForearm, leftSam.x, leftSam.y + 12)
 		self.leftSamLeftForearmJoint = leftSamLeftForearmJoint
 
 		rightShoulder.x = 99
@@ -152,7 +197,6 @@ function TankMan:new()
 		rightShoulderArmJoint.isMotorEnabled = true
 		rightShoulderArmJoint.maxMotorTorque = 1000000
 		
-
 		rightElbow.x = 99
 		rightElbow.y = 66
 
@@ -169,15 +213,12 @@ function TankMan:new()
 		
 		self.rightForearmRightElbowJoint = rightForearmRightElbowJoint
 
-		rightSam.x = 99
-		rightSam.y = 90
+		rightSam.x = 98
+		rightSam.y = 84
 		rightSam.isFixedRotation = true
 
-		local rightSamRightForearmJoint = physics.newJoint("pivot", rightSam, rightForearm, rightSam.x, rightSam.y)
+		local rightSamRightForearmJoint = physics.newJoint("pivot", rightSam, rightForearm, rightSam.x, rightSam.y + 12)
 		self.rightSamRightForearmJoint = rightSamRightForearmJoint
-
-		window.x = 51
-		window.y = 40
 
 		SoundManager.inst:playTankManAnnouncement()
 		SoundManager.inst:playTankManEngineNormalSound({fadeIn = true})
@@ -187,9 +228,9 @@ function TankMan:new()
 		self.stateMachine:addState2(TankManDamagedState:new())
 		self.stateMachine:addState2(TankManCrazyState:new())
 		self.stateMachine:addState2(TankManDeadState:new())
-		self.stateMachine:setInitialState("normal")
+		--self.stateMachine:setInitialState("normal")
 
-		gameLoop:addLoop(self)
+		--gameLoop:addLoop(self)
 	end
 
 	--[[
@@ -376,7 +417,6 @@ function TankMan:new()
 			physics.addBody(self.leftShoulder)
 			physics.addBody(self.leftArm)
 			physics.addBody(self.rightArm)
-			physics.addBody(self.window)
 			physics.addBody(self.background)
 			physics.addBody(self.flakGunRight)
 			physics.addBody(self.flakGunLeft)
@@ -391,7 +431,6 @@ function TankMan:new()
 			self.leftShoulder:removeSelf()
 			self.leftArm:removeSelf()
 			self.rightArm:removeSelf()
-			self.window:removeSelf()
 			self.background:removeSelf()
 			self.flakGunRight:removeSelf()
 			self.flakGunLeft:removeSelf()
@@ -541,8 +580,9 @@ function TankMan:new()
 	function tank:setHitPoints(value)
 		local oldValue = self.hitPoints
 		self.hitPoints = value
+		local background = self.background
 		
-		if self.hitPoints < 0 then
+		if self.hitPoints <= 0 then
 			self.hitPoints = 0
 			self:destroy()
 			return true
@@ -551,6 +591,71 @@ function TankMan:new()
 		if self.hitPoints <= 50 and oldValue > 50 then
 			SoundManager.inst:stopTankManEngineNormalSound()
 			SoundManager.inst:playTankManEngineDamagedSound()
+		end
+
+		if self.hitPoints > 120 then
+			if background.sequence ~= "tankManNormal" then
+				background:prepare("tankManNormal")
+				background:play()
+			end
+		elseif self.hitPoints <= 120 and self.hitPoints > 60 then
+			if background.sequence ~= "tankManDamagedLight" then
+				background:prepare("tankManDamagedLight")
+				background:play()
+			end
+		else
+			if background.sequence ~= "tankManDamagedHeavy" then
+				background:prepare("tankManDamagedHeavy")
+				background:play()
+			end
+		end
+	end
+
+	function tank:setLeftTurretHitPoints(value)
+		local leftSam = self.leftSam
+		local oldValue = hitPoints
+		self.leftTurretHitPoints = value
+		local hitPoints = self.leftTurretHitPoints
+		
+		if hitPoints <= 0 then
+			if leftSam.sequence ~= "tankManLeftTurretDamagedHeavy" then
+				leftSam:prepare("tankManLeftTurretDamagedHeavy")
+				leftSam:play()
+			end
+			self.leftTurretHitPoints = 0
+			self:destroyLeftTurret()
+			return true
+		end
+		
+		if hitPoints <= 30 and hitPoints > 0 then
+			if leftSam.sequence ~= "tankManLeftTurretDamagedLight" then
+				leftSam:prepare("tankManLeftTurretDamagedLight")
+				leftSam:play()
+			end
+		end
+	end
+
+	function tank:setRightTurretHitPoints(value)
+		local rightSam = self.rightSam
+		local oldValue = hitPoints
+		self.rightTurretHitPoints = value
+		local hitPoints = self.rightTurretHitPoints
+		
+		if hitPoints <= 0 then
+			if rightSam.sequence ~= "tankManRightTurretDamagedHeavy" then
+				rightSam:prepare("tankManRightTurretDamagedHeavy")
+				rightSam:play()
+			end
+			self.rightTurretHitPoints = 0
+			self:destroyLeftTurret()
+			return true
+		end
+		
+		if hitPoints <= 30 and hitPoints > 0 then
+			if rightSam.sequence ~= "tankManRightTurretDamagedLight" then
+				rightSam:prepare("tankManRightTurretDamagedLight")
+				rightSam:play()
+			end
 		end
 	end
 
